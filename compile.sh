@@ -1,2 +1,2 @@
 #!/bin/sh
-pdflatex masterproef.tex
+pdflatex -output-directory=results masterproef.tex
