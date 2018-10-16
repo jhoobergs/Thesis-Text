@@ -1,17 +1,34 @@
 \chapter{Literatuurstudie}
 \label{hoofdstuk:literature}
 
-\section{Eerste onderwerp in dit hoofdstuk}
+\section{Raytracing}
+Raytracing is een computergraphics techniek om tweedimensionale beelden te genereren van een virtuele driedimensionale wereld bestaande uit driehoeken.
+Door elke pixel worden één (of meerdere) stralen gestuurd vanuit een oogpunt.
+Voor elke straal wordt dan de dichtstbijzijnde intersectie met een driehoek in de scene berekend.
+De kleur van de pixel is dan het gemiddelde van de kleuren van de intersectie punten van de stralen en driehoeken.
 
-\subsection{Een item}
+Om deze intersecties efficiënt te kunnen doen, wordt gebruik gemaakt van ruimtelijke en/of hiërarchische gegevensstructuren.
+De drie hoofdklassen van acceleratie datastructuren in moderne raytracing zijn: Kd-bomen, uniform grid (mogelijks met meerdere niveaus) en as-gealigneerde bounding volume hiërarchieën (BVH). 
+Verder wordt het raytracen versneld door: het sturen van pakketten coherente stralen, SIMD extensie van moderne CPU's gebruiken, Bounding Frustrum en interval aritmetica.
+Het is nog onduidelijk hoe goed dit voor secundaire stralen werkt ???
 
-\section{Tweede onderwerp in dit hoofdstuk}
+Void area: Het verschil tussen de geprojecteerde oppervlakte van het bounding volume en de geprojecteerde oppervlakte van het omhulde object.
+Het is aangetoond dat het aantal intersectie testen afhankelijk is van de void oppervlakte. [10]
+
+\section{Binary Space Partitioning bomen}
+Binary Space Partitioning bomen of afgekort BSP-bomen splitsen de ruimte op door willekeurig georiënteerde vlakken.
+De bounding box van de scene wordt recursief onderverdeeld volgens willekeurige vlakken totdat een bepaalde stopconditie bereikt wordt.
+Als enkel as-gealigneerde vlakken gebruikt worden, spreekt men van Kd-bomen.
+
+BSP-bomen zijn in theorie op alle vlakke superieur ten opzicht van Kd-bomen:
+\begin{itemize}
+	\item De flexibiliteit om splitsingsvlakken te kunnen plaatsen waar ze het meest effectief zijn, zorgt ervoor dat BSP-bomen zich heel goed kunnen aanpassen aan complexe scenes en heel ongelijke scene distributies.
+	\item Elke Kd-boom kan als een BSP-boom worden uitgedrukt.
+\end{itemize}
+
+Ondanks de theoretische superioriteit worden in de praktijk de Kd-bomen boven de BSP-bomen verkozen.
+De extra flexibiliteit van de BSP-boom zorgt ervoor dat er $\symO(n^3)$ mogelijke splitsingsvlakken gecontroleerd moeten worden in tegenstelling tot $\symO(n)$ bij de Kd-boom.
 
 \subsection{Een item}
 
 \section{Besluit van dit hoofdstuk}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "masterproef"
-%%% End: 
