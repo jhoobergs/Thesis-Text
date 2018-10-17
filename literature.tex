@@ -22,12 +22,26 @@ Als enkel as-gealigneerde vlakken gebruikt worden, spreekt men van Kd-bomen.
 
 BSP-bomen zijn in theorie op alle vlakke superieur ten opzicht van Kd-bomen:
 \begin{itemize}
-	\item De flexibiliteit om splitsingsvlakken te kunnen plaatsen waar ze het meest effectief zijn, zorgt ervoor dat BSP-bomen zich heel goed kunnen aanpassen aan complexe scenes en heel ongelijke scene distributies.
+	\item De flexibiliteit om splitsingsvlakken te kunnen plaatsen waar ze het meest effectief zijn, zorgt ervoor dat BSP-bomen zich heel goed kunnen aanpassen aan complexe scenes en heel ongelijke scene distributies. Ze zijn robuuster dan Kd-bomen.
 	\item Elke Kd-boom kan als een BSP-boom worden uitgedrukt.
 \end{itemize}
+Een Kd-boom is relatief makkelijk te breken met niet as-gealigneerde geometrie, \cite{Ize} haalt het volgende voorbeeld aan: Neem een small, lang object, als dit object as-gealigneerd is zal de Kd-boom zeer efficiënt zijn, maar als dit object diagonaal georiënteerd is, zal de kwaliteit van de Kd-boom sterk verminderen.
+Voor de BSP-boom - in tegenstelling tot de Kd-boom - zou het roteren geen enkel effect mogen hebben.
 
 Ondanks de theoretische superioriteit worden in de praktijk de Kd-bomen boven de BSP-bomen verkozen.
-De extra flexibiliteit van de BSP-boom zorgt ervoor dat er $\symO(n^3)$ mogelijke splitsingsvlakken gecontroleerd moeten worden in tegenstelling tot $\symO(n)$ bij de Kd-boom.
+Er wordt algemeen aangenomen dat BSP-bomen niet bruikbaar zijn omdat ze numeriek instabiel, kostelijk om te doorkruisen en te moeilijk om goed te bouwen zouden zijn.
+De numerieke instabiliteit zou volgen uit de beperkte precisie van vlottende komma getallen.  
+Het doorkruisen is duurder omdat het berekenen van de afstand van een straal tot een willekeurig vlak een scalair product en een deling vraagt in tegenstelling tot de afstand van een straal tot een as-gealigneerd vlak wat enkel een verschil en een deling vraagt.
+De extra flexibiliteit van de BSP-boom zorgt ervoor dat er $\symO(n^3)$ mogelijke splitsingsvlakken gecontroleerd moeten worden tijdens het bouwproces in tegenstelling tot $6n$ mogelijke splitsingsvlakken bij de Kd-boom.
+
+Ize et al tonen in \cite{Ize} aan dat een algemene BSP-boom even efficiënt en vaak zelfs efficiënter kan zijn dan een Kd-boom om te renderen.
+De bouwtijd van de BSP boom is wel een aantal grootteordes groter dan die van de Kd-boom. 
+
+Eén van de optimalisaties die Ize et al doen, gebruikt de goedkopere doorkruis techniek van de Kd-bomen als het splitsingsvlak (toevallig) as-gealigneerd is. 
+
+Restricted Binary Space Partitioning bomen of afgekort RBSP-bomen werden geïntroduceerd door \cite{Kammaje}.
+RBSP-bomen zijn BSP-bomen waarbij de mogelijke splitsingsvlakken op voorhand beperkt worden tot een kleine verzameling van vlakken. 
+Budge (\cite{Budge}) optimaliseerde het bouwen en doorkruisen van RBSP-bomen.
 
 \subsection{Een item}
 
