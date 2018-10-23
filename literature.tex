@@ -51,9 +51,11 @@ RBSP-bomen lijken op Kd-bomen omdat ze beiden splitsingsvlakken uit een voorafbe
 Tegelijkertijd lijken ze meer op algemene BSP-bomen omdat de vlakken niet as-gealigneerd moeten zijn en het aantal vlakken niet gelimiteerd is tot drie.
 De RBSP-boom kan de objecten strakker omhullen en dit zorgt voor minder doorkruisstappen en driehoek intersecties dan Kd-bomen. 
 De rendertijd van de RBSP-boom van \cite{Kammaje} was groter dan die van de Kd-boom.
-Ize et al zien hiervoor twee mogelijke redenen. 
+\authorIze{ }zien hiervoor twee mogelijke redenen. 
 De eerste reden is dat het doorkruisen van de RBSP-boom te verschillend is van het doorkruisen van de Kd-boom en te duur blijkt te zijn.
 Een andere mogelijke reden is dat de RBSP-boom in de lage takken van de boom hetzelfde probleem heeft als de Kd-boom, namelijk dat het niet in staat is om de driehoeken van elkaar af te splitsen.
+De rendertijd, aantal node doorkruisingen en aantal driehoek intersecties daalt wel als het aantal splitsingsvlakken stijgt \cite{Kammaje}.
+\authorKammaje{ }observeerden experimenteel een complexiteit van $\symO(m^{1.6}*n*log^2(n))$ voor het bouw algoritme met $m$ het aantal splitsingsassen $n$ het aantal driehoeken.
 Budge (\cite{Budge}) optimaliseerde het bouwen en doorkruisen van RBSP-bomen.
 
 De manier waarop een node uiteindelijk wordt opgedeeld in twee delen kan een grote impact hebben op het aantal doorkruisstappen en driehoek intersecties.
@@ -74,6 +76,9 @@ Voor een Kd-boom is dit triviaal te berekenen maar bij een BSP-boom wordt een no
 \authorKammaje{ }vormen eerst de polytoop door de vorige polytoop te clippen met het splitsingsvlak en sommeren daarna de oppervlaktes van de zijvlakken \cite{Kammaje}.
 \authorIze{ }gebruiken dezelfde methode voor de BSP-boom \cite{Ize}.
 De methode om deze nieuwe polytoop te berekenen moet robuust zijn en zeer smalle polytopen aankunnen.
+\authorKammaje{ }spreken ook over een tweede methode die gebruik maakt van het feit dat de oppervlakte kwadratisch varieert tussen elke twee opeenvolgend geprojecteerde punten van de pqolyhedron volgens een de as. 
+
+Deze methode zou iets sneller zijn, maar er wordt weinig uitleg gegeven over de exacte berekeningen.
 
 Numerieke inprecisie maakt het moeilijk om te bepalen of een punt exact op een vlak ligt -> er moet gebruik gemaakt worden van een epsilon, die groot genoeg moet zijn, maar ook niet te groot.\cite{Ize}.  
 
@@ -122,7 +127,7 @@ Het originele straal segment clippen ze net zoals bij de Kd-boom met de originel
 Dit heeft als voordeel dat het stralen die het hele object missen, zeer snel kan afwijzen. 
 \authorKammaje{ }gebruikten een complexer bounding volume.
 
-
+\authorIze{ }maken gebruik van Traversal Based Triangle Intersection wat de meeste expliciete straal - driehoek intersectietesten overbodig maakt.
 
 \subsection{Een item}
 
