@@ -61,7 +61,7 @@ Budge (\cite{Budge}) optimaliseerde het bouwen en doorkruisen van RBSP-bomen.
 De manier waarop een node uiteindelijk wordt opgedeeld in twee delen kan een grote impact hebben op het aantal doorkruisstappen en driehoek intersecties.
 Voor een Kd-boom is de Surface Area Heuristiek (SAH) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
 De SAH schat de kost van een splitsingsvlak door te veronderstellen dat beide helften bladeren worden. 
-De verwachte kost om een node {\symNodeExample} te splitsen in nodes ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_i + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
+De verwachte kost om een node {\symNodeExample} te splitsen in nodes ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
 De subscripts ${\symIntersection}$ en ${\symTraversal}$ staan voor respectievelijk intersectie en doorkruising.
 \authorKammaje{ }toonden aan hoe de SAH aangepast kan worden voor RBSP-bomen \cite{Kammaje}. 
 \authorIze{ }toonden aan dat dezelfde theorie ook werkt voor algemene BSP-bomen \cite{Ize}.
@@ -88,7 +88,7 @@ De reden hiervoor is de veronderstelling dat een split bladeren genereert met ee
 Dit werkt goed als er maar één doorkruis kost is, omdat de doorkruis kost enkel beïnvloedt of de node gesplitst wordt of niet.
 In \cite{Ize} bepaald de doorkruis kost niet alleen of er gesplitst moet worden, maar ook of de kostelijker te doorkruisen BSP split te verkiezen is boven de goedkopere Kd split.
 De lineaire intersectie kost zal snel de constante doorkruis kost overstijgen waardoor de optimale split uiteindelijk bijna volledig gebaseerd zal zijn op welke split resulteert in minder driehoek intersectie testen.
-Om dit op te lossen, laten ze $\symCostTraversalBSP$ lineair variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_i * (\symNbPrimitives - 1) + \symCostTraversalKd$. waarbij $\alpha$ een instelbare parameter is. \authorIze{ }gebruiken 0.1 als waarde voor $\alpha$.
+Om dit op te lossen, laten ze $\symCostTraversalBSP$ lineair variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$. waarbij $\alpha$ een instelbare parameter is. \authorIze{ }gebruiken 0.1 als waarde voor $\alpha$.
 Als er na het evalueren van alle splitsingsvlakken geen splitsingsvlak gevonden is dat de kost kleiner maakt dan de kost om een blad node te maken, worden alle BSP splitsingsvlakken opnieuw geëvalueerd maar nu met een vaste kost.
 
 Bij elke node moet beslist worden voor welke vlakken de SAH geëvalueerd wordt. Havran (!!cite) toonde aan dat voor Kd-bomen enkel de splitsingsvlakken rakend aan de driehoeken bekeken moesten worden.
