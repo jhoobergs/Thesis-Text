@@ -1,0 +1,134 @@
+\chapter{Literatuurstudie}
+\label{hoofdstuk:literature}
+
+\section{Raytracing}
+Raytracing is een computergraphics techniek om tweedimensionale beelden te genereren van een virtuele driedimensionale wereld bestaande uit driehoeken.
+Door elke pixel worden één (of meerdere) stralen gestuurd vanuit een oogpunt.
+Voor elke straal wordt dan de dichtstbijzijnde intersectie met een driehoek in de scene berekend.
+De kleur van de pixel is dan het gemiddelde van de kleuren van de straal - driehoek intersectie punten.
+
+Om deze intersecties efficiënt te kunnen doen, wordt gebruik gemaakt van ruimtelijke en/of hiërarchische gegevensstructuren.
+De drie hoofdklassen van acceleratie datastructuren in moderne raytracing zijn: Kd-bomen, uniform grid (mogelijks met meerdere niveaus) en as-gealigneerde bounding volume hiërarchieën (BVH). 
+Verder wordt het raytracen versneld door: het sturen van pakketten coherente stralen, SIMD extensie van moderne CPU's gebruiken, Bounding Frustrum en interval aritmetica.
+Het is nog onduidelijk hoe goed dit voor secundaire stralen werkt ???
+
+Void area: Het verschil tussen de geprojecteerde oppervlakte van het bounding volume en de geprojecteerde oppervlakte van het omhulde object.
+Het is aangetoond dat het aantal intersectie testen afhankelijk is van de void oppervlakte. [10]
+
+\section{Binary Space Partitioning bomen}
+Binary Space Partitioning bomen of afgekort BSP-bomen splitsen de ruimte op door willekeurig georiënteerde vlakken.
+De bounding box van de scene wordt recursief onderverdeeld volgens willekeurige vlakken totdat een bepaalde stopconditie bereikt wordt.
+Als enkel as-gealigneerde vlakken gebruikt worden, spreekt men van Kd-bomen.
+
+
+BSP-bomen zijn in theorie op alle vlakke superieur ten opzicht van Kd-bomen:
+\begin{itemize}
+	\item De flexibiliteit om splitsingsvlakken te kunnen plaatsen waar ze het meest effectief zijn, zorgt ervoor dat BSP-bomen zich heel goed kunnen aanpassen aan complexe scenes en heel ongelijke scene distributies. Ze zijn robuuster dan Kd-bomen.
+	\item Elke Kd-boom kan als een BSP-boom worden uitgedrukt.
+\end{itemize}
+Een Kd-boom is relatief makkelijk te breken met niet as-gealigneerde geometrie, \cite{Ize} haalt het volgende voorbeeld aan: Neem een smal, lang object, als dit object as-gealigneerd is zal de Kd-boom zeer efficiënt zijn, maar als dit object diagonaal georiënteerd is, zal de kwaliteit van de Kd-boom sterk verminderen.
+Voor de BSP-boom - in tegenstelling tot de Kd-boom - zou het roteren geen enkel effect mogen hebben.
+
+
+Ondanks de theoretische superioriteit worden in de praktijk de Kd-bomen boven de BSP-bomen verkozen.
+Er wordt algemeen aangenomen dat BSP-bomen niet bruikbaar zijn omdat ze numeriek instabiel, kostelijk om te doorkruisen en te moeilijk om goed te bouwen zouden zijn.
+De numerieke instabiliteit zou volgen uit de beperkte precisie van vlottende komma getallen.  
+Het doorkruisen is duurder omdat het berekenen van de afstand van een straal tot een willekeurig vlak een scalair product en een deling vraagt in tegenstelling tot de afstand van een straal tot een as-gealigneerd vlak wat enkel een verschil en een deling vraagt.
+Een optimale Kd-boom is - in tegenstelling tot een optimale BSP-boom - niet in staat alle objecten in individuele bladeren onder te verdelen omdat er niet altijd een as-gealigneerd vlak bestaat dat de objecten mooi van elkaar scheidt.  
+Dit leidt tot meer straal - object intersectietesten, maar mogelijks wel minder doorkruis stappen.
+In het algemeen wordt aangenomen dat het groter aantal intersectietesten wordt goedgemaakt door de snellere doorkruising bij de Kd-boom.
+De extra flexibiliteit van de BSP-boom zorgt ervoor dat er $\symO(n^3)$ mogelijke splitsingsvlakken gecontroleerd moeten worden tijdens het bouwproces in tegenstelling tot $6n$ mogelijke splitsingsvlakken bij de Kd-boom.
+
+
+Ize et al tonen in \cite{Ize} aan dat een algemene BSP-boom even efficiënt en vaak zelfs efficiënter kan zijn dan een Kd-boom om te renderen en dat de snellere doorkruising bij de Kd-boom niet voldoende is om het groter aantal straal - object intersecties goed te maken.
+De bouwtijd van de BSP boom is wel een aantal grootteordes groter dan die van de Kd-boom. 
+
+Eén van de optimalisaties die Ize et al doen, is het gebruiken van de goedkopere doorkruis techniek van de Kd-bomen als het splitsingsvlak (toevallig) as-gealigneerd is. 
+
+Restricted Binary Space Partitioning bomen of afgekort RBSP-bomen werden geïntroduceerd door \authorKammaje{ }\cite{Kammaje}.
+RBSP-bomen zijn BSP-bomen waarbij de mogelijke splitsingsvlakken beperkt worden tot een kleine verzameling van richtingen voordat de boom geconstrueerd wordt. 
+RBSP-bomen lijken op Kd-bomen omdat ze beiden splitsingsvlakken uit een voorafbepaalde verzameling richtingen kiezen.
+Tegelijkertijd lijken ze meer op algemene BSP-bomen omdat de vlakken niet as-gealigneerd moeten zijn en het aantal vlakken niet gelimiteerd is tot drie.
+De RBSP-boom kan de objecten strakker omhullen en dit zorgt voor minder doorkruisstappen en driehoek intersecties dan Kd-bomen. 
+De rendertijd van de RBSP-boom van \cite{Kammaje} was groter dan die van de Kd-boom.
+\authorIze{ }zien hiervoor twee mogelijke redenen. 
+De eerste reden is dat het doorkruisen van de RBSP-boom te verschillend is van het doorkruisen van de Kd-boom en te duur blijkt te zijn.
+Een andere mogelijke reden is dat de RBSP-boom in de lage takken van de boom hetzelfde probleem heeft als de Kd-boom, namelijk dat het niet in staat is om de driehoeken van elkaar af te splitsen.
+De rendertijd, aantal node doorkruisingen en aantal driehoek intersecties daalt wel als het aantal splitsingsvlakken stijgt \cite{Kammaje}.
+\authorKammaje{ }observeerden experimenteel een complexiteit van $\symO(m^{1.6}*n*log^2(n))$ voor het bouw algoritme met $m$ het aantal splitsingsassen $n$ het aantal driehoeken.
+Budge (\cite{Budge}) optimaliseerde het bouwen en doorkruisen van RBSP-bomen.
+
+De manier waarop een node uiteindelijk wordt opgedeeld in twee delen kan een grote impact hebben op het aantal doorkruisstappen en driehoek intersecties.
+Voor een Kd-boom is de Surface Area Heuristiek (SAH) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
+De SAH schat de kost van een splitsingsvlak door te veronderstellen dat beide helften bladeren worden. 
+De verwachte kost om een node {\symNodeExample} te splitsen in nodes ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
+De subscripts ${\symIntersection}$ en ${\symTraversal}$ staan voor respectievelijk intersectie en doorkruising.
+\authorKammaje{ }toonden aan hoe de SAH aangepast kan worden voor RBSP-bomen \cite{Kammaje}. 
+\authorIze{ }toonden aan dat dezelfde theorie ook werkt voor algemene BSP-bomen \cite{Ize}.
+
+Het bouwen van een BSP-boom is heel gelijkaardig aan het bouwen van een Kd-boom \cite{Ize}. 
+Er moet wel meer rekening gehouden worden met de verminderde numerieke precisie. 
+Het berekenen van de oppervlakte van een node moet ook aangepast worden naar de berekening van de oppervlakte van een veelvlak (meer bepaald een polytoop) in tegenstelling tot de oppervlakte van een as-gealigneerde box.
+Bepalen welke willekeurige splitsingsvlakken gebruikt worden, vraagt ook extra aandacht.
+
+Om de SAH te kunnen berekenen moet de oppervlakte van de nodes gekend zijn. 
+Voor een Kd-boom is dit triviaal te berekenen maar bij een BSP-boom wordt een node gedefinieerd als de intersectie van halfruimtes.
+\authorKammaje{ }vormen eerst de polytoop door de vorige polytoop te clippen met het splitsingsvlak en sommeren daarna de oppervlaktes van de zijvlakken \cite{Kammaje}.
+\authorIze{ }gebruiken dezelfde methode voor de BSP-boom \cite{Ize}.
+De methode om deze nieuwe polytoop te berekenen moet robuust zijn en zeer smalle polytopen aankunnen.
+\authorKammaje{ }spreken ook over een tweede methode die gebruik maakt van het feit dat de oppervlakte kwadratisch varieert tussen elke twee opeenvolgend geprojecteerde punten van de pqolyhedron volgens een de as. 
+
+Deze methode zou iets sneller zijn, maar er wordt weinig uitleg gegeven over de exacte berekeningen.
+
+Numerieke inprecisie maakt het moeilijk om te bepalen of een punt exact op een vlak ligt -> er moet gebruik gemaakt worden van een epsilon, die groot genoeg moet zijn, maar ook niet te groot.\cite{Ize}.  
+
+\authorIze{ }moeten een aanpassing maken aan de SAH omdat ze twee verschillende doorkruis kosten hebben: $\symCostTraversalBSP$ en $\symCostTraversalKd$.
+Als ze deze rechtstreeks in de SAH gebruiken, leidt dit tot overmatig gebruik van BSP nodes ten opzichte van Kd nodes, zelfs wanneer $\symCostTraversalBSP$ vele malen groter dan $\symCostTraversalKd$ wordt gezet.
+De reden hiervoor is de veronderstelling dat een split bladeren genereert met een kost die lineair is in het aantal driehoeken.
+Dit werkt goed als er maar één doorkruis kost is, omdat de doorkruis kost enkel beïnvloedt of de node gesplitst wordt of niet.
+In \cite{Ize} bepaald de doorkruis kost niet alleen of er gesplitst moet worden, maar ook of de kostelijker te doorkruisen BSP split te verkiezen is boven de goedkopere Kd split.
+De lineaire intersectie kost zal snel de constante doorkruis kost overstijgen waardoor de optimale split uiteindelijk bijna volledig gebaseerd zal zijn op welke split resulteert in minder driehoek intersectie testen.
+Om dit op te lossen, laten ze $\symCostTraversalBSP$ lineair variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$. waarbij $\alpha$ een instelbare parameter is. \authorIze{ }gebruiken 0.1 als waarde voor $\alpha$.
+Als er na het evalueren van alle splitsingsvlakken geen splitsingsvlak gevonden is dat de kost kleiner maakt dan de kost om een blad node te maken, worden alle BSP splitsingsvlakken opnieuw geëvalueerd maar nu met een vaste kost.
+
+Bij elke node moet beslist worden voor welke vlakken de SAH geëvalueerd wordt. Havran (!!cite) toonde aan dat voor Kd-bomen enkel de splitsingsvlakken rakend aan de driehoeken bekeken moesten worden.
+Voor elke driehoek zijn er maar 6 vlakken die aan die voorwaarde voldoen, waardoor er maar $\symO(n)$ kandidaat splitsingsvlakken zijn per node.
+Dit resultaat rechtstreeks uitbreiden naar de BSP-boom resulteert in $\symO(n^3)$ of meer kandidaat splitsingsvlakken per node wat vaak praktisch onmogelijk is. 
+\authorIze{ }beperken zichzelf tot slechts $\symO(n)$ kandidaat splitsingsvlakken per node. 
+Dit zorgt ervoor dat de bouwtijd praktisch blijft, maar heeft als nadeel dat ze mogelijke betere splitsingsvlakken niet bekijken.
+Voor elke driehoek in een node bekijken ze: het vlak van de driehoek zelf (auto-partitie), de drie vlakken loodrecht op de driehoek door de zijdes en de standaard zes as-gealigneerde vlakken die door de Kd-boom gebruikt worden.
+De eerste vier vlakken zouden niet mogelijk zijn bij een RBSP-boom omdat een RBSP-boom op voorhand vastlegt welke splitsingsvlakken voor elke node bekeken worden, ongeacht de driehoeken in die node.
+
+Een Kd-boom kan gebouwd worden in $\symO(n*log(n))$ volgens Wald en Havram [22].
+Dit is niet mogelijk voor de BSP-boom omdat we de driehoeken volgens een willekeurige richting moeten opdelen.
+De standaard $\symO(n^2)$ Kd-boom bouw methode kan wel gebruikt worden.
+Omdat de test vlakken niet gesorteerd kunnen worden, is het niet mogelijk om snellere en met lagere complexiteit te bouwen.
+\authorIze{ }verlaagt de complexiteit door gebruik te maken van een hulp gegevensstructuur om het aantal driehoeken te tellen die links van, op en rechts van het vlak liggen.
+Deze structuur is een bounding sphere hiërarchie over de driehoeken waarbij elke node bijhoudt hoeveel driehoeken hij bevat. 
+Op deze manier kan het aantal driehoeken direct gevonden worden als een node volledig aan één kant van het vlak ligt.
+Deze structuur wordt via het standaard as-gealigneerde BVH algoritme gebouwd, wat heel snel is in verhouding tot de BSP bouwtijd.
+In het slechtste geval (als alle driehoeken op het splitsingsvlak liggen), moeten alle bladeren bekeken worden en wordt lineaire tijd gebruikt voor dit splitsingsvlak. 
+Deze slechtste geval complexiteit verhoogt de bouwtijd niet omdat we sowieso lineaire tijd nodig hebben om te tellen, in het algemeen zorgt deze hulp structuur voor een sub kwadratische bouwtijd.
+Deze structuur moet na elke split geüpdatet worden en dit kost $\symO(n)$, maar aangezien er toch $\symO(n)$ splitsingsvlakken getest worden, verhoogd dit de complexiteit niet. 
+
+Een straal doorkruist een Kd-boom door de intersectie te berekenen van de straal en het splitsingsvlak.  
+Deze intersectie geeft een straal afstand to het vlak waarmee de straal opgedeeld kan worden in verschillende segmenten.
+Het initiële segment wordt berekend door de straal te clippen met de as-gealigneerde bounding box. 
+Een node wordt doorkruist als het segment van de straal, de node overlapt.
+Omdat de twee kindknopen van een node nooit overlappen, kan makkelijk bepaald worden welk kind dichter bij de oorsprong van de straal ligt en kan die knoop eerst doorkruist worden (als die tenminste het segment van de straal overlapt), hierdoor kan het doorkruisen van de tweede kindknoop mogelijks sneller beëindigd worden. 
+
+Het algoritme om een BSP-boom te doorkruisen is hetzelfde als dat om de Kd-boom te doorkruisen met twee wijzigingen.
+De eerste wijziging is dat het berekenen van de afstand tot het vlak nu twee scalaire producten en een vlottende komma deling in tegenstelling tot een verschil en een vermenigvuldiging met een vooraf berekende inverse.
+De tweede wijzing volgt uit de beperkte precies van vlotte komma getallen waardoor de opgeslagen normalen van willekeurige vlakken altijd licht zullen afwijken van de echte waarde.
+Hierdoor kunnen we niet rechtstreeks de berekende waarde voor de afstand gebruiken, maar moeten we veronderstellen dat alle afstanden kleiner dan een bepaalde epsilon, aan eender welke kant van het vlak kan liggen en dus moeten we beide nodes doorkruisen.
+\authorIze{ }ondervonden dat de BSP doorkruising 75\% trager is dan een Kd doorkruising, dit is vooral door de twee scalaire producten en de deling.
+Daarom gebruiken ze een hybride aanpak waarbij de as-gealigneerde splitsingen gebruik maken van de Kd doorkruising.
+Het originele straal segment clippen ze net zoals bij de Kd-boom met de originele as-gealigneerde bounding box.
+Dit heeft als voordeel dat het stralen die het hele object missen, zeer snel kan afwijzen. 
+\authorKammaje{ }gebruikten een complexer bounding volume.
+
+\authorIze{ }maken gebruik van Traversal Based Triangle Intersection wat de meeste expliciete straal - driehoek intersectietesten overbodig maakt.
+
+\subsection{Een item}
+
+\section{Besluit van dit hoofdstuk}
