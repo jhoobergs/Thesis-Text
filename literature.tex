@@ -2,12 +2,12 @@
 \label{hoofdstuk:literature}
 
 \section{Raytracing}
-Raytracing is een computergraphics techniek om tweedimensionale beelden te genereren van een virtuele driedimensionale wereld bestaande uit driehoeken.
+Raytracing is een computergraphics techniek om tweedimensionale beelden te genereren van een virtuele driedimensionale wereld bestaande uit driehoeken of andere primitieven.
 Door elke pixel worden één (of meerdere) stralen gestuurd vanuit een oogpunt.
 Voor elke straal wordt dan de dichtstbijzijnde intersectie met een driehoek in de scene berekend.
-De kleur van de pixel is dan het gemiddelde van de kleuren van de straal - driehoek intersectie punten.
+De kleur van de pixel is dan het gemiddelde van de kleuren van de straal - driehoek intersectiepunten.
 
-Om deze intersecties efficiënt te kunnen doen, wordt gebruik gemaakt van ruimtelijke en/of hiërarchische gegevensstructuren.
+Om deze intersecties efficiënt te kunnen berekenen, wordt gebruik gemaakt van ruimtelijke en/of hiërarchische gegevensstructuren.
 De drie hoofdklassen van acceleratie datastructuren in moderne raytracing zijn: Kd-bomen, uniform grid (mogelijks met meerdere niveaus) en as-gealigneerde bounding volume hiërarchieën (BVH). 
 Verder wordt het raytracen versneld door: het sturen van pakketten coherente stralen, SIMD extensie van moderne CPU's gebruiken, Bounding Frustrum en interval aritmetica.
 Het is nog onduidelijk hoe goed dit voor secundaire stralen werkt ???

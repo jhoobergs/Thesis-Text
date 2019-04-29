@@ -1,16 +1,17 @@
 \chapter{Voorgaand werk}
 \label{hoofdstuk:voorgaand-werk}
-Acceleratiestructuren zijn onmisbaar bij raytracing.
+Raytracing vereist acceleratiestructuren om efficiënt driehoeken in de scene te kunnen zoeken.
 Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
 % TODO
 
 \section{Acceleratiestructuren}
     Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
     De simpelste acceleratiestructuur bestaat uit het omhullende volume van de scene.
-    Intersecteren met de driehoeken uit de scene gebeurt dan enkel als dit omhullende volume intersecteert met de straal.
+    Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullende volume intersecteert met de straal.
     Dit kan worden uitgebreid tot een boomstructuur door dit volume recursief op te delen in kindvolumes.
     Binaire bomen delen elk omhullend volume op in twee nieuwe volumes, andere acceleratiestructuren zoals bijvoorbeeld octrees delen het volume op in meer dan twee volumes.
-    
+    \\
+
     Het volume kan worden opgedeeld op twee manieren: volgens objecten of volgens ruimte.
     Bij opdeling volgens objecten worden de objecten binnen het volume opgedeeld in meerdere disjuncte groepen en de kindvolumes zijn de omhullende volumes van deze groepen.
     Na deze opdeling zit elk object in exact één van deze nieuwe volumes, maar de volumes kunnen overlappen.
@@ -18,37 +19,46 @@ Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
     Opdeling volgens ruimte betekent dat de ruimte in het volume wordt opgedeeld in meerdere delen.
     Na deze opdeling overlappen deze nieuwe volumes niet, maar een object ligt nu in minstens één (en mogelijks in meerdere) kindvolume(s).
     De Binary Space Partioning ($\symBSP$) boom deelt de ruimte van het volume steeds op in twee kindvolumes.
-
-    Een eenvoudige acceleratiestructuur bestaat uit een asgealigneerde balk die de scene omhult. 
-    Als de straal niet intersecteert met de balk, dan raakt de straal geen enkele driehoek van de scene.
-    Als de straal wel intersecteert met de balk, worden alle driehoeken in de omhullende balk getest voor intersectie.
-    Deze balk kan recursief opgedeeld worden in meerdere balken om het aantal straal driehoek intersecties nog meer te verminderen.
-    Als de straal intersecteert met de balk worden de kindbalken gecontroleerd in volgorde van hun afstand.
-    Dit opdelingsproces heeft een aantal parameters: het aantal balken waarin een balk wordt opgedeeld, hoe de balk wordt opgedeeld en de stopconditie. \\
-
-    Binaire bomen delen elke balk op in twee nieuwe balken, andere acceleratiestructuren zoals bijvoorbeeld octrees delen de balk op in meer dan twee balken.
-    De balk kan opgedeeld worden op twee manieren: volgens object of volgens ruimte.
-    Bij opdeling volgens objecten worden de objecten binnen de balk opgedeeld in meerdere groepen en de nieuwe balken zijn de omhullende balken van deze groepen.
-    Na deze opdeling zit elk object in exact één van deze nieuwe balken, maar de balken kunnen overlappen.
-    Deze acceleratiestructuur wordt \textit{Bounding Volume Hierarchy} ($\symBVH$) genoemd.
-    Opdeling volgens ruimte betekent dat de ruimte van de balk wordt opgedeeld in meerdere delen.
-    Na deze opdeling overlappen deze nieuwe balken niet, maar een object ligt nu in minstens één (en mogelijke meerdere) van de nieuwe balken.
-    Deze acceleratiestructuur wordt de ${\symKd}$ boom genoemd.
-
     % TODO: combinatie van Kd en BVH ? SBVH
     % TODO: check if all abbrev are listed and defined at first usage
-\section{$\symKd$ Bomen}    
+
+\section{$\symBSP$ bomen}
+    De $\symBSP$ boom deelt de ruimte van het omhullende volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat een bepaald stopconditie bereikt is.
+    Het algoritme splitst een knoop niet op als het aantal driehoeken in de knoop lager is dan een vastgelegde limiet, bijvoorbeeld als er maar één driehoek in de knoop zit.
+    Een heuristiek kan ook tonen dat het beter is om de knoop niet te splitsen.    
+    Meerdere stopcondities worden vaak tegelijk gebruikt.
+    Het feit dat de $\symBSP$ volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als een nadeel.
+    Het zorgt ervoor dat de $\symBSP$ zich heel goed kan aanpassen aan de scene en alle niet intersecterende driehoeken in principe kan scheiden.
+    Maar het zorgt er ook voor dat het heel moeilijk is om deze goede splitsingsvlakken te vinden.
+    \\
+
+    %TODO: \authorIze{ } geeft drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen:
+
+
+    %Spatiaal, opsplitsen volgens willekeurige vlakken
+    %Niet feasible geacht
+   
+\section{$\symKd$ Bomen}   
+    In de praktijk wordt vaak een specifieke soort $\symBSP$ boom gebruikt.
     De $\symKd$ boom is een $\symBSP$ boom waarbij alle splitsingsvlakken asgealigneerd zijn.
     Hiermee wordt bedoelt dat de splitsingsrichting (de normaal op het splitsingsvlak) evenwijdig is aan één van de drie hoofdassen.
     Dit zorgt ervoor dat elke knoop van de boom een asgealigneerde balk voorstelt.
     Het doorkruisen van een knoop uit een $\symKd$ boom is daardoor goedkoper dan het doorkruisen van een knoop uit een algemene $\symBSP$ boom.
-    De reden hiervoor is dat het goedkoper is om het intersectiepunt van een straal en een asgealigneerd vlak te vinden dan het intersectiepunt van een straal en een willekeurig vlak.
+    De reden hiervoor is dat het goedkoper is om het intersectiepunt van een straal en een asgealigneerd vlak te vinden (verschil en vermenigvuldiging) dan het intersectiepunt van een straal en een willekeurig vlak (scalair product en deling).
+    $\symKd$ bomen kunnen zich minder goed aanpassen aan de scene en kunnen niet alle niet intersecterende driehoeken scheiden. 
+    \\
 
-    Het opbouwen van een $\symKd$ boom bestaat uit het recursief opdelen van het omhullend volume.
-    In elke stap moet bepaald worden volgens welke splitsingsrichting en op welke positie er gesplitst wordt.
-    Het doel is om de totale intersectiekost van de boom te minimaliseren. 
-    De heuristiek die dit doel probeert te bereiken is de Surface Area (SA) heuristiek.
-    De SA heuristiek is oorspronkelijk ontwikkelt door REF voor de $\symBVH$ en later aangepast door REF voor de $\symKd$ boom.
+    \authorIze{} \cite{ize} geven drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen.
+    Ten eerste wordt er aangenomen dat algemene BSP bomen nooit sneller kunnen zijn dan $\symKd$ bomen omdat het doorkruisen van een $\symBSP$ boom beduidend duurder is.
+    De beperkte precisie van vlottende komma getallen wordt gezien als tweede probleem want het zou $\symBSP$ bomen numeriek onstabiel maken.
+    De derde aanname is dat door de grotere flexibileit het veel moeilijker is om een $\symBSP$ boom te bouwen dan om een $\symKd$ boom te bouwen.
+    
+
+    %Het opbouwen van een $\symKd$ boom bestaat uit het recursief opdelen van het omhullend volume.
+    %In elke stap moet bepaald worden volgens welke splitsingsrichting en op welke positie er gesplitst wordt.
+    %Het doel is om de totale intersectiekost van de boom te minimaliseren. 
+    %De heuristiek die dit doel probeert te bereiken is de Surface Area (SA) heuristiek.
+    %De SA heuristiek is oorspronkelijk ontwikkelt door REF voor de $\symBVH$ en later aangepast door REF voor de $\symKd$ boom.
 
 
 
@@ -61,9 +71,7 @@ Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
     kDOPs ipv balken
     Praktische problemen: worst of both worlds -> trage doorkruising, 
     houd geen rekening met geometrie, kan nog steeds niet goed splitsen
-\section{Algemeen principe}
-    Spatiaal, opsplitsen volgens willekeurige vlakken
-    Niet feasible geacht
+
 \section{Algemene BSP-Bomen in de praktijk}
     Paper Ize et al.
         3 Kd richtingen (sweepen) plus 4 richtingen afhankelijk van geometrie 
