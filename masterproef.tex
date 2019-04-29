@@ -3,7 +3,7 @@
   author={Jesse Hoobergs},
   promotor={Prof.\,dr.\,ir.\ Philip Dutré},
   assessor={Ir.\,W. Eetveel\and W. Eetrest},
-  assistant={Ir.\ M. ~Moulin}}
+  assistant={Ir.\ M. Moulin\and Ir. P. Bartels}}
 % De volgende \setup mag verwijderd worden als geen fiche gewenst is.
 \setup{filingcard,
   translatedtitle={Using the distribution function of the geometric normals to build BSP acceleration data structures.},
@@ -67,22 +67,30 @@
 \section*{Afkortingen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
-    LoG   & Laplacian-of-Gaussian \\
-    MSE   & Mean Square error \\
-    PSNR  & Peak Signal-to-Noise ratio \\
+  \begin{tabularx}{\textwidth}{@{}p{20mm}X@{}}
+    $\symBSP$ & Binary Space Partitioning \\
+    $\symBVH$ & Bounding Volume Hierarchy \\
+    $\symRBSP$ & Restricted Binary Space Partitioning Tree \\
+    $\symSA$   & Surface Area \\
   \end{tabularx}
 \end{flushleft}
 \section*{Symbolen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
-  \begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
-    42    & ``The Answer to the Ultimate Question of Life, the Universe,
-            and Everything'' volgens de \cite{h2g2} \\
-    $c$   & Lichtsnelheid \\
-    $E$   & Energie \\
-    $m$   & Massa \\
-    $\pi$ & Het getal pi \\
+  \begin{tabularx}{\textwidth}{@{}p{25mm}X@{}}
+    $\symBSParbitrary$ & $\symBSP$ boom die per knoop random normalen als splitsrichtingen gebruikt. \\
+    $\symBSParbitrarykd$ & $\symBSParbitrary$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsrichtingen. \\
+    $\symBSParbitraryfastkd$ & $\symBSParbitrarykd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+    $\symBSPcluster$ & $\symBSP$ boom die per knoop een clustering van de normalen berekend en de centrums van deze clusters als splitsrichtingen gebruikt. \\
+    $\symBSPclusterkd$ & $\symBSPcluster$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsrichtingen. \\
+    $\symBSPclusterfastkd$ & $\symBSPclusterkd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+    $\symBSPrandom$ & $\symBSP$ boom die per knoop random richtingen als splitsrichtingen gebruikt. \\
+    $\symBSPrandomkd$ & $\symBSPrandom$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de random splitsrichtingen. \\
+    $\symBSPrandomfastkd$ & $\symBSPrandomkd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+    $\symCostTraversalBSP$ & De kost om een BSP knoop te doorkruisen. \\
+    $\symCostTraversalKd$ & De kost om een Kd knoop te doorkruisen. \\
+    $\symRBSPKd$ & $\symRBSP$ waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+  
   \end{tabularx}
 \end{flushleft}
 
@@ -90,19 +98,23 @@
 \mainmatter
 
 \include{inleiding}
-\include{literature}
-\include{hfdst-1}
-\include{hfdst-2}
+\include{voorgaand-werk}
+\include{bsp-sweep}
+\include{implementatie}
+\include{resultaten}
+%\include{literature}
+%\include{hfdst-1}
+%\include{hfdst-2}
 % ... en zo verder tot
-\include{hfdst-n}
-\include{besluit}
+%\include{hfdst-n}
+%\include{besluit}
 
 % Indien er bijlagen zijn:
-\appendixpage*          % indien gewenst
-\appendix
-\include{app-A}
+%\appendixpage*          % indien gewenst
+%\appendix
+%\include{app-A}
 % ... en zo verder tot
-\include{app-n}
+%\include{app-n}
 
 \backmatter
 % Na de bijlagen plaatst men nog de bibliografie.
