@@ -1,15 +1,16 @@
 \chapter{Voorgaand werk}
 \label{hoofdstuk:voorgaand-werk}
 Raytracing vereist acceleratiestructuren om efficiënt driehoeken in de scene te kunnen zoeken.
-Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
+Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren en wijdt dan uit over één specifieke acceleratiestructuur: de \textit{Binary Space Partitioning} ($\symBSP$) boom.
+De varianten van de $\symBSP$ boom worden één voor één besproken.
 % TODO
 
 \section{Acceleratiestructuren}
     Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
     De simpelste acceleratiestructuur bestaat uit het omhullende volume van de scene.
     Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullende volume intersecteert met de straal.
-    Dit kan worden uitgebreid tot een boomstructuur door dit volume recursief op te delen in kindvolumes.
-    Binaire bomen delen elk omhullend volume op in twee nieuwe volumes, andere acceleratiestructuren zoals bijvoorbeeld octrees delen het volume op in meer dan twee volumes.
+    Deze acceleratiestructuur kan worden uitgebreid tot een boomstructuur door dit volume recursief op te delen in kindvolumes.
+    Binaire bomen delen elk omhullend volume op in twee nieuwe volumes, andere acceleratiestructuren zoals bijvoorbeeld octrees, delen het volume op in meer dan twee volumes.
     \\
 
     Het volume kan worden opgedeeld op twee manieren: volgens objecten of volgens ruimte.
@@ -18,61 +19,67 @@ Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
     Een voorbeeld van een acceleratiestructuur waarbij de opdeling volgens objecten gebeurt is de \textit{Bounding Volume Hierarchy} ($\symBVH$).
     Opdeling volgens ruimte betekent dat de ruimte in het volume wordt opgedeeld in meerdere delen.
     Na deze opdeling overlappen deze nieuwe volumes niet, maar een object ligt nu in minstens één (en mogelijks in meerdere) kindvolume(s).
-    De Binary Space Partioning ($\symBSP$) boom deelt de ruimte van het volume steeds op in twee kindvolumes.
+    De $\symBSP$ boom deelt de ruimte van het volume steeds op in twee kindvolumes.
     % TODO: combinatie van Kd en BVH ? SBVH
     % TODO: check if all abbrev are listed and defined at first usage
 
 \section{$\symBSP$ bomen}
-    De $\symBSP$ boom deelt de ruimte van het omhullende volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat een bepaald stopconditie bereikt is.
-    Het algoritme splitst een knoop niet op als het aantal driehoeken in de knoop lager is dan een vastgelegde limiet, bijvoorbeeld als er maar één driehoek in de knoop zit.
-    Een heuristiek kan ook tonen dat het beter is om de knoop niet te splitsen.    
-    Meerdere stopcondities worden vaak tegelijk gebruikt.
+    De $\symBSP$ boom deelt de ruimte van het omhullende volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat een bepaalde stopconditie bereikt is.
     Het feit dat de $\symBSP$ volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als een nadeel.
-    Het zorgt ervoor dat de $\symBSP$ zich heel goed kan aanpassen aan de scene en alle niet intersecterende driehoeken in principe kan scheiden.
+    Het zorgt ervoor dat de $\symBSP$ zich heel goed kan aanpassen aan de scene en alle niet-intersecterende driehoeken in principe kan scheiden.
     Maar het zorgt er ook voor dat het heel moeilijk is om deze goede splitsingsvlakken te vinden.
-    \\
-
-    %TODO: \authorIze{ } geeft drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen:
-
+    In de praktijk wordt vaak een specifieke soort $\symBSP$ boom gebruikt: de $\symKd$ boom.
+    
+    \paragraph{Het bouwen van de boom}
+    Het splitsingsvlak dat een knoop opdeelt in twee delen, kan een grote impact hebben op het aantal doorkruisstappen en het aantal driehoekintersecties.
+    Het bouwalgoritme moet voor elke knoop het beste splitsingvlak bepalen en als splitsen volgens dat vlak voordelig is, de knoop opsplitsen in twee kindknopen.
+    Heuristieken voorspellen hoe goed een splitsing volgens een bepaald splitsingsvlak is.   
+    Het algoritme stopt met het splitsen van de knoop als het aantal driehoeken in de knoop lager is dan een vastgelegde limiet, bijvoorbeeld als er maar één driehoek in de knoop zit.
 
     %Spatiaal, opsplitsen volgens willekeurige vlakken
     %Niet feasible geacht
    
 \section{$\symKd$ Bomen}   
-    In de praktijk wordt vaak een specifieke soort $\symBSP$ boom gebruikt.
     De $\symKd$ boom is een $\symBSP$ boom waarbij alle splitsingsvlakken asgealigneerd zijn.
-    Hiermee wordt bedoelt dat de splitsingsrichting (de normaal op het splitsingsvlak) evenwijdig is aan één van de drie hoofdassen.
+    Hiermee wordt bedoeld dat de splitsingsrichting (de normaal op het splitsingsvlak) evenwijdig is aan één van de drie hoofdassen.
     Dit zorgt ervoor dat elke knoop van de boom een asgealigneerde balk voorstelt.
     Het doorkruisen van een knoop uit een $\symKd$ boom is daardoor goedkoper dan het doorkruisen van een knoop uit een algemene $\symBSP$ boom.
     De reden hiervoor is dat het goedkoper is om het intersectiepunt van een straal en een asgealigneerd vlak te vinden (verschil en vermenigvuldiging) dan het intersectiepunt van een straal en een willekeurig vlak (scalair product en deling).
-    $\symKd$ bomen kunnen zich minder goed aanpassen aan de scene en kunnen niet alle niet intersecterende driehoeken scheiden. 
+    Door de beperking op mogelijke splitsingsvlakken kunnen $\symKd$ bomen zich minder goed aanpassen aan de scene.
+    Ze kunnen bijvoorbeeld niet alle niet-intersecterende driehoeken scheiden. 
+    \\ % TODO: 2D voorbeeld van splitsbaar en wat niet
+
+    Ondanks dit nadeel, worden in de praktijk $\symKd$ bomen verkozen boven algemene $\symBSP$ bomen.
+    \authorIze{} \cite{ize} geven drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen die ervoor zorgen dat $\symKd$ bomen hoger ingeschat worden.
+    Ten eerste wordt er aangenomen dat algemene $\symBSP$ bomen nooit sneller kunnen zijn dan $\symKd$ bomen omdat het doorkruisen van een $\symBSP$ boom beduidend duurder is.
+    De beperkte precisie van vlottende komma getallen wordt gezien als het tweede probleem omdat het $\symBSP$ bomen numeriek onstabiel zou maken.
+    De derde aanname is dat door de grotere flexibileit (= grotere verzameling van mogelijke splitsingsvlakken) het veel moeilijker is om een $\symBSP$ boom te bouwen dan om een $\symKd$ boom te bouwen.
     \\
 
-    \authorIze{} \cite{ize} geven drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen.
-    Ten eerste wordt er aangenomen dat algemene BSP bomen nooit sneller kunnen zijn dan $\symKd$ bomen omdat het doorkruisen van een $\symBSP$ boom beduidend duurder is.
-    De beperkte precisie van vlottende komma getallen wordt gezien als tweede probleem want het zou $\symBSP$ bomen numeriek onstabiel maken.
-    De derde aanname is dat door de grotere flexibileit het veel moeilijker is om een $\symBSP$ boom te bouwen dan om een $\symKd$ boom te bouwen.
-    
+    Voor een Kd-boom is de Surface Area Heuristiek (SAH) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
+    De $\symSAH$ is oorspronkelijk ontwikkelt door REF voor de $\symBVH$ en later aangepast door REF voor de $\symKd$ boom. 
+    De $\symSAH$ schat de kost van een splitsingsvlak door te veronderstellen dat beide kindknopen bladknopen worden. 
+    De verwachte kost $\symCost$ om een knoop $\symNodeExample$ te splitsen in kindknopen ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
+    De subscripts ${\symIntersection}$ en ${\symTraversal}$ staan voor respectievelijk intersectie en doorkruising.
 
-    %Het opbouwen van een $\symKd$ boom bestaat uit het recursief opdelen van het omhullend volume.
-    %In elke stap moet bepaald worden volgens welke splitsingsrichting en op welke positie er gesplitst wordt.
-    %Het doel is om de totale intersectiekost van de boom te minimaliseren. 
-    %De heuristiek die dit doel probeert te bereiken is de Surface Area (SA) heuristiek.
-    %De SA heuristiek is oorspronkelijk ontwikkelt door REF voor de $\symBVH$ en later aangepast door REF voor de $\symKd$ boom.
-
-
-
-    Meest onderzoek naar deze en gebruikt
-    Beperkte versie: as-gealigneerd -> balken
-    Voordelen: simpele intersectie splitsingsvlak
     SAH (inclusief nulbonus) -> sweeping
 \section{RBSP-bomen}
+    De Restricted Binary Space Partitioning ($\symRBSP$) boom is een uitbreiding van de $\symKd$ boom ontwikkeld door \authorKammaje{ } \cite{Kammaje}.
+    De $\symRBSP$ boom laat toe om knopen op te splitsen volgens splitsingsrichtingen uit een vaste verzameling richtingen.
+    Deze splitsingsrichtingen moeten niet asgealigneerd zijn.
+    \authorKammaje{ } stellen de richtingen %TODO
+    Het omhullend volume van een $\symRBSP$ knoop is hierdoor geen balk maar een Discreet Geöriënteerde Polytoop met k richtingen: een $\symKDOP$. %TODO: check kDOP
+    \authorKammaje{ } toonden aan dat de SAH ook gebruikt kan worden voor $\symRBSP$ bomen. Het berekenen van de oppervlakte van een $\symKDOP$ is computationeel duurder dan het berekenen van de oppervlakte van een balk. Het doorkruisen van een $\symRBSP$ knoop is duurder dan het doorkruisen van een $\symKd$ knoop.
+    %TODO: Budge -> incrementele oppervlakte berekening
+    \\
+
+    Huidige $\symRBSP$ implemenaties moeten onderdoen voor de $\symKd$ bomen. \authorIze{ } menen dat de $\symRBSP$ boom de slechtste eigenschappen van zowel de $\symKd$ boom als de algemene $\symBSP$ boom overneemt. Net als de $\symKd$ boom kan het geen rekening houden met de lokale geometrie en zich dus niet aanpassen aan complexe geometrie. Net als bij de algemene $\symBSP$ boom moet de intersectie met een willekeurig georiënteerd vlak berekend worden om knopen te doorkruisen.
+
     Algemener dan Kd -> meer richtingen -> richtingen gekozen volgens
     kDOPs ipv balken
-    Praktische problemen: worst of both worlds -> trage doorkruising, 
-    houd geen rekening met geometrie, kan nog steeds niet goed splitsen
 
 \section{Algemene BSP-Bomen in de praktijk}
+    \authorIze{ } ontwikkelde de eerste algemene $\symBSP$ boom voor raytracing \cite{ize}. In teenstelling
     Paper Ize et al.
         3 Kd richtingen (sweepen) plus 4 richtingen afhankelijk van geometrie 
         Snelle Kd traversal, aanpassing SAH
@@ -84,8 +91,18 @@ Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren.
         Duurder om te traversen
         Duurder om te bouwen (berekening SA van veelvlak vs SA van balk)
         Grote zoekruimte om beste splitsingsvlak te vinden
+ 
 \section{Hiërarchie}
-
+\paragraph{Aantal verschillende splitsingsvlakken}
+Eén van de belangrijkste eigenschappen van een $\symBSP$ algoritme is zijn vermogen om zich aan te passen aan complexe geometrie.
+Het totaal aantal verschillende splitsingsvlakken dat bekeken wordt tijdens het bouwen van de boom, draagt bij tot dit vermogen.
+Voor een scene met $n$ driehoeken, bekijkt een $\symKd$ boom $6n$ verschillende splitsingsvlakken. 
+Elk niveau van de boom bekijkt exact dezelfde splitsingsvlakken.
+Een $\symRBSP$ boom met k discrete richtingen doet hetzelfde, maar bekijkt $2kn$ verschillende splitsingsvlakken. 
+De $\symBSPize$ boom gebruikt $10n$ verschillende splitsingsrichtingen, $6n$ voor de $\symKd$ richtingen en $n$ voor elk van de vier andere richtingen.
+De $\symBSPize$ boom bekijkt op elk niveau ook exact dezelfde splitsingvlakken en is dus niet zo algemeen als een $\symBSP$ boom kan zijn. 
+De reden hiervoor is dat de gebruikte $\symBSP$ splitsingsvlakken enkel afhankelijk zijn van de driehoeken zelf en niet van welke driehoeken samen in een knoop zitten.
+Geen van bovenstaande bomen gebruikt de volledige vrijheid van een $\symBSP$ boom om op elk niveau andere splitsingsvlakken te nemen en op die manier beperken ze hun vermogen om zich aan te passen aan complexe geometrie.
 
 %%% Local Variables: 
 %%% mode: latex
