@@ -77,7 +77,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Een veegbeweging (\textit{sweep}) over deze gesorteerde lijst kan dan in lineaire tijd de $SAH$ kost van alle splitsingsvlakken langs de splitsingsrichting berekenen.
 
     % nulbonus ?
-\section{RBSP-bomen}
+\section{$\symRBSP$ bomen}
     De Restricted Binary Space Partitioning ($\symRBSP$) boom is een uitbreiding van de $\symKd$ boom die toelaat om knopen op te splitsen volgens splitsingsrichtingen uit een vaste verzameling van k richtingen.
     Het omhullend volume van een $\symRBSP$ knoop is hierdoor geen balk maar een Discreet Geöriënteerde Polytoop met k richtingen: een \symKDOP.
     Zowel \authorKlosowki{} \cite{klosowski1998efficient} als \authorZachmann{} \cite{zachmann1998rapid} hebben hiërarchiën van \symKDOP s gebruikt binnen het domein van botsherkenning (\textit{collision detection}).
@@ -99,7 +99,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Net als de $\symKd$ boom kan het geen rekening houden met de lokale geometrie en zich dus niet aanpassen aan complexe geometrie.
     Net als bij de algemene $\symBSP$ boom moet de intersectie met een willekeurig georiënteerd vlak berekend worden om knopen te doorkruisen. \authorBudge{} \cite{Budge} tonen aan dat deze tweede eigenschap minder erg is bij de $\symRBSP$ boom dan bij de algemene $\symBSP$ boom omdat het mogelijk is om alle scalaire producten op voorhand (en dus maar één keer) te berekenen.
 
-\section{Algemene BSP-Bomen in de praktijk}
+\section{Algemene $\symBSP$ Bomen in de praktijk}
     \authorIze{} \cite{ize} ontwikkelden de eerste algemene $\symBSP$ boom voor raytracing. In tegenstelling tot de $\symKd$ en $\symRBSP$ boom kan $\symBSPize$ wel splitsingsvlakken kiezen afhankelijk van de geometrie. De $\symBSPize$ boom gebruikt de splitsingsvlakken van de $\symKd$ boom en elke driehoek in de knoop bepaalt nog vier extra splitsingsvlakken. Deze vier vlakken zijn: het vlak van de driehoek zelf (autoparitie) en de drie vlakken loodrecht op de driehoek door elk van de drie zijden. Merk op dat deze laatste vier vlakken rekening houden met de geometrie en niet mogelijk zouden zijn bij een $\symRBSP$ boom. Het omhullend volume van de knopen bij een $\symBSP$ boom is een convex veelvlak.
     Voor de eenvoud wordt de omhullende balk gebruikt als omhullend volume voor de wortelknoop. Dit heeft als extra voordeel dat er een zeer snelle test is voor stralen die niets raken. \\
 
@@ -165,12 +165,15 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   Eén van de belangrijkste eigenschappen van een $\symBSP$ algoritme is zijn vermogen om zich aan te passen aan complexe geometrie.
   Het totaal aantal verschillende splitsingsvlakken dat bekeken wordt tijdens het bouwen van de boom, draagt bij tot dit vermogen.
   Voor een scene met $n$ driehoeken, bekijkt een $\symKd$ boom $6n$ verschillende splitsingsvlakken. 
-  Elk niveau van de boom bekijkt exact dezelfde splitsingsvlakken.
+  Elk niveau van de boom bekijkt exact dezelfde splitsingsvlakken. Figuur \ref{fig:splitsingsvlakken-kd} toont dit visueel.
   Een $\symRBSP$ boom met k discrete richtingen doet hetzelfde, maar bekijkt $2kn$ verschillende splitsingsvlakken. 
+  Figuur \ref{fig:splitsingsvlakken-rbsp} toont dit visueel.
   De $\symBSPize$ boom gebruikt $10n$ verschillende splitsingsrichtingen, $6n$ voor de $\symKd$ richtingen en $n$ voor elk van de vier andere richtingen.
   De $\symBSPize$ boom bekijkt op elk niveau ook exact dezelfde splitsingvlakken en is dus niet zo algemeen als een $\symBSP$ boom kan zijn. 
+  Figuur \ref{fig:splitsingsvlakken-bspize} toont dit visueel.
   De reden hiervoor is dat de gebruikte $\symBSP$ splitsingsvlakken enkel afhankelijk zijn van de driehoeken zelf en niet van welke driehoeken samen in een knoop zitten.
   Geen van bovenstaande bomen gebruikt de volledige vrijheid van een $\symBSP$ boom om op elk niveau andere splitsingsvlakken te nemen en op die manier beperken ze hun vermogen om zich aan te passen aan complexe geometrie.
+  Driehoeken die in de wortelknoop door geen enkel vlak van elkaar kunnen worden gesplitst, kunnen nooit van elkaar gesplitst worden.
   Het volgende hoofdstuk introduceert nieuwe $\symBSP$ bomen die deze vrijheid wel benutten.
   
   \tikzset{every tree node/.style={minimum width=2em,draw,circle},
@@ -178,12 +181,15 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   edge from parent/.style=
   {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
   level distance=1.5cm}
-  \resizebox{0.3\textwidth}{!}{%
+  \begin{figure}
+    \begin{subfigure}[t]{.3\linewidth}
+        
+  \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$6n$};    
 [.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$3n$};
- [.\node(n3l)[fill=nodeblue1, text=white]{$3\frac{n}{2}$};]
+ [.\node(n3l)[fill=nodeblue1]{$3\frac{n}{2}$};]
  [.\node[fill=nodeblue2, text=white]{$3\frac{n}{2}$};]
 ]
 [.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$3n$};
@@ -201,12 +207,16 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \node at (4,-3) {$6n$};
 \end{tikzpicture}
 }
-\resizebox{0.3\textwidth}{!}{%
+\caption{$\symKd$ boom}
+\label{fig:splitsingsvlakken-kd}
+\end{subfigure}
+\begin{subfigure}[t]{.3\linewidth}
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$2kn$};    
 [.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$kn$};
- [.\node(n3l)[fill=nodeblue1, text=white]{$k\frac{n}{2}$};]
+ [.\node(n3l)[fill=nodeblue1]{$k\frac{n}{2}$};]
  [.\node[fill=nodeblue2, text=white]{$k\frac{n}{2}$};]
 ]
 [.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$kn$};
@@ -224,12 +234,16 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \node at (4,-3) {$2kn$};
 \end{tikzpicture}
 }
-\resizebox{0.3\textwidth}{!}{%
+\caption{$\symRBSP$ boom}
+\label{fig:splitsingsvlakken-rbsp}
+\end{subfigure}
+\begin{subfigure}[t]{.3\linewidth}
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$10n$};    
 [.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$5n$};
- [.\node(n3l)[fill=nodeblue1, text=white]{$5\frac{n}{2}$};]
+ [.\node(n3l)[fill=nodeblue1]{$5\frac{n}{2}$};]
  [.\node[fill=nodeblue2, text=white]{$5\frac{n}{2}$};]
 ]
 [.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$5n$};
@@ -247,6 +261,11 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \node at (4,-3) {$10n$};
 \end{tikzpicture}
 }
+\caption{$\symBSPize$ boom}
+\label{fig:splitsingsvlakken-bspize}
+\end{subfigure}
+\caption{Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus.}
+\end{figure}
 
 %%% Local Variables: 
 %%% mode: latex
