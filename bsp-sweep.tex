@@ -1,13 +1,79 @@
 \chapter{$\symBSPsweep$}
 \label{hoofdstuk:bsp-sweep}
+In dit hoofdstuk wordt een nieuwe soort $\symBSP$ boom besproken: de $\symBSPsweep$ boom.
+Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies van de $\symBSPsweep$.
 
+% Duidelijk wiskundig uitleggen
+
+ % TODO
+  Beginnen met het probleem te schetsen, aantal paragrafen aan spenderen: 
+  	- Eerst uitleggen in welke gevallen het nuttig is dat je die vrijheid gebruikt
+	- In dit soort scene, intuitief ...
 
 \section{Algemeen idee}
-    De bekeken richtingen zijn verschillend per node
-    Richtingen kunnen rekening houden met lokale geometrie (kan niet bij RBSP, wel bij BSPize)
-    Sweeping van richtingen
-    Kd-richtingen + aantal richtingen of puur die richtingen
-    Snelle traversal voor kd-richtingen
+    De $\symBSPsweep$ boom is een algemene $\symBSP$ boom waarbij in elke knoop k richtingen bepaald worden en alle $2n$ splitsingsvlakken langs elk van deze richtingen worden bekeken door te sweepen.
+    Deze k richtingen kunnen verschillend zijn voor elke knoop en kunnen gekozen worden afhankelijk van de lokale geometrie.
+    De $\symRBSP$ boom is een $\symBSPsweep$ boom waarbij de gekozen richtingen in elke knoop hetzelfde zijn.
+    De $\symBSPsweep$ boom heeft drie belangrijke ontwerpbeslissingen.
+    De belangrijkste ontwerpbeslissing bij de $\symBSPsweep$ boom is methode die gebruikt wordt om de k richtingen te bepalen.
+    Een tweede belangrijke ontwerpbeslissing is de waarde van k.
+    De derde belangrijke ontwerpbeslissing sluit aan bij de eerst en gaat over het al dan niet gebruiken van de $\symKd$ richtingen als de eerste drie van de k richtingen.
+    \\
+
+
+    %Kd-richtingen + aantal richtingen of puur die richtingen
+    %Snelle traversal voor kd-richtingen
+\section{Gebaseerd op random richtingen}
+De simpelste $\symBSPsweep$ bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
+De richtingen worden uniform op de hemisphere gegenereerd.
+Het idee achter deze boom is dat het nuttiger kan zijn om driehoeken via veel verschillende vlakken te proberen splitsen, dan om ze steeds met dezelfde vlakken te proberen splitsen.
+Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.
+% TODO: sterkte kd: loodrecht
+Als de $\symBSPrandom$ boom perfect gebalanceerd is, worden in elk niveau $2*k*n$ verschillende spitslingsvlakken bekeken.
+Deze splitsingsvlakken zijn verschillend op elk niveau, zodat in totaal $2*k*n*log(n)$ verschillende splitsingsvlakken bekeken worden.
+Figuur \ref{fig:splitsingsvlakken-bsprandom} toont dit visueel.
+De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2*k*log(n)$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken, in tegenstelling tot de bestaande bomen die dit maximaal met $\symO(1)$ vlakken proberen.\\
+
+\begin{figure}
+   \resizebox{0.4\textwidth}{!}{%
+   \centering
+    \begin{tikzpicture}
+   \Tree
+   [ .\node[fill=green]{$2kn$};    
+       [.\node[fill=nodeblue1]{$2k\frac{n}{2}$};
+           [.\node(n3l)[fill=nodered1, text=white]{$2k\frac{n}{4}$};]
+           [.\node[fill=nodered2, text=white]{$2k\frac{n}{4}$};]
+       ]
+       [.\node[fill=nodeblue2, text=white]{$2k\frac{n}{2}$};
+           [.\node[fill=nodered3, text=white]{$2k\frac{n}{4}$};]
+           [.\node(n3r)[fill=nodered4, text=white]{$2k\frac{n}{4}$};]
+       ]
+   ]
+   \node at (3,0.5) {$\#$};
+   \node at (4,0.5) {$\# \neq$};
+   \node at (3,0) {$2kn$};
+   \node at (3,-1.5) {$2kn$};
+   \node at (3,-3) {$2kn$};
+   \node at (4,0) {$2kn$};
+   \node at (4,-1.5) {$4kn$};
+   \node at (4,-3) {$6kn$};
+   \end{tikzpicture}
+   }
+   \caption{Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandom$ boom.} %TODO: meer uitleg
+   \label{fig:splitsingsvlakken-bsprandom}
+\end{figure}
+
+Zoals hierboven beschreven, zijn de $\symKd$ richtingen in praktische scenes vaak beter dan willekeurige richtingen.
+Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Aangezien de $\symKd$ richtingen in deze boom voor elke knoop gebruikt worden, kan de snellere $\symKd$ knoop doorkruising ook nuttig zijn. Een boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$.
+
+%(Extra) richtingen door random richtingen te kiezen
+%Ter controle dat de richtingen met behulp van normalen, nuttige richtingen zijn
+%Sweeping
+%Waarom zou dit werken ? : Random per node itt vast bij Kd
+%    Driehoeken proberen te worden gesplitst volgens meer verschillende richtingen, Kd probeert steeds hetzelfde
+%    Kd heeft maar 3 opties, als het volgens geen kan -> nooit mogelijk
+%    Kans splitsbaar door Kd richting of random is even hoog in uniform geval. Scenes hebben wel veel asgealigneerde delen, dus daarom die extra.
+
 \section{Gebaseerd op geometrische normalen}
 \subsection{Willekeurige normaal}
     Extra richtingen door random normalen te kiezen
@@ -18,14 +84,7 @@
     (Extra) richtingen via K-means clustering
     Sweepen volgens die richtingen
     Waarom zou dit werken ...
-\section{Gebaseerd op random richtingen}
-    (Extra) richtingen door random richtingen te kiezen
-    Ter controle dat de richtingen met behulp van normalen, nuttige richtingen zijn
-    Sweeping
-    Waarom zou dit werken ? : Random per node itt vast bij Kd
-        Driehoeken proberen te worden gesplitst volgens meer verschillende richtingen, Kd probeert steeds hetzelfde
-        Kd heeft maar 3 opties, als het volgens geen kan -> nooit mogelijk
-        Kans splitsbaar door Kd richting of random is even hoog in uniform geval. Scenes hebben wel veel asgealigneerde delen, dus daarom die extra.
+
 %\section{Hiërarchie}
 
 

@@ -5,7 +5,15 @@ Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren en wijdt 
 De varianten van de $\symBSP$ boom worden één voor één besproken.
 % TODO
 
-\section{Acceleratiestructuren}
+\section{Basisconcept}
+    
+    % TODO: raytracing
+    \paragraph{Ray tracing}
+    Door elke pixel één (of meerdere stralen), kleur intersectiepunt is kleur pixel -> path tracing.
+    voor realistische beeldgeneratie + referentie,
+zichtstralen of verder recursief voor andere lichteffecten.
+
+    \paragraph{Acceleratiestructuren}
     Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
     De simpelste acceleratiestructuur bestaat uit het omhullende volume van de scene.
     Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullende volume intersecteert met de straal.
@@ -188,13 +196,13 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$6n$};    
-[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$3n$};
- [.\node(n3l)[fill=nodeblue1]{$3\frac{n}{2}$};]
- [.\node[fill=nodeblue2, text=white]{$3\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$6\frac{n}{2}$};
+ [.\node(n3l)[fill=nodeblue1]{$6\frac{n}{4}$};]
+ [.\node[fill=nodeblue2, text=white]{$6\frac{n}{4}$};]
 ]
-[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$3n$};
- [.\node[fill=nodered1, text=white]{$3\frac{n}{2}$};]
- [.\node(n3r)[fill=nodered2, text=white]{$3\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$6\frac{n}{2}$};
+ [.\node[fill=nodered1, text=white]{$6\frac{n}{4}$};]
+ [.\node(n3r)[fill=nodered2, text=white]{$6\frac{n}{4}$};]
 ]
 ]
 \node at (3,0.5) {$\#$};
@@ -215,13 +223,13 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$2kn$};    
-[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$kn$};
- [.\node(n3l)[fill=nodeblue1]{$k\frac{n}{2}$};]
- [.\node[fill=nodeblue2, text=white]{$k\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$2k\frac{n}{2}$};
+ [.\node(n3l)[fill=nodeblue1]{$2k\frac{n}{4}$};]
+ [.\node[fill=nodeblue2, text=white]{$2k\frac{n}{4}$};]
 ]
-[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$kn$};
- [.\node[fill=nodered1, text=white]{$k\frac{n}{2}$};]
- [.\node(n3r)[fill=nodered2, text=white]{$k\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$2k\frac{n}{2}$};
+ [.\node[fill=nodered1, text=white]{$2k\frac{n}{4}$};]
+ [.\node(n3r)[fill=nodered2, text=white]{$2k\frac{n}{4}$};]
 ]
 ]
 \node at (3,0.5) {$\#$};
@@ -242,13 +250,13 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \begin{tikzpicture}
 \Tree
 [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$10n$};    
-[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$5n$};
- [.\node(n3l)[fill=nodeblue1]{$5\frac{n}{2}$};]
- [.\node[fill=nodeblue2, text=white]{$5\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$10\frac{n}{2}$};
+ [.\node(n3l)[fill=nodeblue1]{$10\frac{n}{4}$};]
+ [.\node[fill=nodeblue2, text=white]{$10\frac{n}{4}$};]
 ]
-[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$5n$};
- [.\node[fill=nodered1, text=white]{$5\frac{n}{2}$};]
- [.\node(n3r)[fill=nodered2, text=white]{$5\frac{n}{2}$};]
+[.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$10\frac{n}{2}$};
+ [.\node[fill=nodered1, text=white]{$10\frac{n}{4}$};]
+ [.\node(n3r)[fill=nodered2, text=white]{$10\frac{n}{4}$};]
 ]
 ]
 \node at (3,0.5) {$\#$};
@@ -265,6 +273,7 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \label{fig:splitsingsvlakken-bspize}
 \end{subfigure}
 \caption{Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus.}
+%TODO: meer uitleg
 \end{figure}
 
 %%% Local Variables: 
