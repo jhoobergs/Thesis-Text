@@ -6,9 +6,21 @@ Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies 
 % Duidelijk wiskundig uitleggen
 
  % TODO
-  Beginnen met het probleem te schetsen, aantal paragrafen aan spenderen: 
-  	- Eerst uitleggen in welke gevallen het nuttig is dat je die vrijheid gebruikt
-	- In dit soort scene, intuitief ...
+ % Beginnen met het probleem te schetsen, aantal paragrafen aan spenderen: 
+%  	- Eerst uitleggen in welke gevallen het nuttig is dat je die vrijheid gebruikt
+%	- In dit soort scene, intuitief ...
+
+\section{Probleemstelling}
+    Het doel van acceleratiestructuren is om de totale kost om een scene te renderen, te minimaliseren.
+    Deze rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
+    De totale intersectietijd $\symTime_{\symIntersection, \symTotal}$ is afhankelijk van het aantal driehoeken $\symNbPrimitives_\symLeaf$ in de geïntersecteerde bladknopen $\symLeaf$ en het aantal keer $\symTraversalL_\symLeaf$ dat elk van deze bladknopen doorkruist wordt.
+    De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
+    Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoek intersectie en $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen. 
+\begin{equation}
+    \symTime_{\symRender} = \symTime_{\symIntersection, \symTotal} + \symTime_{\symTraversal, \symTotal} = \symTime_{\symIntersection} * \sum_{\symLeaf}^\symLeafL \symNbPrimitives_\symLeaf * \symTraversalL_\symLeaf + \symTime_{\symTraversal} * \symTraversalL_{\symInternal}
+    \label{eq:rendertijd}
+\end{equation}
+
 
 \section{Algemeen idee}
     De $\symBSPsweep$ boom is een algemene $\symBSP$ boom waarbij in elke knoop k richtingen bepaald worden en alle $2n$ splitsingsvlakken langs elk van deze richtingen worden bekeken door te sweepen.
