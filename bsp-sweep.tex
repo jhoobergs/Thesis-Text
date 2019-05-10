@@ -17,8 +17,26 @@ Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies 
     De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
     Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoek intersectie en $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen. 
 \begin{equation}
-    \symTime_{\symRender} = \symTime_{\symIntersection, \symTotal} + \symTime_{\symTraversal, \symTotal} = \symTime_{\symIntersection} * \sum_{\symLeaf}^\symLeafL \symNbPrimitives_\symLeaf * \symTraversalL_\symLeaf + \symTime_{\symTraversal} * \symTraversalL_{\symInternal}
     \label{eq:rendertijd}
+   \symTime_{\symRender} \sim
+    \symTime_{\symIntersection, \symTotal} + \symTime_{\symTraversal, \symTotal} = \symTime_{\symIntersection} * \sum_{\symLeaf}^\symLeafL \symNbPrimitives_\symLeaf * \symTraversalL_\symLeaf + \symTime_{\symTraversal} * \symTraversalL_{\symInternal}
+\end{equation}
+% B -> 2Bs : nb -> nb/2 * 2 en Db1 + db2 << Db + 1 inwendige knoop, Db keer bekeken
+\begin{equation}
+    \symTime_{\symRender} - \symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} * \symTraversalL_{\symLeaf_j} + \symTime_{\symTraversal} * \symTraversalL_{\symLeaf_j}  + \frac{\symNbPrimitives_{\symLeaf_j}}{2} * (\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) * \symTime_{\symIntersection} \leq \symTime_{\symRender}
+\end{equation}
+\begin{equation}
+    \frac{\symNbPrimitives_{\symLeaf_j}}{2} * (\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) * \symTime_{\symIntersection} \leq (\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal}) * \symTraversalL_{\symLeaf_j}
+\end{equation}
+\begin{equation}
+    \frac{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}}{(\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
+\end{equation}
+\begin{equation}
+    \frac{1}{(1 - \frac{\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
+\end{equation}
+\begin{equation}
+    \symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} \leq
+    2\symTraversalL_{\symLeaf_j} * (1 - \frac{\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}})
 \end{equation}
 
 
