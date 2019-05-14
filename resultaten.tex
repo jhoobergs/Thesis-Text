@@ -9,22 +9,102 @@ Wikipedia eens nakijken.
 % Max depth: net zoals Mora en Ka.. gebruiken we k1 * log2(n) + k2 (voorgesteld door Havran en Bittner in [7]) met k1 = 1.2 en k2 = 2
 \section{Praktische aspecten}
 \section{Afhankelijkheid van aantal richtingen}
+\csvstyle{rendertimeTableStyle}{tabular=@{}llllllllll@{},
+table head=\toprule & \multicolumn{3}{c}{Been} & \multicolumn{3}{c}{Sponza} & \multicolumn{3}{c}{Conference Hall} \\ \cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10} K      & Min  & Med & Max & Min & Med & Max & Min & Med & Max\\ \midrule,
+late after line=\\,
+late after last line=\\\bottomrule,
+head to column names}
+
 \begin{table}
+\centering
+\csvreader[rendertimeTableStyle]{data/bsprandomRender.csv}{}%
+{\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+\caption{Statistieken over de rendertijd voor $\symBSPrandom$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+\label{tab:bsprandom-k-rendertijd}
+\end{table}
+
+\begin{table}
+  \centering
+  \csvreader[rendertimeTableStyle]{data/bsprandomwithkdRender.csv}{}%
+  {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+  \caption{Statistieken over de rendertijd voor $\symBSPrandomkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+  \label{tab:bsprandomwithkd-k-rendertijd}
+  \end{table}
+
+  \begin{table}
     \centering
-    \begin{tabular}{@{}lllllllll@{}} \toprule
-      & \multicolumn{2}{c}{Feet} & \multicolumn{2}{c}{Sponza} & \multicolumn{2}{c}{Conference Hall} & \multicolumn{2}{c}{Museum} \\ \cmidrule(r){2-3} \cmidrule(r){4-5} \cmidrule(r){6-7} \cmidrule(r){8-9}
+    \csvreader[rendertimeTableStyle]{data/bsprandomfastkdRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSPrandomfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bsprandomfastkd-k-rendertijd}
+    \end{table}
+
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bsparbitraryRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSParbitrary$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bsparbitrary-k-rendertijd}
+    \end{table}
       
-      K      & Mediaan     & Stdev & Mediaan & Stdev & Mediaan & Stdev & Mediaan & Stdev \\ \midrule
-      4      &     & &     & & & & & \\
-      5      &     & &     & & & & & \\
-      6      &     & &     & & & & & \\
-      7      &     & &     & & & & & \\
-      8      &     & &     & & & & & \\
-      9      &     & &     & & & & & \\
-      10      &     & &     & & & & & \\ \bottomrule
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bsparbitrarywithkdRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSParbitrarykd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bsparbitrarykd-k-rendertijd}
+    \end{table}
+  
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bsparbitraryfastkdRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSParbitraryfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bsparbitraryfastkd-k-rendertijd}
+    \end{table}
+
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bspclusterRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSPcluster$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bspcluster-k-rendertijd}
+    \end{table}
+      
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bspclusterwithkdRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSPclusterkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bspclusterkd-k-rendertijd}
+    \end{table}
+  
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{data/bspclusterfastkdRender.csv}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \caption{Statistieken over de rendertijd voor $\symBSPclusterfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
+    \label{tab:bspclusterfastkd-k-rendertijd}
+    \end{table}
+  
+
+  \begin{table}
+    \centering
+    \begin{tabular}{@{}lllllllllllll@{}} \toprule
+      & \multicolumn{3}{c}{Feet} & \multicolumn{3}{c}{Sponza} & \multicolumn{3}{c}{Conference Hall} & \multicolumn{3}{c}{Museum} \\ \cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10} \cmidrule(r){11-13}
+      K      & $\symKd$     & $\symBSP$ & Totaal & $\symKd$  & $\symBSP$ & Totaal & $\symKd$     & $\symBSP$ & Totaal & $\symKd$     & $\symBSP$ & Totaal \\ \midrule
+      2      &  0   & 642081 & 642081  & 0 & 2473542 & 2473542 & 0 & 954708 & 954708 & & &\\
+      3      &  0   & 718759 & 718759  & 0 & 3307722 & 3307722 & 0 & 1203867 & 1203867 & & &\\
+      4      &  0   & 783752 & 783752  & 0 & 3831201 & 3831201 & 0 & 1456774 & 1456774 & & &\\
+      5      &  0   & 784195 & 784195  & 0 & 4250026 & 4250026 & 0 & 1608240 & 1608240 & & &\\
+      6      &  0   & 794381 & 794381  & 0 & 4500849 & 4500849 & 0 & 1658489 & 1658489 & & &\\
+      7      &  0   & 809726 & 809726  & 0 & 4721923 & 4721923 & 0 & 1765114 & 1765114 & & &\\
+      8      &  0   & 829596 & 829596  & 0 & 4908790 & 4908790 & 0 & 1802687 & 1802687 & & &\\
+      9      &  0   & 830428 & 830428  & 0 & 4940333 & 4940333 & 0 & 1819335 & 1819335 & & &\\
+      10      & 0   & 856250 & 856250  & 0 & 5099947 & 5099947 & 0 & 1891082 & 1891082 & & &\\ \bottomrule
     \end{tabular}
-    \caption{Statistieken over de rendertijd voor $\symBSPrandomfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 6 keer uitgevoerd. }
-    \label{tab:bsprandom-k-rendertijd}
+    \caption{}
+    \label{tab:bsprandom-k-boomvgl}
   \end{table}
 \section{Vergelijking}
 

@@ -1,0 +1,9 @@
+type,K,renderMinKdFeet,renderMedKdFeet,renderMaxKdFeet,renderMinKdSponza,renderMedKdSponza,renderMaxKdSponza,renderMinKdConference,renderMedKdConference,renderMaxKdConference
+bsparbitrarywithkd,3,102.555,102.405,103.09,104.655,96.063,100.144,97.549,97.503,97.794
+bsparbitrarywithkd,4,70.873,70.982,70.946,96.228,94.165,95.941,81.85,82.461,86.085
+bsparbitrarywithkd,5,67.85,68.482,68.37,94.684,92.765,99.968,84.101,83.239,87.39
+bsparbitrarywithkd,6,67.419,67.283,68.196,101.928,98.831,107.121,82.223,83.912,87.486
+bsparbitrarywithkd,7,66.999,67.177,67.03,96.528,100.152,113.112,83.9,84.41,88.507
+bsparbitrarywithkd,8,66.752,66.861,66.809,106.938,102.555,110.824,83.37,84.228,88.147
+bsparbitrarywithkd,9,66.831,66.729,66.616,107.749,104.674,107.536,83.752,84.364,88.829
+bsparbitrarywithkd,10,66.414,66.491,66.772,107.362,100.657,110.953,83.12,85.119,89.107

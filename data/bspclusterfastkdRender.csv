@@ -1,0 +1,9 @@
+type,K,renderMinKdFeet,renderMedKdFeet,renderMaxKdFeet,renderMinKdSponza,renderMedKdSponza,renderMaxKdSponza,renderMinKdConference,renderMedKdConference,renderMaxKdConference
+bspclusterfastkd,3,101.454,101.571,101.18,105.169,95.846,99.905,96.645,96.491,95.757
+bspclusterfastkd,4,78.023,78.065,78.356,96.472,87.161,94.116,84.088,83.582,91.343
+bspclusterfastkd,5,70.681,70.429,72.718,91.49,83.064,85.978,79.583,80.756,88.038
+bspclusterfastkd,6,68.006,67.828,67.837,89.127,80.339,80.096,78.349,79.272,86.204
+bspclusterfastkd,7,67.408,67.208,67.208,88.377,79.844,78.395,79.853,79.577,85.83
+bspclusterfastkd,8,67.165,67.291,66.905,88.68,80.107,79.958,79.798,79.712,86.478
+bspclusterfastkd,9,66.958,66.847,66.683,89.005,80.173,79.666,77.809,78.885,79.792
+bspclusterfastkd,10,66.849,66.899,66.686,89.448,83.764,83.188,79.45,80.151,87.728
