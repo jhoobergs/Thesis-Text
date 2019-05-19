@@ -9,9 +9,20 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     
     % TODO: raytracing
     \paragraph{Ray tracing}
-    Door elke pixel één (of meerdere stralen), kleur intersectiepunt is kleur pixel -> path tracing.
-    voor realistische beeldgeneratie + referentie,
-zichtstralen of verder recursief voor andere lichteffecten.
+    \textit{Ray tracing} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het vormt een beschrijving van een 3D scene om tot een fotorealistische 2D afbeelding. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel.\\
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.5\linewidth]{img/ray-tracing}
+        \caption{Een visuele voorstelling van \textit{ray tracing}. Door elke pixel worden één of meerdere zichtstralen gestuurd. Schaduwstralen worden gebruikt om de belichting in de scene realistisch te maken. Deze afbeelding is een aangepaste versie van een afbeelding op \url{https://en.wikipedia.org/wiki/Ray_tracing_(graphics)}}
+        \label{fig:raytracing}    
+    \end{figure}
+
+    Om realistische afbeeldingen te maken, wordt belichting in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting, een punt is donker als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen, stralen van het punt naar de lichtbron.  Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar.  Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting kan een andere techniek, \textit{path tracing}, gebruikt worden. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
+    
+  %  , kleur intersectiepunt is kleur pixel -> path tracing.
+  %  voor realistische beeldgeneratie + referentie,
+
 
     \paragraph{Acceleratiestructuren}
     Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
@@ -34,10 +45,15 @@ zichtstralen of verder recursief voor andere lichteffecten.
 \section{$\symBSP$ bomen}
     De $\symBSP$ boom deelt de ruimte van het omhullende volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat een bepaalde stopconditie bereikt is.
     Het feit dat de $\symBSP$ boom volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als nadeel.
-    Het zorgt ervoor dat de $\symBSP$ boom zich heel goed kan aanpassen aan de scene en alle niet-intersecterende driehoeken in principe kan scheiden.
+    Het zorgt ervoor dat de $\symBSP$ boom zich heel goed kan aanpassen aan de scene en alle niet-intersecterende driehoeken in principe kan scheiden (zie figuur \ref{fig:splitsing-bsp}).
     Maar het zorgt er ook voor dat het heel moeilijk is om deze goede splitsingsvlakken te vinden.
     In de praktijk wordt vaak een specifieke soort $\symBSP$ boom gebruikt: de $\symKd$ boom.
-    
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/splitsing-BSP}
+        \caption{Een 2D voorbeeld dat toont dat alle (niet-intersecterende) driehoeken gesplitst kunnen worden door een $\symBSP$ boom.}
+        \label{fig:splitsing-bsp}    
+    \end{figure}    
     \paragraph{Het bouwen van de boom}
     Het splitsingsvlak dat een knoop opdeelt in twee delen, kan een grote impact hebben op het aantal doorkruisstappen en het aantal driehoekintersecties.
     Het bouwalgoritme moet voor elke knoop het beste splitsingvlak bepalen en als splitsen volgens dat vlak voordelig is, de knoop opsplitsen in twee kindknopen.
@@ -56,7 +72,15 @@ zichtstralen of verder recursief voor andere lichteffecten.
     De reden hiervoor is dat het goedkoper is om het intersectiepunt van een straal en een asgealigneerd vlak te vinden (verschil en vermenigvuldiging) dan het intersectiepunt van een straal en een willekeurig vlak (twee scalaire producten en deling).
     Door de beperking op mogelijke splitsingsvlakken kunnen $\symKd$ bomen zich minder goed aanpassen aan de scene.
     Ze kunnen bijvoorbeeld niet alle niet-intersecterende driehoeken scheiden. 
+    Figuur \ref{fig:splitsing-kd} toont een situatie waarin de $\symKd$ boom niet alle driehoeken kan scheiden.
     \\ % TODO: 2D voorbeeld van splitsbaar en wat niet
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/splitsing-Kd}
+        \caption{Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de asgealigneerde vlakken van de $\symKd$ boom. De twee driehoeken linksonder (en rechtsboven) kunnen niet gesplitst worden omdat zowel hun projecties op de x-as, als hun projecties op de y-as overlappen.}
+        \label{fig:splitsing-kd}    
+    \end{figure}
 
     Ondanks dit nadeel, worden in de praktijk $\symKd$ bomen verkozen boven algemene $\symBSP$ bomen.
     \authorIze{} \cite{ize} geven drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen die ervoor zorgen dat $\symKd$ bomen hoger ingeschat worden.
@@ -90,8 +114,16 @@ zichtstralen of verder recursief voor andere lichteffecten.
     Het omhullend volume van een $\symRBSP$ knoop is hierdoor geen balk maar een Discreet Geöriënteerde Polytoop met k richtingen: een \symKDOP.
     Zowel \authorKlosowki{} \cite{klosowski1998efficient} als \authorZachmann{} \cite{zachmann1998rapid} hebben hiërarchiën van \symKDOP s gebruikt binnen het domein van botsherkenning (\textit{collision detection}).
     De $\symRBSP$ boom is voor het eerst gebruikt in ray tracing door \authorKammaje{} \cite{Kammaje} en verder onderzocht door \authorBudge{} \cite{Budge}.
-    Aangezien de splitsingsrichtingen niet asgealigneerd moeten zijn, lijkt de $\symRBSP$ boom meer op de algemene $\symBSP$ boom dan de $\symKd$ boom.
+    Aangezien de splitsingsrichtingen niet asgealigneerd moeten zijn, lijkt de $\symRBSP$ boom meer op de algemene $\symBSP$ boom dan de $\symKd$ boom. Net als de $\symKd$ boom kan de $\symRBSP$ boom niet alle niet-intersecterende driehoeken scheiden. 
+    Figuur \ref{fig:splitsing-rbsp} toont een situatie waarin de $\symRBSP$ boom niet alle driehoeken kan scheiden.
     \\
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{img/splitsing-RBSP}
+        \caption{Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de vlakken van de $\symRBSP$ boom. De $\symRBSP$ boom kan de driehoeken wel beter splitsen dan de $\symKd$ boom in figuur \ref{fig:splitsing-kd}. De twee driehoeken rechtsboven kunnen niet gesplitst worden omdat de discrete verzameling van k richtingen, geen richting bevat waarlangs deze driehoeken gesplitst kunnen worden.}
+        \label{fig:splitsing-rbsp}    
+    \end{figure}
 
     Een belangrijke ontwerpbeslissing bij $\symRBSP$ bomen is het kiezen van de verzameling splitsingsrichtingen. 
     Volgens \authorBudge{} \cite{Budge} werkt in principe elke verzameling met minstens drie niet-evenwijdige richtingen, maar is het gewenst om richtingen te kiezen die samen de eenheidsbol goed bedekken.

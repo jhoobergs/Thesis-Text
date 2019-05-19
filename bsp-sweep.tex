@@ -21,23 +21,59 @@ Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies 
    \symTime_{\symRender} \sim
     \symTime_{\symIntersection, \symTotal} + \symTime_{\symTraversal, \symTotal} = \symTime_{\symIntersection} * \sum_{\symLeaf}^\symLeafL \symNbPrimitives_\symLeaf * \symTraversalL_\symLeaf + \symTime_{\symTraversal} * \symTraversalL_{\symInternal}
 \end{equation}
+
+Stel dat één kindknoop $\symLeaf_j$ uit de boom wordt opgesplitst in twee kleinere kindknopen $\symLeaf_{j1}$ en $\symLeaf_{j2}$ die elk de helft van de driehoeken krijgen.
+Deze opsplitsing is voordelig als aan voorwaarde \ref{eq:vw_splitwinst} voldaan is.
+Deze voorwaarde drukt uit dat knoop $\symLeaf_j$ nu een inwendig knoop wordt en dus niet meer zorgt voor een intersectietijd en wel voor een doorkruistijd en dat de nieuwe kindknopen zorgen voor een intersectietijd.
+De voorwaarde is equivalent aan voorwaarden \ref{eq:vw_splitwinst_tussen} en \ref{eq:vw_splitwinst_res}.
 % B -> 2Bs : nb -> nb/2 * 2 en Db1 + db2 << Db + 1 inwendige knoop, Db keer bekeken
 \begin{equation}
+    \label{eq:vw_splitwinst}
     \symTime_{\symRender} - \symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} * \symTraversalL_{\symLeaf_j} + \symTime_{\symTraversal} * \symTraversalL_{\symLeaf_j}  + \frac{\symNbPrimitives_{\symLeaf_j}}{2} * (\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) * \symTime_{\symIntersection} \leq \symTime_{\symRender}
 \end{equation}
 \begin{equation}
-    \frac{\symNbPrimitives_{\symLeaf_j}}{2} * (\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) * \symTime_{\symIntersection} \leq (\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal}) * \symTraversalL_{\symLeaf_j}
+    \label{eq:vw_splitwinst_tussen}
+  \Leftrightarrow \frac{\symNbPrimitives_{\symLeaf_j}}{2} * (\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) * \symTime_{\symIntersection} \leq (\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal}) * \symTraversalL_{\symLeaf_j}
 \end{equation}
+%\begin{equation}
+%    \frac{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}}{(\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
+%\end{equation}
+%\begin{equation}
+%    \frac{1}{(1 - \frac{\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
+%\end{equation}
 \begin{equation}
-    \frac{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}}{(\symTime_{\symIntersection} * \symNbPrimitives_{\symLeaf_j} - \symTime_{\symTraversal})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
-\end{equation}
-\begin{equation}
-    \frac{1}{(1 - \frac{\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}})} \leq \frac{2\symTraversalL_{\symLeaf_j}}{(\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}}) }
-\end{equation}
-\begin{equation}
-    \symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} \leq
+    \label{eq:vw_splitwinst_res}
+    \Leftrightarrow \symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} \leq
     2\symTraversalL_{\symLeaf_j} * (1 - \frac{\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} * \symTime_{\symIntersection}})
 \end{equation}
+
+De som in het linkerlid van voorwaarde \ref{eq:vw_splitwinst_res} is minstens gelijk aan $\symTraversalL_{\symLeaf_{j}}$ aangezien elke doorkruising van $\symLeaf_j$ voor minstens één doorkruising door een kindknoop zorgt.
+Analoog kan worden ingezien dat de maximale waarde voor deze som gelijk is aan $2\symTraversalL_{\symLeaf_{j}}$ aangezien elke doorkruising van $\symLeaf_j$ voor maximaal twee doorkruisingen door een kindknoop kan zorgen. Hieruit volgt ongelijkheid \ref{eq:vw_doorkruisingen}.
+
+\begin{equation}
+    \label{eq:vw_doorkruisingen}
+    \symTraversalL_{\symLeaf_{j}} \leq \symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} \leq 2\symTraversalL_{\symLeaf_{j}}
+\end{equation}
+
+In het algemeen geval geldt dat $\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} = (2 * (1-\alpha) + \alpha) \symTraversalL_{\symLeaf_{j}}$ waarbij $\alpha$ het procentueel aantal doorkruisingen is dat door slechts één van de twee kindknopen gaat.
+In dit geval leidt voorwaarde \ref{eq:vw_splitwinst_res} tot voorwaarde \ref{eq:vw_splitwinst_general}.
+\begin{equation}
+    \label{eq:vw_splitwinst_general}
+    (2 * (1-\alpha) + \alpha) \symTraversalL_{\symLeaf_{j}} \leq
+    2\symTraversalL_{\symLeaf_j} - \frac{2\symTraversalL_{\symLeaf_j}\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} \symTime_{\symIntersection}}
+    \Leftrightarrow
+    2 - \alpha \leq 2 - \frac{2\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} \symTime_{\symIntersection}}
+    \Leftrightarrow
+    \symTime_{\symTraversal} \leq \frac{\alpha \symNbPrimitives_{\symLeaf_j} }{2}\symTime_{\symIntersection}
+\end{equation}
+
+In het ideale geval ($\alpha = 1$) leidt voorwaarde \ref{eq:vw_splitwinst_general} tot $\symTime_{\symTraversal} \leq \frac{\symNbPrimitives_{\symLeaf_j}}{2}\symTime_{\symIntersection}$.
+Het opsplitsen van een knoop met twee elementen, kan hierdoor pas voordelig zijn als de doorkruistijd kleiner is dan de intersectietijd.
+Aangezien de doorkruistijd in de realiteit beduidend kleiner is dan de intersectietijd, is het in dit ideale geval altijd voordelig om een kindknoop op te splitsen, ongeacht het aantal driehoeken in de knoop.
+In het slechtste geval ($\alpha = 0$) kan aan voorwaarde \ref{eq:vw_splitwinst_general} enkel voldaan zijn als de doorkruistijd gelijk is aan nul. Dit is onmogelijk waardoor opsplitsen nooit voordelig kan zijn in dit geval. \\
+
+Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. Voorwaarde \ref{eq:vw_splitwinst_general} toont dat de kans dat splitsen voordelig is, lineair stijgt met $\symNbPrimitives_{\symLeaf_j}$. De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\alpha$ keer kleiner is dan de intersectietijd. Intuitief lijkt het logisch dat hier in het algemeen aan voldaan is. Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan één driehoek op te splitsen in twee kleinere bladknopen. De volgende secties ... \\
+
 
 
 \section{Algemeen idee}
