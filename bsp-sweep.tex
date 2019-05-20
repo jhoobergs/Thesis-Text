@@ -81,7 +81,7 @@ Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhan
     Deze k richtingen kunnen verschillend zijn voor elke knoop en kunnen gekozen worden afhankelijk van de lokale geometrie.
     De $\symRBSP$ boom is een $\symBSPsweep$ boom waarbij de gekozen richtingen in elke knoop hetzelfde zijn.
     De $\symBSPsweep$ boom heeft drie belangrijke ontwerpbeslissingen.
-    De belangrijkste ontwerpbeslissing bij de $\symBSPsweep$ boom is methode die gebruikt wordt om de k richtingen te bepalen.
+    De belangrijkste ontwerpbeslissing bij de $\symBSPsweep$ boom is de methode die gebruikt wordt om de k richtingen te bepalen.
     Een tweede belangrijke ontwerpbeslissing is de waarde van k.
     De derde belangrijke ontwerpbeslissing sluit aan bij de eerst en gaat over het al dan niet gebruiken van de $\symKd$ richtingen als de eerste drie van de k richtingen.
     \\
@@ -93,14 +93,16 @@ Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhan
 De simpelste $\symBSPsweep$ bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
 De richtingen worden uniform op de hemisphere gegenereerd.
 Het idee achter deze boom is dat het nuttiger kan zijn om driehoeken via veel verschillende vlakken te proberen splitsen, dan om ze steeds met dezelfde vlakken te proberen splitsen.
-Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.
-% TODO: sterkte kd: loodrecht
-Als de $\symBSPrandom$ boom perfect gebalanceerd is, worden in elk niveau $2*k*n$ verschillende spitslingsvlakken bekeken.
-Deze splitsingsvlakken zijn verschillend op elk niveau, zodat in totaal $2*k*n*log(n)$ verschillende splitsingsvlakken bekeken worden.
+Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden, even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.
+
+Als de $\symBSPrandom$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ verschillende splitsingsvlakken bekeken.
+Deze splitsingsvlakken zijn verschillend op elk niveau, zodat in totaal $2knlog(n)$ verschillende splitsingsvlakken bekeken worden.
 Figuur \ref{fig:splitsingsvlakken-bsprandom} toont dit visueel.
-De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2*k*log(n)$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken, in tegenstelling tot de bestaande bomen die dit maximaal met $\symO(1)$ vlakken proberen.\\
+De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2klog(n)$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken, in tegenstelling tot de bestaande bomen die dit maximaal met $\symO(1)$ vlakken proberen.\\
 
 \begin{figure}
+    \centering
+
    \resizebox{0.4\textwidth}{!}{%
    \centering
     \begin{tikzpicture}
@@ -125,12 +127,53 @@ De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2*k*log(n)$ ($\sym
    \node at (4,-3) {$6kn$};
    \end{tikzpicture}
    }
-   \caption{Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandom$ boom.} %TODO: meer uitleg
    \label{fig:splitsingsvlakken-bsprandom}
+   \caption[Splitsingsvlakken $\symBSPrandom$]%
+    {Splitsingsvlakken $\symBSPrandom$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandom$ boom.} %TODO: meer uitleg
+   
 \end{figure}
 
-Zoals hierboven beschreven, zijn de $\symKd$ richtingen in praktische scenes vaak beter dan willekeurige richtingen.
-Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Aangezien de $\symKd$ richtingen in deze boom voor elke knoop gebruikt worden, kan de snellere $\symKd$ knoop doorkruising ook nuttig zijn. Een boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$.
+\begin{figure}
+        \resizebox{\textwidth}{!}{%
+        \centering
+         \begin{tikzpicture}
+            \usetikzlibrary{arrows}
+            \usetikzlibrary{shapes}
+\tikzstyle{every tree node}=[draw, ellipse, align=center]
+        \Tree
+        [ .\node[shading = axis, left color=green, right color=nodeyellow1,shading angle=135]{$2(k-3)n + 6n$};    
+            [.\node[shading = axis, left color=nodeblue1, right color=nodeyellow1, shading angle=135]{$2(k-3)\frac{n}{2} + 6\frac{n}{2}$};
+                [.\node(n3l)[shading = axis, left color=nodered1, right color=nodeyellow1, shading angle=135]{$2(k-3)\frac{n}{4} + 6\frac{n}{4}$};]
+                [.\node[shading = axis, left color=nodered2, right color=nodeyellow1, shading angle=135]{$2(k-3)\frac{n}{4} + 6\frac{n}{4}$};]
+            ]
+            [.\node[shading = axis, left color=nodeblue2, right color=nodeyellow1, shading angle=135, text=white]{$2(k-3)\frac{n}{2} + 6\frac{n}{2}$};
+                [.\node[shading = axis, left color=nodered3, right color=nodeyellow1, shading angle=135]{$2(k-3)\frac{n}{4} + 6\frac{n}{4}$};]
+                [.\node(n3r)[shading = axis, left color=nodered4, right color=nodeyellow1, shading angle=135]{$2(k-3)\frac{n}{4} + 6\frac{n}{4}$};]
+            ]
+        ]
+        \node at (10,0.5) {$\#$};
+        \node at (13,0.5) {$\# \neq$};
+        \node at (10,0) {$2(k-3)n + 6n$};
+        \node at (10,-1.5) {$2(k-3)n + 6n$};
+        \node at (10,-3) {$2(k-3)n + 6n$};
+        \node at (13,0) {$2(k-3)n + 6n$};
+        \node at (13,-1.5) {$4(k-3)n + 6n$};
+        \node at (13,-3) {$6(k-3)n + 6n$};
+        \end{tikzpicture}
+        }
+    \label{fig:splitsingsvlakken-bsprandomsomekd}
+    \caption[Splitsingsvlakken $\symBSPrandomsomekd$]%
+    {Splitsingsvlakken $\symBSPrandomsomekd$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandomsomekd$ boom.} %TODO: meer uitleg
+\end{figure}
+
+De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisphere goed bedekken.
+Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
+Als de $\symBSPrandomsomekd$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ splitsingsvlakken bekeken.
+Van deze $2kn$ zijn er $6n$ die hergebruikt worden, de vlakken volgens de $\symKd$ richtingen.
+Dit zorgt voor $2(k-3)n$ verschillende splitsingsvlakken per niveau, zodat in totaal $2(k-3)nlog(n) + 6n$ verschillende splitsingsvlakken bekeken worden.
+Figuur \ref{fig:splitsingsvlakken-bsprandomsomekd} toont dit visueel.
+De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n))$ vlakken te splitsen van de andere driehoeken, net als  de $\symBSPrandom$ boom.\\
+
 
 %(Extra) richtingen door random richtingen te kiezen
 %Ter controle dat de richtingen met behulp van normalen, nuttige richtingen zijn

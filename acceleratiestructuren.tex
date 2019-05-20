@@ -14,7 +14,8 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     \begin{figure}
         \centering
         \includegraphics[width=0.5\linewidth]{img/ray-tracing}
-        \caption{Een visuele voorstelling van \textit{ray tracing}. Door elke pixel worden één of meerdere zichtstralen gestuurd. Schaduwstralen worden gebruikt om de belichting in de scene realistisch te maken. Deze afbeelding is een aangepaste versie van een afbeelding op \url{https://en.wikipedia.org/wiki/Ray_tracing_(graphics)}}
+        \caption[Visuele voorstelling van \textit{ray tracing}]%
+    {Visuele voorstelling van \textit{ray tracing} - \small Door elke pixel worden één of meerdere zichtstralen gestuurd. Schaduwstralen worden gebruikt om de belichting in de scene realistisch te maken. Deze afbeelding is een aangepaste versie van een afbeelding op \url{https://en.wikipedia.org/wiki/Ray_tracing_(graphics)}}
         \label{fig:raytracing}    
     \end{figure}
 
@@ -51,7 +52,8 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{img/splitsing-BSP}
-        \caption{Een 2D voorbeeld dat toont dat alle (niet-intersecterende) driehoeken gesplitst kunnen worden door een $\symBSP$ boom.}
+        \caption[Splitsingskracht $\symBSP$ boom]%
+        {Splitsingskracht $\symBSP$ boom - \small Een 2D voorbeeld dat toont dat alle (niet-intersecterende) driehoeken gesplitst kunnen worden door een $\symBSP$ boom.}
         \label{fig:splitsing-bsp}    
     \end{figure}    
     \paragraph{Het bouwen van de boom}
@@ -73,12 +75,12 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Door de beperking op mogelijke splitsingsvlakken kunnen $\symKd$ bomen zich minder goed aanpassen aan de scene.
     Ze kunnen bijvoorbeeld niet alle niet-intersecterende driehoeken scheiden. 
     Figuur \ref{fig:splitsing-kd} toont een situatie waarin de $\symKd$ boom niet alle driehoeken kan scheiden.
-    \\ % TODO: 2D voorbeeld van splitsbaar en wat niet
+    \\
 
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{img/splitsing-Kd}
-        \caption{Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de asgealigneerde vlakken van de $\symKd$ boom. De twee driehoeken linksonder (en rechtsboven) kunnen niet gesplitst worden omdat zowel hun projecties op de x-as, als hun projecties op de y-as overlappen.}
+        \caption[Splitsingskracht $\symKd$ boom]{Splitsingskracht $\symKd$ boom - \small Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de asgealigneerde vlakken van de $\symKd$ boom. De twee driehoeken linksonder (en rechtsboven) kunnen niet gesplitst worden omdat zowel hun projecties op de x-as, als hun projecties op de y-as overlappen.}
         \label{fig:splitsing-kd}    
     \end{figure}
 
@@ -121,7 +123,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     \begin{figure}
         \centering
         \includegraphics[width=\linewidth]{img/splitsing-RBSP}
-        \caption{Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de vlakken van de $\symRBSP$ boom. De $\symRBSP$ boom kan de driehoeken wel beter splitsen dan de $\symKd$ boom in figuur \ref{fig:splitsing-kd}. De twee driehoeken rechtsboven kunnen niet gesplitst worden omdat de discrete verzameling van k richtingen, geen richting bevat waarlangs deze driehoeken gesplitst kunnen worden.}
+        \caption[Splitsingskracht $\symRBSP$ boom]{Splitsingskracht $\symRBSP$ boom - \small Een 2D voorbeeld dat toont dat niet alle (niet-intersecterende) driehoeken gesplitst kunnen worden door de vlakken van de $\symRBSP$ boom. De $\symRBSP$ boom kan de driehoeken wel beter splitsen dan de $\symKd$ boom in figuur \ref{fig:splitsing-kd}. De twee driehoeken rechtsboven kunnen niet gesplitst worden omdat de discrete verzameling van k richtingen, geen richting bevat waarlangs deze driehoeken gesplitst kunnen worden.}
         \label{fig:splitsing-rbsp}    
     \end{figure}
 
@@ -222,6 +224,7 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
   level distance=1.5cm}
   \begin{figure}
+    \centering
     \begin{subfigure}[t]{.3\linewidth}
         
   \resizebox{\textwidth}{!}{%
@@ -304,7 +307,7 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
 \caption{$\symBSPize$ boom}
 \label{fig:splitsingsvlakken-bspize}
 \end{subfigure}
-\caption{Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus.}
+\caption[Splitsingsvlakken $\symKd$, $\symRBSP$ en $\symBSPize$]{Splitsingsvlakken $\symKd$, $\symRBSP$ en $\symBSPize$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus.}
 %TODO: meer uitleg
 \end{figure}
 
