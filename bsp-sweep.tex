@@ -93,7 +93,7 @@ Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhan
 De simpelste $\symBSPsweep$ bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
 De richtingen worden uniform op de hemisphere gegenereerd.
 Het idee achter deze boom is dat het nuttiger kan zijn om driehoeken via veel verschillende vlakken te proberen splitsen, dan om ze steeds met dezelfde vlakken te proberen splitsen.
-Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden, even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.
+Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden, even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.\\
 
 Als de $\symBSPrandom$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ verschillende splitsingsvlakken bekeken.
 Deze splitsingsvlakken zijn verschillend op elk niveau, zodat in totaal $2knlog(n)$ verschillende splitsingsvlakken bekeken worden.
@@ -166,7 +166,7 @@ De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2klog(n)$ ($\symO(
 \end{figure}
 
 De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisphere goed bedekken.
-Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
+Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een $\symBSParbitrary$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
 Als de $\symBSPrandomsomekd$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ splitsingsvlakken bekeken.
 Van deze $2kn$ zijn er $6n$ die hergebruikt worden, de vlakken volgens de $\symKd$ richtingen.
 Dit zorgt voor $2(k-3)n$ verschillende splitsingsvlakken per niveau, zodat in totaal $2(k-3)nlog(n) + 6n$ verschillende splitsingsvlakken bekeken worden.
@@ -182,16 +182,123 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
 %    Kd heeft maar 3 opties, als het volgens geen kan -> nooit mogelijk
 %    Kans splitsbaar door Kd richting of random is even hoog in uniform geval. Scenes hebben wel veel asgealigneerde delen, dus daarom die extra.
 
-\section{Gebaseerd op geometrische normalen}
+\section{Gebaseerd op normalen}
+    De kracht van de $\symBSPsweep$ boom ligt in het feit dat er gebruik gemaakt kan worden van de lokale geometrie om de splitsingsrichtingen te bepalen.
+    De normalen van de driehoeken in een knoop bevatten informatie over de oriëntatie van de driehoeken.
+    De autopartitie vlakken van \authorIze{} maken ook gebruik van de normalen, maar de normaal van een driehoek wordt enkel voor die driehoek zelf gebruikt.
+    
 \subsection{Willekeurige normaal}
-    Extra richtingen door random normalen te kiezen
-    Autopartitie van Ize maar gesweeped
-    Waarom zou dit werken ? : ...
+    De $\symBSParbitrary$ boom is een $\symBSPsweep$ boom waarbij in elke knoop de normalen van k willekeurige driehoeken gekozen worden als splitsingrichtingen.
+    Als er k of minder driehoeken in de knoop zitten, worden alle normalen als splitsingrichting genomen.
+    In het algemeen zijn er n driehoeken met n verschillende normalen waardoor er in totaal $2n^2$ mogelijke splitsingsvlakken zijn.
+    Figuur \ref{fig:splitsingsvlakken-bsparbitrary-top} toont het aantal splitsingsvlakken gebruikt per knoop in de bovenste niveaus van de boom.
+    Deze figuur is identiek aan de figuur van $\symBSPrandom$. \\
+
+    Voor de onderste $log(k)$ niveaus is er echter een verschil, omdat er dan k of minder driehoeken in elke knoop zitten.
+    In de onderste $log(k)$ niveaus worden er in elke knoop $2n_m^2$ splitsingsvlakken bekeken, met $n_m <= k$.
+    Een knoop op het $m^{de}$ laagste niveau (met $m \leq log(k)$) bevat $\frac{n}{2^{log(n) - m}}$ driehoeken waardoor er $2n_m^2 = 2 * (\frac{n}{2^{log(n) - m}})^2 = 2*(2^m)^2 = 2*4^m$ splitsingen gebeuren in deze knoop.
+    Formule \ref{eq:bsparbitrary-logkjonderste} toont dat het totaal aantal splitsingsvlakken bekeken op het ${log(k) - j}^{de}$ onderste niveau gelijk is aan $\frac{2kn}{2^j}$. Dit aantal is berekend als het aantal splitsingsvlakken per knoop ($2*4^{log(k) - j}$) vermenigvuldigd met het aantal knopen ($2^{log(n)-log(k)+j}$) op het niveau.
+    \begin{equation}
+        \label{eq:bsparbitrary-logkjonderste}
+    2*4^{log(k) - j} * 2^{log(n)-log(k)+j} = 2 * 2^{log(k) + log(n) - j} = \frac{2 * 2^{log(kn)}}{2^j} =\frac{2kn}{2^j}
+    \end{equation}
+    In de bovenste $log(n) - log(k) = log(\frac{n}{k})$ niveaus worden $2log(\frac{n}{k})kn$ verschillende splitsingsvlakken bekeken.
+    Het niveau eronder gebruikt nog $kn$ nieuwe splitsingsvlakken zodat in totaal $2(log(\frac{n}{k}) + \frac{1}{2})kn$ verschillende splitsingsvlakken worden gebruikt.
+    Figuur \ref{fig:splitsingsvlakken-bsparbitrary-bottom} toont dit visueel.
+    Als de boom perfect gebalanceerd is, probeert de $\symBSParbitrary$ boom elke driehoek via gemiddeld $2klog(\frac{n}{k} + \frac{1}{2})$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken. Dit aantal is minder dan bij de $\symBSPrandom$ boom, die ook in de lagere niveaus steeds k splitsingrichtingen genereert.\\
+
+    Net als bij de $\symBSPrandom$ boom kan een versie van de $\symBSParbitrary$ boom gemaakt worden die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel voor de overige $k - 3$ richtingen willekeurige normalen selecteert: de $\symBSParbitrarykd$ boom. Een $\symBSParbitrary$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSParbitraryfastkd$. Als de $\symBSParbitrarysomekd$ boom perfect gebalanceerd is, worden in totaal $2(log(\frac{n}{k-3}) + \frac{1}{2})(k-3)n + 6n$ verschillende splitsingsvlakken bekeken. De analyse hiervoor is analoog aan de analyse voor $\symBSPrandomsomekd$.
+
+    %TODO: subfig a en b, a zelfde als bsprandom, b = laatste log(k) niveaus -> allemaal dezelfde
+    %TODO: kd verbetering -> zelfde formule maar k-3 en + 6n
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.34\textwidth}
+
+   \resizebox{\textwidth}{!}{%
+   \centering
+    \begin{tikzpicture}
+   \Tree
+   [ .\node[fill=green]{$2kn$};    
+       [.\node[fill=nodeblue1]{$2k\frac{n}{2}$};
+           [.\node(n3l)[fill=nodered1, text=white]{$2k\frac{n}{4}$};]
+           [.\node[fill=nodered2, text=white]{$2k\frac{n}{4}$};]
+       ]
+       [.\node[fill=nodeblue2, text=white]{$2k\frac{n}{2}$};
+           [.\node[fill=nodered3, text=white]{$2k\frac{n}{4}$};]
+           [.\node(n3r)[fill=nodered4, text=white]{$2k\frac{n}{4}$};]
+       ]
+   ]
+   \node at (3,0.5) {$\#$};
+   \node at (4,0.5) {$\# \neq$};
+   \node at (3,0) {$2kn$};
+   \node at (3,-1.5) {$2kn$};
+   \node at (3,-3) {$2kn$};
+   \node at (4,0) {$2kn$};
+   \node at (4,-1.5) {$4kn$};
+   \node at (4,-3) {$6kn$};
+   \end{tikzpicture}
+   }
+   \caption{Bovenste drie niveaus}
+   \label{fig:splitsingsvlakken-bsparbitrary-top}
+\end{subfigure}
+\begin{subfigure}[t]{0.64\textwidth}
+
+    \resizebox{\textwidth}{!}{%
+    \centering
+     \begin{tikzpicture}
+        \usetikzlibrary{arrows}
+        \usetikzlibrary{shapes}
+\tikzstyle{every tree node}=[draw, ellipse, align=center]
+    \Tree
+    [ .\node[shading = axis, left color=nodeblue1, right color=nodered2,shading angle=90, text=white]{$2*4^{log(k)}$};    
+        [.\node[shading = axis, left color=nodeblue1, right color=nodeblue2,shading angle=90, text=white]{$2*4^{log(k) - 1}$};
+            [.\node(n3l)[fill=nodeblue1, text=black]{$2*4^{1}$};]
+            [.\node[fill=nodeblue2, text=white]{$2*4^{1}$};]
+        ]
+        [.\node[shading = axis, left color=nodered1, right color=nodered2,shading angle=90, text=white]{$2*4^{log(k) - 1}$};
+            [.\node[fill=nodered1, text=white]{$2*4^{1}$};]
+            [.\node(n3r)[fill=nodered2, text=white]{$2*4^{1}$};]
+        ]
+    ]
+    \node at (5,0.5) {$\#$};
+    \node at (8,0.5) {$\# \neq$};
+    \node at (5,0) {$2kn$};
+    \node at (5,-1.5) {$kn$};
+    \node at (5,-3) {$\frac{kn}{2}$};
+    \node at (8,0) {$2(log(\frac{n}{k}) + \frac{1}{2})kn$};
+    \node at (8,-1.5) {$2(log(\frac{n}{k}) + \frac{1}{2})kn$};
+    \node at (8,-3) {$2(log(\frac{n}{k}) + \frac{1}{2})kn$};
+    \end{tikzpicture}
+    }
+    \caption{Onderste $log(k)$ niveaus}
+    \label{fig:splitsingsvlakken-bsparbitrary-bottom}
+ \end{subfigure}
+   \caption[Splitsingsvlakken $\symBSParbitrary$]%
+    {Splitsingsvlakken $\symBSParbitrary$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandom$ boom.} %TODO: meer uitleg
+\end{figure}
+
+    
+
+    %Extra richtingen door random normalen te kiezen
+    %Autopartitie van Ize maar gesweeped
+    %Waarom zou dit werken ? : ...
     
 \subsection{Geclusterde normalen}
-    (Extra) richtingen via K-means clustering
-    Sweepen volgens die richtingen
-    Waarom zou dit werken ...
+    Bovenstaande $\symBSPsweep$ bomen bevatten een grote niet-deterministische factor.
+    De $\symBSPcluster$ boom gebruikt het K-means clustering algoritme om deterministischere richtingen te bepalen.
+    De normalen van de driehoeken in een knoop worden geclusterd in k clusters en de centra van deze clusters worden gebruikt als richtingen voor de $\symBSPsweep$ boom.
+    Als er k of minder driehoeken in de knoop zitten, worden alle normalen als splitsingsrichting genomen, net zoals bij de $\symBSParbitrary$ boom.
+    In tegenstelling tot de $\symBSParbitrary$ is het voor de $\symBSPcluster$ moeilijker om het totaal aantal mogelijke splitsingsvlakken te bepalen.
+    In het algemeen kan elke clustering verschillende richtingen geven waardoor er oneindig veel mogelijke splitsingsrichtingen mogelijk zijn.
+    De $\symBSPcluster$ boom is zeer gelijkaardig aan de $\symBSParbitrary$ boom waardoor het totaal aantal verschillende splitsingsvlakken die gebruikt worden, gelijk is. Analoog bestaan ook de $\symBSPclusterkd$ en $\symBSPclusterfastkd$ bomen.
+
+
+
+    %TODO, identiek dezelfde afleidingen als arbitrary
+    %Waarom zou dit werken ...
 
 %\section{Hiërarchie}
 
