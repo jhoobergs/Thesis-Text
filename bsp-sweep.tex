@@ -309,8 +309,28 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
 
 % TODO: vergelijking
 
-%\section{Hiërarchie}
+\section{Vergelijking}
+Tabel \ref{tab:boom-vergelijking-sweep} vergelijkt de hierboven besproken $\symBSPsweep$ bomen.
+Alle drie bomen zijn algemene $\symBSP$ bomen die een convex veelvlak hebben als omhullend volume.
+De $\symBSPsweep$ bomen zijn ontworpen om sweeping te ondersteunen en zo efficiënt de $SAH$ kosten te kunnen berekenen, zonder hulpstructuren.
+De $\symBSPrandom$ boom is onafhankelijk van de lokale geometrie, de twee andere bomen bepalen hun splitsingsvlakken afhankelijk van de lokale geometrie.
+De $\symBSPsweep$ bomen zijn makkelijk uit te breiden naar $\symBSPsweepkd$ bomen die de optimalisatie met de snelle $\symKd$ knoop doorkruising gebruiken.
+Per niveau gebruiken de $\symBSPsweep$ bomen niet altijd meer splitsingsvlakken dan de bestaande bomen, maar de $\symBSPsweep$ bomen gebruiken in totaal duidelijk meer verschillende splitsingsvlakken dan de bestaande bomen en zouden zich hierdoor beter moeten kunnen aanpassen aan complexe scenes.
 
+\begin{table}[tb]
+    \centering
+    \begin{tabular}{@{}|l|c|c|c|@{}} \toprule      
+            & $\symBSPrandom$     & $\symBSParbitrary$ & $\symBSPcluster$ \\ \midrule
+      Omhullend volume & Convex veelvlak & Convex veelvlak & Convex veelvlak \\
+      Sweeping                              &  Ja   & Ja & Ja    \\
+      Geometrie afhankelijke vlakken & Nee & Ja & Ja \\
+      Snelle Kd doorkruising                 & $\symBSPrandomfastkd$  & $\symBSParbitraryfastkd$  & $\symBSPclusterfastkd$    \\
+      \# splitsingsvlakken per niveau       &  $2kn$   & $2kn$* & $2kn$*  \\
+      totaal \# $\neq$ splitsingsvlakken           &  $2knlog(n)$   & $2(log(\frac{n}{k}) + \frac{1}{2})kn$ & $2(log(\frac{n}{k}) + \frac{1}{2})kn$     \\ \bottomrule
+    \end{tabular}
+    \caption[Vergelijking van de nieuwe soorten $\symBSP$ bomen.]{Vergelijking van de nieuwe soorten $\symBSP$ bomen - \small Deze tabel vat een aantal belangrijke eigenschappen van de nieuwe soorten $\symBSP$ bomen samen. *De onderste niveaus van $\symBSParbitrary$ en $\symBSPrandom$ bekijken minder dan $2kn$ splitsingsvlakken.}
+    \label{tab:boom-vergelijking-sweep}
+  \end{table}
 
 %%% Local Variables: 
 %%% mode: latex

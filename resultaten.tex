@@ -6,87 +6,132 @@ wordt uitgelegd wat de te volgen weg is (beter bekend als de rode draad).
 Als je niet goed weet wat een masterproef is, kan je altijd
 Wikipedia eens nakijken.
 
-% Max depth: net zoals Mora en Ka.. gebruiken we k1 * log2(n) + k2 (voorgesteld door Havran en Bittner in [7]) met k1 = 1.2 en k2 = 2
-\section{Praktische aspecten}
-\section{Afhankelijkheid van aantal richtingen}
+
+\newcommand{\rendercaption}[1] {
+  \caption[Rendertijd #1 in functie van K]{Rendertijd #1 in functie van K - \small Deze tabel toont statistieken over de rendertijd voor #1 voor verschillende waarden van K. Voor elke waarde van K is het algoritme zeven keer uitgevoerd. De \textit{Min} kolom staat voor de minimale rendertijd, de \textit{Max} kolom voor de maximale rendertijd en de \textit{Med} kolom voor de mediaan van de zeven tijd. De (min, max, med) rendertijd is procentueel uitgedrukt ten opzichte van de (min, max, med) rendertijd van de $\symKd$ boom. }}
+
 \csvstyle{rendertimeTableStyle}{tabular=@{}llllllllll@{},
 table head=\toprule & \multicolumn{3}{c}{Been} & \multicolumn{3}{c}{Sponza} & \multicolumn{3}{c}{Conference Hall} \\ \cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10} K      & Min  & Med & Max & Min & Med & Max & Min & Med & Max\\ \midrule,
 late after line=\\,
 late after last line=\\\bottomrule,
 head to column names}
 
-\begin{table}
-\centering
-\csvreader[rendertimeTableStyle]{data/bsprandomRender.csv}{}%
-{\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-\caption{Statistieken over de rendertijd voor $\symBSPrandom$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-\label{tab:bsprandom-k-rendertijd}
-\end{table}
+\newcommand{\rendertable}[3] {
+  \begin{table}
+    \centering
+    \csvreader[rendertimeTableStyle]{#1}{}%
+    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
+    \rendercaption{#2}
+    \label{#3}
+    \end{table}
+}
 
-\begin{table}
-  \centering
-  \csvreader[rendertimeTableStyle]{data/bsprandomwithkdRender.csv}{}%
-  {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-  \caption{Statistieken over de rendertijd voor $\symBSPrandomkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-  \label{tab:bsprandomwithkd-k-rendertijd}
-  \end{table}
+% Max depth: net zoals Mora en Ka.. gebruiken we k1 * log2(n) + k2 (voorgesteld door Havran en Bittner in [7]) met k1 = 1.2 en k2 = 2
+\section{Praktische aspecten}
+\section{Afhankelijkheid van aantal richtingen}
 
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bsprandomfastkdRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSPrandomfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bsprandomfastkd-k-rendertijd}
-    \end{table}
 
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bsparbitraryRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSParbitrary$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bsparbitrary-k-rendertijd}
-    \end{table}
-      
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bsparbitrarywithkdRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSParbitrarykd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bsparbitrarykd-k-rendertijd}
-    \end{table}
-  
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bsparbitraryfastkdRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSParbitraryfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bsparbitraryfastkd-k-rendertijd}
-    \end{table}
+\rendertable{data/bsprandomRender.csv}{$\symBSPrandom$}{tab:bsprandom-k-rendertijd}
+\rendertable{data/bsprandomwithkdRender.csv}{$\symBSPrandomkd$}{tab:bsprandomwithkd-k-rendertijd}
+\rendertable{data/bsprandomfastkdRender.csv}{$\symBSPrandomfastkd$}{tab:bsprandomfastkd-k-rendertijd}
+\rendertable{data/bsparbitraryRender.csv}{$\symBSParbitrary$}{tab:bsparbitrary-k-rendertijd}
+\rendertable{data/bsparbitrarywithkdRender.csv}{$\symBSParbitrarykd$}{tab:bsparbitrarywithkd-k-rendertijd}
+\rendertable{data/bsparbitraryfastkdRender.csv}{$\symBSParbitraryfastkd$}{tab:bsparbitraryfastkd-k-rendertijd}
+\rendertable{data/bspclusterRender.csv}{$\symBSPcluster$}{tab:bspcluster-k-rendertijd}
+\rendertable{data/bspclusterwithkdRender.csv}{$\symBSPclusterkd$}{tab:bspclusterwithkd-k-rendertijd}
+\rendertable{data/bspclusterfastkdRender.csv}{$\symBSPclusterfastkd$}{tab:bspclusterfastkd-k-rendertijd}
 
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bspclusterRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSPcluster$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bspcluster-k-rendertijd}
-    \end{table}
-      
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bspclusterwithkdRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSPclusterkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bspclusterkd-k-rendertijd}
-    \end{table}
-  
-  \begin{table}
-    \centering
-    \csvreader[rendertimeTableStyle]{data/bspclusterfastkdRender.csv}{}%
-    {\K & \renderMinKdFeet & \renderMedKdFeet & \renderMaxKdFeet & \renderMinKdSponza & \renderMedKdSponza & \renderMaxKdSponza & \renderMinKdConference & \renderMedKdConference & \renderMaxKdConference}% specify your coloumns here
-    \caption{Statistieken over de rendertijd voor $\symBSPclusterfastkd$ voor verschillende waarden van K. Voor elke waarde van K is het algoritme 7 keer uitgevoerd. }
-    \label{tab:bspclusterfastkd-k-rendertijd}
-    \end{table}
-  
+\newcommand{\plotRendertimeK}[2] {
+  \begin{tikzpicture}
+    \begin{axis}[
+      axis lines = left,
+      ylabel = Procentuele tijd tov de $\symKd$ boom,
+      xlabel = K,
+      ymin=60, ymax=120,
+      width=0.5\textwidth,
+      height=0.8\textwidth,
+      cycle multi list={%
+        color list\nextlist
+        [3 of]mark list
+      },
+      title = #2,
+  ]
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsprandomRender.csv};
+    \addlegendentry{$\symBSPrandom$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsprandomwithkdRender.csv};
+    \addlegendentry{$\symBSPrandomkd$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsprandomfastkdRender.csv};
+    \addlegendentry{$\symBSPrandomfastkd$}
+    
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsparbitraryRender.csv};
+    \addlegendentry{$\symBSParbitrary$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsparbitrarywithkdRender.csv};
+    \addlegendentry{$\symBSParbitrarykd$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bsparbitraryfastkdRender.csv};
+    \addlegendentry{$\symBSParbitraryfastkd$}
+    
+    \addplot table [x=K, y=#1, col sep=comma] {data/bspclusterRender.csv};
+    \addlegendentry{$\symBSPcluster$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bspclusterwithkdRender.csv};
+    \addlegendentry{$\symBSPclusterkd$}
+    \addplot table [x=K, y=#1, col sep=comma] {data/bspclusterfastkdRender.csv};
+    \addlegendentry{$\symBSPclusterfastkd$}
+      \end{axis}
+    \end{tikzpicture}
+}
+
+\newcommand{\plotRendertimeKScenes}[4] {
+  \begin{tikzpicture}
+    \begin{axis}[
+      axis lines = left,
+      ylabel = Procentuele tijd tov de $\symKd$ boom,
+      xlabel = K,
+      ymin=#3, ymax=#4,
+      width=0.5\textwidth,
+      height=0.8\textwidth,
+      cycle multi list={%
+        color list\nextlist
+        [3 of]mark list
+      },
+      title = #2,
+      legend pos=outer north east,
+  ]
+    \addplot table [x=K, y=renderMinKdFeet, col sep=comma] {#1};
+    \addlegendentry{Min Killeroo Been}
+    \addplot table [x=K, y=renderMaxKdFeet, col sep=comma] {#1};
+    \addlegendentry{Max Killeroo Been}
+    \addplot table [x=K, y=renderMedKdFeet, col sep=comma] {#1};
+    \addlegendentry{Med Killeroo Been}
+
+    \addplot table [x=K, y=renderMinKdSponza, col sep=comma] {#1};
+    \addlegendentry{Min Sponza Been}
+    \addplot table [x=K, y=renderMaxKdSponza, col sep=comma] {#1};
+    \addlegendentry{Max Sponza Been}
+    \addplot table [x=K, y=renderMedKdSponza, col sep=comma] {#1};
+    \addlegendentry{Med Sponza Been}
+
+    \addplot table [x=K, y=renderMinKdConference, col sep=comma] {#1};
+    \addlegendentry{Min Conference Been}
+    \addplot table [x=K, y=renderMaxKdConference, col sep=comma] {#1};
+    \addlegendentry{Max Conference Been}
+    \addplot table [x=K, y=renderMedKdConference, col sep=comma] {#1};
+    \addlegendentry{Med Conference Been}
+    
+      \end{axis}
+    \end{tikzpicture}
+}
+\plotRendertimeK{renderMinKdFeet}{Minimale tijd Killeroo Been}
+\plotRendertimeK{renderMaxKdFeet}{Maximale tijd Killeroo Been}
+\plotRendertimeK{renderMedKdFeet}{Mediaan tijd Killeroo Been}
+\plotRendertimeKScenes{data/bsprandomRender.csv}{$\symBSPrandom$}{60}{400}\\
+\plotRendertimeKScenes{data/bsprandomwithkdRender.csv}{$\symBSPrandomkd$}{70}{110}\\
+\plotRendertimeKScenes{data/bsprandomfastkdRender.csv}{$\symBSPrandomfastkd$}{70}{110}\\
+\plotRendertimeKScenes{data/bsparbitraryRender.csv}{$\symBSParbitrary$}{60}{400}\\
+\plotRendertimeKScenes{data/bsparbitrarywithkdRender.csv}{$\symBSParbitrarykd$}{60}{120}\\
+\plotRendertimeKScenes{data/bsparbitraryfastkdRender.csv}{$\symBSParbitraryfastkd$}{60}{120}\\
+\plotRendertimeKScenes{data/bspclusterRender.csv}{$\symBSPcluster$}{60}{400}\\
+\plotRendertimeKScenes{data/bspclusterwithkdRender.csv}{$\symBSPclusterkd$}{60}{120}\\
+\plotRendertimeKScenes{data/bspclusterfastkdRender.csv}{$\symBSPclusterfastkd$}{60}{120}\\
 
   \begin{table}
     \centering
