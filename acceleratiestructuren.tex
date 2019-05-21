@@ -1,15 +1,15 @@
 \chapter{Voorgaand werk}
 \label{hoofdstuk:voorgaand-werk}
-Raytracing vereist acceleratiestructuren om efficiënt driehoeken in de scene te kunnen zoeken.
-Dit hoofdstuk start met een algemene uitleg over acceleratiestructuren en wijdt dan uit over één specifieke acceleratiestructuur: de \textit{Binary Space Partitioning} ($\symBSP$) boom.
+Dit hoofdstuk start met een korte uitleg over enkele basisconcepten: \textit{ray tracing} en acceleratiestructuren.
+\textit{Ray tracing} vereist acceleratiestructuren om efficiënt driehoeken in de scene te kunnen zoeken.
+Daarna wijdt dit hoofdstuk uit over één specifieke acceleratiestructuur: de \textit{Binary Space Partitioning} ($\symBSP$) boom.
 De varianten van de $\symBSP$ boom worden één voor één besproken.
 % TODO
 
-\section{Basisconcept}
+\section{Basisconcepten}
     
-    % TODO: raytracing
     \paragraph{Ray tracing}
-    \textit{Ray tracing} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het vormt een beschrijving van een 3D scene om tot een fotorealistische 2D afbeelding. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel.\\
+    \textit{Ray tracing} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het vormt een beschrijving van een 3D scene om tot een fotorealistische 2D afbeelding. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
 
     \begin{figure}
         \centering
@@ -19,7 +19,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
         \label{fig:raytracing}    
     \end{figure}
 
-    Om realistische afbeeldingen te maken, wordt belichting in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting, een punt is donker als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen, stralen van het punt naar de lichtbron.  Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar.  Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting kan een andere techniek, \textit{path tracing}, gebruikt worden. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
+    Om realistische afbeeldingen te maken, wordt belichting in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting waarbij een punt donker is als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen. Dit zijn stralen van het punt naar de lichtbron.  Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar.  Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting is \textit{path tracing} een veelgebruikte techniek. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
     
   %  , kleur intersectiepunt is kleur pixel -> path tracing.
   %  voor realistische beeldgeneratie + referentie,
@@ -27,8 +27,8 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
 
     \paragraph{Acceleratiestructuren}
     Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
-    De simpelste acceleratiestructuur bestaat uit het omhullende volume van de scene.
-    Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullende volume intersecteert met de straal.
+    De simpelste acceleratiestructuur bestaat uit het omhullend volume van de scene.
+    Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullend volume intersecteert met de straal.
     Deze acceleratiestructuur kan worden uitgebreid tot een boomstructuur door dit volume recursief op te delen in kindvolumes.
     Binaire bomen delen elk omhullend volume op in twee nieuwe volumes, andere acceleratiestructuren zoals bijvoorbeeld octrees, delen het volume op in meer dan twee volumes.
     \\
@@ -44,7 +44,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     % TODO: check if all abbrev are listed and defined at first usage
 
 \section{$\symBSP$ bomen}
-    De $\symBSP$ boom deelt de ruimte van het omhullende volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat een bepaalde stopconditie bereikt is.
+    De $\symBSP$ boom deelt de ruimte van het omhullend volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat aan een bepaalde stopconditie voldaan wordt.
     Het feit dat de $\symBSP$ boom volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als nadeel.
     Het zorgt ervoor dat de $\symBSP$ boom zich heel goed kan aanpassen aan de scene en alle niet-intersecterende driehoeken in principe kan scheiden (zie figuur \ref{fig:splitsing-bsp}).
     Maar het zorgt er ook voor dat het heel moeilijk is om deze goede splitsingsvlakken te vinden.
@@ -93,7 +93,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
 
     Voor een Kd-boom is de Surface Area Heuristiek ($\symSAH$) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
     De $\symSAH$ is oorspronkelijk ontwikkelt door \authorGoldsmithSalmon{} \cite{goldsmith1987automatic} voor de $\symBVH$ en later aangepast door \authorMacDonaldBooth{} \cite{macdonald1990heuristics} voor de $\symKd$ boom. 
-    De $\symSAH$ schat de kost van een splitsingsvlak door te veronderstellen dat beide kindknopen, bladknopen worden en dat de kost om een bladknoop te intersecteren afhankelijk is van het aantal driehoeken en de oppervlakte van het omhullende volume.
+    De $\symSAH$ schat de kost van een splitsingsvlak door te veronderstellen dat beide kindknopen, bladknopen worden en dat de kost om een bladknoop te intersecteren afhankelijk is van het aantal driehoeken en de oppervlakte van het omhullend volume.
     De verwachte kost $\symCost$ om een knoop $\symNodeExample$ te splitsen in kindknopen ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
     De subscripts ${\symIntersection}$ en ${\symTraversal}$ staan voor respectievelijk intersectie en doorkruising.
     De kost van het beste splitsingsvlak (laagste kost) wordt dan vergeleken met de kost voor de knoop als die niet gesplitst zou worden: $\symNbPrimitives*\symCost_\symIntersection$.
@@ -115,7 +115,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     De Restricted Binary Space Partitioning ($\symRBSP$) boom is een uitbreiding van de $\symKd$ boom die toelaat om knopen op te splitsen volgens splitsingsrichtingen uit een vaste verzameling van k richtingen.
     Het omhullend volume van een $\symRBSP$ knoop is hierdoor geen balk maar een Discreet Geöriënteerde Polytoop met k richtingen: een \symKDOP.
     Zowel \authorKlosowki{} \cite{klosowski1998efficient} als \authorZachmann{} \cite{zachmann1998rapid} hebben hiërarchiën van \symKDOP s gebruikt binnen het domein van botsherkenning (\textit{collision detection}).
-    De $\symRBSP$ boom is voor het eerst gebruikt in ray tracing door \authorKammaje{} \cite{Kammaje} en verder onderzocht door \authorBudge{} \cite{Budge}.
+    De $\symRBSP$ boom is voor het eerst gebruikt in \textit{ray tracing} door \authorKammaje{} \cite{Kammaje} en verder onderzocht door \authorBudge{} \cite{Budge}.
     Aangezien de splitsingsrichtingen niet asgealigneerd moeten zijn, lijkt de $\symRBSP$ boom meer op de algemene $\symBSP$ boom dan de $\symKd$ boom. Net als de $\symKd$ boom kan de $\symRBSP$ boom niet alle niet-intersecterende driehoeken scheiden. 
     Figuur \ref{fig:splitsing-rbsp} toont een situatie waarin de $\symRBSP$ boom niet alle driehoeken kan scheiden.
     \\
@@ -134,19 +134,25 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Deze richtingen gebruiken enkel waarden uit de verzameling $\{-1, 0, 1\}$ als x, y en z coördinaat. %TODO meer uitwijden ?
     \\
 
-    \authorKammaje{} \cite{Kammaje} toonden aan dat de SAH ook gebruikt kan worden voor $\symRBSP$ bomen. Net zoals bij de $\symKd$ boom moeten voor elke splitsingsrichting de eindpunten van de driehoeken gesorteerd worden en $2n$ splitsingsvlakken bekeken worden. In totaal bekijkt de $\symRBSP$ boom dus $2kn$ splitsingsvlakken. Het bouwen van de $\symRBSP$ boom is computationeel duurder dan het bouwen van de $\symKd$ boom door het grotere aantal richtingen en het feit dat het berekenen van de oppervlakte van een \symKDOP{} computationeel duurder is dan het berekenen van de oppervlakte van een balk. \authorBudge{} \cite{Budge} vonden een oplossing voor dit tweede probleem door een methode te ontwikkelen waarmee de oppervlaktes van de kind \symKDOP s incrementeel berekend kunnen worden tijdens het sweepen.\\
+    \authorKammaje{} \cite{Kammaje} toonden aan dat de SAH ook gebruikt kan worden voor $\symRBSP$ bomen. Net zoals bij de $\symKd$ boom moeten voor elke splitsingsrichting de eindpunten van de driehoeken gesorteerd worden en $2n$ splitsingsvlakken bekeken worden. In totaal bekijkt de $\symRBSP$ boom dus $2kn$ splitsingsvlakken. Het bouwen van de $\symRBSP$ boom is computationeel duurder dan het bouwen van de $\symKd$ boom door het grotere aantal richtingen en het feit dat het splitsen en het berekenen van de oppervlakte van een \symKDOP{} computationeel duurder is dan het splitsen en het berekenen van de oppervlakte van een balk. \authorBudge{} \cite{Budge} vonden een oplossing voor dit tweede probleem door een methode te ontwikkelen waarmee de kind \symKDOP s en hun oppervlaktes incrementeel berekend kunnen worden tijdens het sweepen.\\
 
-    De huidige $\symRBSP$ implementaties zijn superieur ten opzichte van de $\symKd$ boom in termen van het aantal driehoekintersecties en het aantal doorkruisingen, maar moet onderdoen in termen van rendertijd.
+    De huidige $\symRBSP$ implementaties zijn superieur ten opzichte van de $\symKd$ boom in termen van het aantal driehoekintersecties en het aantal doorkruisingen, maar moeten onderdoen in termen van rendertijd.
     \authorIze{} \cite{ize} menen dat de $\symRBSP$ boom de slechtste eigenschappen van zowel de $\symKd$ boom als de algemene $\symBSP$ boom overneemt. 
     Net als de $\symKd$ boom kan het geen rekening houden met de lokale geometrie en zich dus niet aanpassen aan complexe geometrie.
     Net als bij de algemene $\symBSP$ boom moet de intersectie met een willekeurig georiënteerd vlak berekend worden om knopen te doorkruisen. \authorBudge{} \cite{Budge} tonen aan dat deze tweede eigenschap minder erg is bij de $\symRBSP$ boom dan bij de algemene $\symBSP$ boom omdat het mogelijk is om alle scalaire producten op voorhand (en dus maar één keer) te berekenen.
 
 \section{Algemene $\symBSP$ Bomen in de praktijk}
-    \authorIze{} \cite{ize} ontwikkelden de eerste algemene $\symBSP$ boom voor raytracing. In tegenstelling tot de $\symKd$ en $\symRBSP$ boom kan $\symBSPize$ wel splitsingsvlakken kiezen afhankelijk van de geometrie. De $\symBSPize$ boom gebruikt de splitsingsvlakken van de $\symKd$ boom en elke driehoek in de knoop bepaalt nog vier extra splitsingsvlakken. Deze vier vlakken zijn: het vlak van de driehoek zelf (autoparitie) en de drie vlakken loodrecht op de driehoek door elk van de drie zijden. Merk op dat deze laatste vier vlakken rekening houden met de geometrie en niet mogelijk zouden zijn bij een $\symRBSP$ boom. Het omhullend volume van de knopen bij een $\symBSP$ boom is een convex veelvlak.
-    Voor de eenvoud wordt de omhullende balk gebruikt als omhullend volume voor de wortelknoop. Dit heeft als extra voordeel dat er een zeer snelle test is voor stralen die niets raken. \\
+    \authorIze{} \cite{ize} ontwikkelden de eerste algemene $\symBSP$ boom voor \textit{ray tracing}.
+    In tegenstelling tot de $\symKd$ en $\symRBSP$ boom kan $\symBSPize$ wel splitsingsvlakken kiezen afhankelijk van de geometrie.
+    De $\symBSPize$ boom gebruikt de splitsingsvlakken van de $\symKd$ boom en elke driehoek in de knoop bepaalt nog vier extra splitsingsvlakken.
+    Deze vier vlakken zijn: het vlak van de driehoek zelf (autopartitie) en de drie vlakken loodrecht op de driehoek door elk van de drie zijden.
+    Merk op dat deze laatste vier vlakken rekening houden met de geometrie en niet mogelijk zouden zijn bij een $\symRBSP$ boom.
+    Het omhullend volume van de knopen bij een $\symBSP$ boom is een convex veelvlak.
+    Voor de eenvoud wordt de omhullende balk gebruikt als omhullend volume voor de wortelknoop.
+    Dit heeft als extra voordeel dat er een zeer snelle test is voor stralen die niets raken. \\
 
     % sweeping Kd richtingen & bvh hulpstructuur
-    De \symSAH{} kan ook gebruikt worden voor algemene $\symBSP$ bomen. De $\symBSPize$ boom controleert de $6n$ $\symKd$ splitsingsvlakken door te sweepen zoals bij de $\symKd$ en $\symRBSP$ boom. De $SA$ berekening is duurder aangezien het omhullende volume een convex veelvlak is. 
+    De \symSAH{} kan ook gebruikt worden voor algemene $\symBSP$ bomen. De $\symBSPize$ boom controleert de $6n$ $\symKd$ splitsingsvlakken door te sweepen zoals bij de $\symKd$ en $\symRBSP$ boom. Het splitsen in kindknopen en de $SA$ berekening is duurder aangezien het omhullend volume een convex veelvlak is. 
     De $\symBSPize$ boom controleert ook vier extra vlakken per driehoek. 
     Voor deze vlakken is het berekenen van de $SAH$ kost moeilijker omdat het aantal driehoeken links en rechts van het vlak bepaald moet worden. 
     Om dit efficiënt te bepalen gebruiken \authorIze{} \cite{ize} de $\symBVH$ als hulpstructuur. 
@@ -170,6 +176,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     De winst wordt behaald door het lagere aantal straal driehoek intersecties.
     Het aantal knoop doorkruising stijgt echter, waardoor de totale verbetering wordt afgezwakt. De $\symBSPizefastkd$ boom toont veel minder variatie in rendertijd per pixel dan de $\symKd$ boom die duidelijke hotspot regio's heeft. Dit toont aan dat de $\symBSP$ boom beter kan omgaan met complexe geometrie.
     % amdahl ?
+    % TODO: afbeelding van rendertijd killeroo ?
 
     %Voordelen
     %    Knopen kunnen beter worden opgesplist
@@ -200,8 +207,6 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
     \caption{Vergelijking van de bestaande soorten $\symBSP$ bomen. }
     \label{tab:boom-vergelijking}
   \end{table}
-  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
-
 
   \paragraph{Aantal verschillende splitsingsvlakken}
   Eén van de belangrijkste eigenschappen van een $\symBSP$ algoritme is zijn vermogen om zich aan te passen aan complexe geometrie.
@@ -217,7 +222,8 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   Geen van bovenstaande bomen gebruikt de volledige vrijheid van een $\symBSP$ boom om op elk niveau andere splitsingsvlakken te nemen en op die manier beperken ze hun vermogen om zich aan te passen aan complexe geometrie.
   Driehoeken die in de wortelknoop door geen enkel vlak van elkaar kunnen worden gesplitst, kunnen nooit van elkaar gesplitst worden.
   Het volgende hoofdstuk introduceert nieuwe $\symBSP$ bomen die deze vrijheid wel benutten.
-  
+  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
+
   \tikzset{every tree node/.style={minimum width=2em,draw,circle},
   blank/.style={draw=none},
   edge from parent/.style=

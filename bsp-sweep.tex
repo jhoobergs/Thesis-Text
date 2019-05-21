@@ -1,7 +1,8 @@
 \chapter{$\symBSPsweep$}
 \label{hoofdstuk:bsp-sweep}
 In dit hoofdstuk wordt een nieuwe soort $\symBSP$ boom besproken: de $\symBSPsweep$ boom.
-Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies van de $\symBSPsweep$.
+Eerst wordt het nut van het opsplitsen van bladknopen in kleinere bladknopen wiskundig besproken.
+Het algemene idee van de $\symBSPsweep$ boom wordt dan besproken en daarna worden een aantal specifieke versies van de $\symBSPsweep$ ($\symBSPrandom$, $\symBSParbitrary$ en $\symBSPcluster$) besproken.
 
 % Duidelijk wiskundig uitleggen
 
@@ -11,7 +12,7 @@ Eerst wordt het algemene idee besproken en nadien een aantal specifieke versies 
 %	- In dit soort scene, intuitief ...
 
 \section{Probleemstelling}
-    Het doel van acceleratiestructuren is om de totale kost om een scene te renderen, te minimaliseren.
+    Het doel van acceleratiestructuren is om de totale tijd nodig om een scene te renderen, te minimaliseren.
     Deze rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
     De totale intersectietijd $\symTime_{\symIntersection, \symTotal}$ is afhankelijk van het aantal driehoeken $\symNbPrimitives_\symLeaf$ in de geïntersecteerde bladknopen $\symLeaf$ en het aantal keer $\symTraversalL_\symLeaf$ dat elk van deze bladknopen doorkruist wordt.
     De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
@@ -72,7 +73,13 @@ Het opsplitsen van een knoop met twee elementen, kan hierdoor pas voordelig zijn
 Aangezien de doorkruistijd in de realiteit beduidend kleiner is dan de intersectietijd, is het in dit ideale geval altijd voordelig om een kindknoop op te splitsen, ongeacht het aantal driehoeken in de knoop.
 In het slechtste geval ($\alpha = 0$) kan aan voorwaarde \ref{eq:vw_splitwinst_general} enkel voldaan zijn als de doorkruistijd gelijk is aan nul. Dit is onmogelijk waardoor opsplitsen nooit voordelig kan zijn in dit geval. \\
 
-Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. Voorwaarde \ref{eq:vw_splitwinst_general} toont dat de kans dat splitsen voordelig is, lineair stijgt met $\symNbPrimitives_{\symLeaf_j}$. De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\alpha$ keer kleiner is dan de intersectietijd. Intuitief lijkt het logisch dat hier in het algemeen aan voldaan is. Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan één driehoek op te splitsen in twee kleinere bladknopen. De volgende secties ... \\
+Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. 
+Voorwaarde \ref{eq:vw_splitwinst_general} toont dat de kans dat splitsen voordelig is, lineair stijgt met $\symNbPrimitives_{\symLeaf_j}$. 
+De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\alpha$ keer kleiner is dan de intersectietijd. 
+Intuitief lijkt het logisch dat hier in het algemeen aan voldaan is. 
+Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan één driehoek op te splitsen in twee kleinere bladknopen.\\
+
+De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vrijheid om op elk niveau van de boom andere splitsingsvlakken te gebruiken en op die manier meer bladknopen kunnen opsplitsen in kleinere bladknopen.\\
 
 
 
@@ -90,7 +97,7 @@ Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhan
     %Kd-richtingen + aantal richtingen of puur die richtingen
     %Snelle traversal voor kd-richtingen
 \section{Gebaseerd op random richtingen}
-De simpelste $\symBSPsweep$ bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
+De simpelste $\symBSPsweep$ boom, de $\symBSPrandom$ boom, bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
 De richtingen worden uniform op de hemisphere gegenereerd.
 Het idee achter deze boom is dat het nuttiger kan zijn om driehoeken via veel verschillende vlakken te proberen splitsen, dan om ze steeds met dezelfde vlakken te proberen splitsen.
 Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden, even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.\\
@@ -165,8 +172,8 @@ De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2klog(n)$ ($\symO(
     \label{fig:splitsingsvlakken-bsprandomsomekd}
 \end{figure}
 
-De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisphere goed bedekken.
-Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een $\symBSParbitrary$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
+De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisphere goed bedekken en omdat scenes die door de mens gemaakt worden, vaak asgealigneerde delen bevatten.
+Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een $\symBSPrandom$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
 Als de $\symBSPrandomsomekd$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ splitsingsvlakken bekeken.
 Van deze $2kn$ zijn er $6n$ die hergebruikt worden, de vlakken volgens de $\symKd$ richtingen.
 Dit zorgt voor $2(k-3)n$ verschillende splitsingsvlakken per niveau, zodat in totaal $2(k-3)nlog(n) + 6n$ verschillende splitsingsvlakken bekeken worden.
@@ -192,7 +199,7 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
     Als er k of minder driehoeken in de knoop zitten, worden alle normalen als splitsingrichting genomen.
     In het algemeen zijn er n driehoeken met n verschillende normalen waardoor er in totaal $2n^2$ mogelijke splitsingsvlakken zijn.
     Figuur \ref{fig:splitsingsvlakken-bsparbitrary-top} toont het aantal splitsingsvlakken gebruikt per knoop in de bovenste niveaus van de boom.
-    Deze figuur is identiek aan de figuur van $\symBSPrandom$. \\
+    Deze figuur is identiek aan de figuur voor de $\symBSPrandom$ boom. \\
 
     Voor de onderste $log(k)$ niveaus is er echter een verschil, omdat er dan k of minder driehoeken in elke knoop zitten.
     In de onderste $log(k)$ niveaus worden er in elke knoop $2n_m^2$ splitsingsvlakken bekeken, met $n_m <= k$.
@@ -299,6 +306,8 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
 
     %TODO, identiek dezelfde afleidingen als arbitrary
     %Waarom zou dit werken ...
+
+% TODO: vergelijking
 
 %\section{Hiërarchie}
 
