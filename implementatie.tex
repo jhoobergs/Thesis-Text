@@ -1,18 +1,315 @@
 \chapter{Implementatie}
 \label{hoofdstuk:implementatie}
-In dit hoofdstuk wordt het werk ingeleid. Het doel wordt gedefinieerd en er
-wordt uitgelegd wat de te volgen weg is (beter bekend als de rode draad).
+In dit hoofdstuk wordt de implementatie van volgende $\symBSP$ bomen besproken: $\symKd$ boom, $\symRBSP$ boom, $\symRBSPKd$ boom, $\symBSPize$ boom, $\symBSPizefastkd$ boom, $\symBSPrandom$ boom, $\symBSPrandomkd$ boom, $\symBSPrandomfastkd$ boom, $\symBSParbitrary$ boom, $\symBSParbitrarykd$ boom, $\symBSParbitraryfastkd$ boom, $\symBSPcluster$ boom, $\symBSPclusterkd$ boom en $\symBSPclusterfastkd$ boom. \\
 
-Als je niet goed weet wat een masterproef is, kan je altijd
-Wikipedia eens nakijken.
+Het hoofdstuk start met een hoogniveau beschrijving (\ref{sec:h4-hoog-niveau}) van het algoritme om de boom te bouwen en het algoritme om de boom te intersecteren.
+Daarna wordt voor elk type boom besproken hoe hun knopen worden voorgesteld in het geheugen (\ref{sec:h4-voorstelling-knopen}.
+De specifieke implementaties van de bouwalgoritmes (\ref{sec:h4-bouwalgoritmes}) en intersectie-algoritmes (\ref{sec:h4-intersectie-algoritmes}) worden dan besproken.
+
+
 
 %\section{Outline BSP-algoritmes}
-\section{Datastructuren knopen}
-\section{Bouwalgoritmes}
-    \subsection{SAH}
+%\section{Datastructuren knopen}
+%\section{Bouwalgoritmes}
+%    \subsection{SAH}
     %Intersectie willekeurig vlak & asgealigneerd
     % Snellere intersect / aangepast SAH
+%\section{Intersectie-algoritmes}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolor}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{pseudoStyle}{
+    backgroundcolor=\color{backcolor},   
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    %basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    basicstyle=\fontsize{9}{11}\selectfont\ttfamily
+}
+\lstset{style=pseudoStyle}
+
+%TODO: slechteAanpassingen
+\section{Hoog niveau beschrijving}
+\label{sec:h4-hoog-niveau}
+\subsection{Bouwalgoritme}
+Het bouwalgoritme voor $\symBSP$ bomen heeft een aantal parameters:
+\begin{itemize}
+    \item $\symCost_\symIntersection$: De intersectiekost voor primitieven. Deze parameter is nodig voor de $\symSAH$ heuristiek.
+    \item $\symCostTraversalKd$: De doorkruiskost voor $\symKd$ knopen. Deze parameter is nodig voor de $\symSAH$ heuristiek.
+    \item $\symCostTraversalBSP$: De aparte doorkruiskost voor $\symBSP$ knopen. Deze parameter is nodig voor de $\symSAH$ heuristiek.
+    \item $\symMaxPrims$: Elke knoop met $\symMaxPrims$ of minder primitieven wordt direct een bladknoop, er wordt niet geprobeerd om de knoop te splitsen.
+    \item $\symMaxDepth$: De maximale diepte van de boom.
+\end{itemize}
+\begin{dutchalgorithm}
+    \begin{algorithmic}
+
+        \State $stack\gets \emptyset$
+        \State Voeg een bouwknoop met alle primitieven toe aan de stack
+        \While {$stack \neq \emptyset$}
+            \State $b \gets $\Call{pop}{$stack$}
+            \If {$b_{\symNbPrimitives} \leq \symMaxPrims$ \Or $b_{d} = \symMaxDepth$}
+                \State \Call{maak\_blad\_knoop}{b}
+                \State $continue$
+            \EndIf
+            \State $besteSplit \gets $ \Call{bepaal\_beste\_split}{b}
+            \State $nietSplitKost \gets  b_{\symNbPrimitives}*\symCost_\symIntersection$
+            \If {$besteSplit_{kost} > nietSplitKost$}
+                \State $b_{slechteAanpassingen} \gets b_{slechteAanpassingen} + 1$
+            \EndIf
+            \If {$(besteSplit_{kost} > 4 * nietSplitKost$ \And $b_{\symNbPrimitives} < 16)$ \Or $besteSplit = None$ \Or $b_{slechteAanpassingen} = 3$}
+                \State \Call{maak\_blad\_knoop}{b}
+                \State $continue$
+            \EndIf
+            \State \Call{maak\_inwendige\_knoop}{b}
+            \State Plaats de kindknopen als twee nieuwe bouwknopen op de stack
+        \EndWhile
+    \end{algorithmic}
+    \caption{Bouwen van een BSP boom}
+\end{dutchalgorithm}
+
+\subsection{Intersectie-algoritme}
+Een straal wordt geparameteriseerd als $o + td$.
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer}{Boom b, Straal s}
+            \State $geraakt_{omhullendVolume}, tMin, tMax \gets $ \Call{intersecteer}{$b_{omhullendVolume}$, s}
+            \If {not $geraakt_{omhullendVolume}$}
+                \State \Return false
+            \EndIf
+            \State $geraakt \gets false$
+            \State $k \gets b_{wortelKnoop}$
+            \State $stack\gets \emptyset$
+
+            \While {$k \neq None$}
+                \If {$s_{maxT} < tMin$}
+                    \State $break$
+                \EndIf
+                \If {\Call{is\_inwendige\_knoop}{k}}
+                    \State $tVlak, linksEerst \gets$ \Call{intersecteer\_inwendige\_knoop}{k,s}
+                    \If {$linksEerst$}
+                        \State $k_1 \gets k_{linkerKind}$
+                        \State $k_2 \gets k_{rechterKind}$
+                    \Else
+                        \State $k_1 \gets k_{rechterKind}$
+                        \State $k_2 \gets k_{linkerKind}$
+                    \EndIf
+                    \If {$tVlak > tMax$ \Or $tVlak <= 0$}
+                        \State $k \gets k_1$
+                    \ElsIf {$tVlak < tMin$}
+                        \State $k \gets k_2$
+                    \Else
+                        \State \Call{add}{$stack, \{k_2, tMin: tVlak, tMax: tMax\})$}
+                        \State $k \gets k_1$
+                        \State $tMax \gets tVlak$ 
+                    \EndIf
+                \Else
+                    \If {\Call{intersecteer\_bladknoop}{k, s}}
+                        \State $geraakt \gets true$
+                    \EndIf
+                    \If {$stack \neq \emptyset$}
+                        \State $k, tMin, tMax \gets $\Call{pop}{$stack$}
+                    \Else
+                        \State $break$
+                    \EndIf
+                \EndIf
+            \EndWhile
+            \State \Return $geraakt$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een BSP boom}
+\end{dutchalgorithm}
+    
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer\_inwendige\_knoop}{$\symKd$ Knoop k, Straal s}
+            \State $as <- k_{splitsAs}$
+            \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
+            \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
+            \State \Return $tVlak$, $linksEerst$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een inwendige $\symKd$ knoop.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{kd\_vlak\_afstand}{splitPositie, s, inverseRichting, as}
+            \State \Return $(splitPos - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersectie tussen een asgealigneerd vlak en een straal.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer\_inwendige\_knoop}{$\symRBSP$ Knoop k, Straal s}
+            \State $richtingId \gets k_{splitsAs}$
+            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{splitPos}$, s}
+            \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+            \State \Return $tVlak$, $linksEerst$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een inwendige $\symRBSP$ knoop.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer\_inwendige\_knoop}{$\symRBSPKd$ Knoop k, Straal s}
+            \State $richtingId \gets k_{splitsAs}$
+            \If {$richtingId < 3$}
+                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, richtingId}
+                \State $linksEerst \gets \vec{s_o}[richtingId] < k_{splitPos}$ \Or $(\vec{s_o}[richtingId] = k_{splitPos}$ \And $s_d[richtingId] \leq 0)$
+                \State \Return $tVlak$, $linksEerst$
+            \Else
+                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{splitPos}$, s}
+                 \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+                \State \Return $tVlak$, $linksEerst$
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een inwendige $\symRBSPKd$ knoop.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer\_inwendige\_knoop}{$\symBSP$ Knoop k, Straal s}
+            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{splitPos}$, s}
+            \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+            \State \Return $tVlak$, $linksEerst$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een inwendige $\symBSP$ knoop.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{intersecteer\_inwendige\_knoop}{$\symBSPKd$ Knoop k, Straal s}
+            \State $isKdKnoop \gets k_{flags} < 4$
+            \If {$isKdKnoop$}
+                \State $as \gets k_{flags}$
+                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
+                \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
+                \State \Return $tVlak$, $linksEerst$
+            \Else
+                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{splitPos}$, s}
+                 \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+                \State \Return $tVlak$, $linksEerst$
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersecteren van een inwendige $\symBSPKd$ knoop.}
+\end{dutchalgorithm}
+
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{vlak\_afstand}{$\vec{normaal}$, splitPositie, s}
+            \State $projOorsprong \gets \vec{normaal} \cdot \vec{s_o}$
+            \State $invProjRichting \gets \frac{1}{\vec{normaal} \cdot \vec{s_d}}$
+            \State $afstand \gets (splitPos - projOorsprong) * invProjRichting $
+            \State \Return projOorsprong, invProjRichting, afstand
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersectie tussen een vlak en een straal.}
+\end{dutchalgorithm}
+
+
+\section{Voorstelling knopen}
+\label{sec:h4-voorstelling-knopen}
+    \begin{table}[tb]
+        \begin{subtable}{1\textwidth}
+        \centering
+        \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
+        Inwendig & bits & Blad & bits \\ \midrule
+        tSplit & 32 & primitief Offset & 32 \\
+        flags  & 2  &  flags   & 2    \\
+        tweedeKindIndex & 30 & $\symNbPrimitives$ & 30 \\ \hline \hline
+        & 64 & & 64    \\ \bottomrule
+        \end{tabular}
+        \caption{$\symKd$ knoop}
+        \label{tab:voorstelling-kd-knoop}
+        \end{subtable}
+
+        \bigskip
+        \begin{subtable}{1\textwidth}
+            \centering
+            \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
+            Inwendig & bits & Blad & bits \\ \midrule
+            tSplit & 32 & primitief Offset & 32 \\
+            flags  & $log_2(k + 1)$  &  flags   & $log_2(k + 1)$   \\
+            tweedeKindIndex & 32 - $log_2(k + 1)$ & $\symNbPrimitives$ & 32 - $log_2(k + 1)$ \\ \hline \hline
+            & 64 & & 64    \\ \bottomrule
+            \end{tabular}
+            \caption{$\symRBSP$ en $\symRBSPKd$ knoop}
+            \label{tab:voorstelling-rbsp-knoop}
+        \end{subtable}
+
+        \bigskip
+        \begin{subtable}{1\textwidth}
+            \centering
+            \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
+                Inwendig & bits & Blad & bits \\ \midrule
+                tSplit & 32 & primitief Offset & 32 \\
+                flags  & 1  &  flags   & 1    \\
+                tweedeKindIndex & 31 & $\symNbPrimitives$ & 31 \\
+                splitRichting & 96 &  &  \\ \hline \hline
+                & 160 & & 64    \\ \bottomrule
+            \end{tabular}
+            \caption{$\symBSP$ knoop}
+            \label{tab:voorstelling-bsp-knoop}
+        \end{subtable}
+
+        \bigskip
+        \begin{subtable}{1\textwidth}
+            \centering
+            \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
+                Inwendig & bits & Blad & bits \\ \midrule
+                tSplit & 32 & primitief Offset & 32 \\
+                flags  & 3  &  flags   & 3   \\
+                tweedeKindIndex & 29 & $\symNbPrimitives$ & 29 \\
+                splitRichting & 96 &  &  \\ \hline \hline
+                & 160 & & 64    \\ \bottomrule
+            \end{tabular}
+            \caption{$\symBSPKd$ knoop}
+            \label{tab:voorstelling-bspkd-knoop}
+        \end{subtable}
+        \caption[Voorstelling $\symKd$, $\symRBSP$, $\symBSP$ en $\symBSPKd$ knopen]{Voorstelling $\symKd$, $\symRBSP$, $\symBSP$ en $\symBSPKd$ knopen - \small }
+    \end{table}                                                                                         
+
+    \begin{table}
+        \centering
+        \begin{tabular}{@{}|c|c|@{}} \toprule      
+        $\symBSP$ boom & Knooptype \\ \midrule
+        $\symKd$ & $\symKd$ \\
+        $\symRBSP$ & $\symRBSP$  \\
+        $\symRBSPKd$ & $\symRBSPKd$  \\
+        $\symBSPize$ &  $\symBSP$ \\
+        $\symBSPizefastkd$ & $\symBSPKd$ \\
+        $\symBSPsweepmaybewithkd$ & $\symBSP$ \\
+        $\symBSPsweepkd$ & $\symBSPKd$ \\ \bottomrule
+        \end{tabular}
+        \caption[Gebruikte soorten knopen voor alle soorten $\symBSP$ bomen]{Gebruikte soorten knopen voor alle soorten $\symBSP$ bomen - \small}
+        \label{tab:voorstelling-knoop-boom}
+    \end{table}
+
+\section{Bouwalgoritmes}
+\label{sec:h4-bouwalgoritmes}
+
+
 \section{Intersectie-algoritmes}
+\label{sec:h4-intersectie-algoritmes}
+
+
 
 %
 %\section{$\symKd$ boom}

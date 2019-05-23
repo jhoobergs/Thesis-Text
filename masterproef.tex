@@ -34,8 +34,24 @@
 \captionsetup{compatibility=false}
 \usepackage{csvsimple}
 \usepackage{pgfplots}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{xspace}
+\algnewcommand{\And}{\textbf{and}\xspace}
+\algnewcommand{\Or}{\textbf{or}\xspace}
 
-
+\newenvironment{dutchalgorithm}[1][]
+  {\begin{algorithm}[#1]
+     \selectlanguage{dutch}%
+     \floatname{algorithm}{Algoritme}%
+     \renewcommand{\algorithmicif}{\textbf{if}}%
+     \renewcommand{\algorithmicthen}{\textbf{then}}%
+     \renewcommand{\algorithmicend}{\textbf{end}}%
+     % Set other language requirements
+  }
+  {\end{algorithm}}
 
 \include{symbols}
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien

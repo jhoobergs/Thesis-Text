@@ -332,6 +332,61 @@ Per niveau gebruiken de $\symBSPsweep$ bomen niet altijd meer splitsingsvlakken 
     \label{tab:boom-vergelijking-sweep}
   \end{table}
 
+
+  \begin{tikzpicture}[scale=0.6]
+    \begin{axis}[
+      axis lines = left,
+      ylabel = \small Cumulatieve Procentuele bijdrage aan totaal aantal driehoekintersecties,
+      xlabel = \small Aantal driehoeken in leafnode,
+      ymin=0, ymax=100,
+      width=0.8\textwidth,
+      height=\textwidth,
+      cycle multi list={%
+        color list\nextlist
+        [2 of]mark list
+      },
+      title = \small Invloed grootte bladknopen op totaal aantal intersecties,
+      legend pos=south east,
+  ]
+    \addplot table [x=V1, y=KillerooKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+    \addlegendentry{$\symKd$ Killeroo}
+    \addplot table [x=V1, y=FeetKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+    \addlegendentry{$\symKd$ Killeroo Been}
+
+    \addplot table [x=V1, y=KillerooBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+    \addlegendentry{$\symBSPizefastkd$ Killeroo}
+    \addplot table [x=V1, y=FeetBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+    \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
+    
+      \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}[scale=0.6]
+        \begin{axis}[
+          axis lines = left,
+          ylabel = \small Cumulatieve bijdrage aan totaal aantal driehoekintersecties,
+          xlabel = \small Aantal driehoeken in leafnode,
+          ymin=1000000, ymax=180000000,
+          width=0.8\textwidth,
+          height=\textwidth,
+          cycle multi list={%
+            color list\nextlist
+            [2 of]mark list
+          },
+          title = \small Invloed grootte bladknopen op totaal aantal intersecties,
+          legend pos=north west,
+      ]
+        \addplot table [x=V1, y=KillerooKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symKd$ Killeroo}
+        \addplot table [x=V1, y=FeetKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symKd$ Killeroo Been}
+    
+        \addplot table [x=V1, y=KillerooBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symBSPizefastkd$ Killeroo}
+        \addplot table [x=V1, y=FeetBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
+        
+          \end{axis}
+        \end{tikzpicture}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "masterproef"
