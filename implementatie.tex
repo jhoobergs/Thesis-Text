@@ -121,7 +121,7 @@ De aanpassing naar een algoritme dat controleert of er een intersectiepunt besta
                     \State $break$
                 \EndIf
                 \If {$k_{isInwendig}$}
-                    \State $tVlak, linksEerst \gets$ \Call{intersecteer\_inwendige\_knoop}{k,s}
+                    \State $tVlak, linksEerst \gets$ \Call{doorkruis\_inwendige\_knoop}{k,s}
                     \If {$linksEerst$}
                         \State $k_1 \gets k_{linkerKind}$
                         \State $k_2 \gets k_{rechterKind}$
@@ -159,7 +159,7 @@ De aanpassing naar een algoritme dat controleert of er een intersectiepunt besta
 
 Het algoritme maakt gebruik van de volgende functies:
 \begin{enumerate}
-    \item INTERSECTEER\_INWENDIGE\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de gegeven straal met het splitsingsvlak van de gegeven inwendige knoop. Het resultaat bevat tVlak, de t waade waarvoor de straal intersecteert met het vlak en linksEerst, een boolean die aangeeft of de straal eerst door de linkerkindknoop gaat of niet.
+    \item DOORKRUIS\_INWENDIGE\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de gegeven straal met het splitsingsvlak van de gegeven inwendige knoop. Het resultaat bevat tVlak, de t waade waarvoor de straal intersecteert met het vlak en linksEerst, een boolean die aangeeft of de straal eerst door de linkerkindknoop gaat of niet.
     \item INTERSECTEER\_BLAD\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de primitieven in de gegeven bladknoop met de gegeven straal.     
     \item INTERSECTEER(volume, straal): Deze functie bepaalt de intersectie van het omhullend volume van de boom en de straal. Het resultaat bevat een booleaans waarde, die aanduidt of het volume geraakt wordt door de straal. Als het volume geraakt wordt, bevat het ook de waarde tMin, de t waarde waarvoor de straal het volume binnengaan, en tMax, de t waarde waarvoor de straal het volume verlaat.
 \end{enumerate}
@@ -179,8 +179,7 @@ De $\symKd$ boom maakt gebruik van $\symKd$ knopen.
 Tabel \ref{tab:voorstelling-kd-knoop} toont de representatie van zowel inwendige $\symKd$ knopen als blad $\symKd$ knopen. 
 Zowel inwendige knopen als bladknopen worden voorgesteld met 64 bits en bevatten de \textit{flags} variabele.
 Als de \textit{flags} variabele gelijk is aan 3, is het een bladknoop.
-Bij inwendige knopen stelt die variabele de as voor waarlangs gesplitst wordt: 0 is x, 1 is y en 2 is z.
-\\
+Bij inwendige knopen stelt die variabele de as voor waarlangs gesplitst wordt: 0 is x, 1 is y en 2 is z.\\
 
 De inwendige knopen bevatten extra informatie over hun splitsingsvlak via \textit{tSplit}.
 Deze \textit{tSplit} variabele bepaalt de locatie van het vlak langs de as.
@@ -192,7 +191,7 @@ De \textit{n} variabele stelt het aantal primitieven in de bladknoop voor.
 De \textit{primitiefOffset} variabele verwijst naar de primitieven in de bladknoop.
 Als er maar één primitief in de knoop zit, wijst de variabele rechtstreeks naar het primitief.
 Als er meerdere primitieven in de knoop zitten, stelt het in index voor in een lijst.
-Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\textit{primitiefOffset} + \textit{n}$ wijst dan naar een primitief in de bladknoop.
+Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\textit{primitiefOffset} + \textit{n}$ wijst dan naar een primitief in de bladknoop.\\
 
 \begin{table}
     \centering
@@ -205,34 +204,70 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
     \end{tabular}
     \caption[Voorstelling $\symKd$ knoop]{Voorstelling $\symKd$ knoop - \small }
     \label{tab:voorstelling-kd-knoop}
-\end{table}        
-    
-    \begin{dutchalgorithm}
-        \begin{algorithmic}       
-            \Function{intersecteer\_inwendige\_knoop}{$\symKd$ Knoop k, Straal s}
-                \State $as <- k_{splitsAs}$
-                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
-                \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
-                \State \Return $tVlak$, $linksEerst$
-            \EndFunction
-        \end{algorithmic}
-        \caption{Intersecteren van een inwendige $\symKd$ knoop.}
-    \end{dutchalgorithm}
-    
-    \begin{dutchalgorithm}
-        \begin{algorithmic}       
-            \Function{kd\_vlak\_afstand}{splitPositie, s, inverseRichting, as}
-                \State \Return $(splitPos - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
-            \EndFunction
-        \end{algorithmic}
-        \caption{Intersectie tussen een asgealigneerd vlak en een straal.}
-    \end{dutchalgorithm}
+\end{table}            
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{doorkruis\_inwendige\_knoop}{$\symKd$ Knoop k, Straal s}
+            \State $as <- k_{splitsAs}$
+            \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
+            \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
+            \State \Return $tVlak$, $linksEerst$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Doorkruisen van een inwendige $\symKd$ knoop.}
+    \label{alg:kd-inwendige-doorkruising}
+\end{dutchalgorithm}
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{kd\_vlak\_afstand}{splitPositie, s, inverseRichting, as}
+            \State \Return $(splitPos - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Intersectie tussen een asgealigneerd vlak en een straal.}
+    \label{alg:kd-vlak-intersectie}
+\end{dutchalgorithm}
+Algoritme \ref{alg:kd-inwendige-doorkruising} toont het algoritme om inwendige $\symKd$ knopen te doorkruisen.
+Het gebruikt de functie KD\_VLAK\_INTERSECTIE (algoritme \ref{alg:kd-vlak-intersectie}) om te intersecteren met een asgealigneerd vlak.
+De inverse van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.
 
 %TODO: beste split algo
+\begin{dutchalgorithm}
+    \begin{algorithmic}       
+        \Function{bepaal\_beste\_split}{bouwKnoop}
+            \State $besteAs$, $besteT$ $\gets None$, $None$
+            \State $besteKost$, $oudeKost$ $\gets \infty$, $\symCost_\symIntersection * bouwknoop_n$
+            \For{$as \in \{0, 1, 2\}$}
+                \State $\forall i: randen[2i]\gets$ \Call{linkerrand}{$b_{primitieven}[i]$, as}
+                \State $\forall i: randen[2i+1]\gets$ \Call{rechterrand}{$b_{primitieven}[i]$, as}
+                \State \Call{sorteer}{randen}
+                \State $n_{links}, n_{rechts} \gets 0, bouwknoop_n$
+                \For{$rand \in randen$}
+                    \If{$rand_{isRechts}$}
+                        \State $n_{rechts} \gets n_{rechts} - 1$
+                    \EndIf
+                    \State $kost \gets$ \Call{SAH}{$\symCostTraversal$,$\symCost_\symIntersection$,$\symSA_{links}$,
+                    $\symSA_{rechts}$,
+                    $n_{links}$, $n_{rechts}$}
+                    \If{$kost < besteKost$}
+                        \State $besteKost, besteAs, besteT \gets kost, as, rand_t$
+                    \EndIf
+                    \If{$rand_{isLinks}$}
+                        \State $n_{links} \gets n_{links} + 1$
+                    \EndIf
+                \EndFor                
+            \EndFor
+            \State \Return $(splitPos - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
+        \EndFunction
+    \end{algorithmic}
+    \caption{Beste split voor een bouwknoop b bij een $\symKd$ boom.}
+    \label{alg:kd-beste-split}
+\end{dutchalgorithm}
+
+
 
 \section{$\symRBSP$ boom}
 \label{sec:h4-rbsp}
-Implementatie gebasseerd op
+Implementatie gebasseerd op 
 De $\symRBSP$ boom maakt gebruik van $\symRBSP$ knopen. 
 Tabel \ref{tab:voorstelling-rbsp-knoop} toont de representatie van zowel inwendige $\symRBSP$ knopen als blad $\symRBSP$ knopen.
 \begin{table}
@@ -262,14 +297,14 @@ Tabel \ref{tab:voorstelling-rbsp-knoop} toont de representatie van zowel inwendi
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{intersecteer\_inwendige\_knoop}{$\symRBSP$ Knoop k, Straal s}
+        \Function{doorkruis\_inwendige\_knoop}{$\symRBSP$ Knoop k, Straal s}
             \State $richtingId \gets k_{splitsAs}$
             \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{splitPos}$, s}
             \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
             \State \Return $tVlak$, $linksEerst$
         \EndFunction
     \end{algorithmic}
-    \caption{Intersecteren van een inwendige $\symRBSP$ knoop.}
+    \caption{Doorkruisen van een inwendige $\symRBSP$ knoop.}
 \end{dutchalgorithm}
 
 \section{$\symRBSPKd$ boom}
@@ -279,7 +314,7 @@ $\symRBSPKd$ knoop identiek aan $\symRBSP$ knoop in termen van voorstelling, and
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{intersecteer\_inwendige\_knoop}{$\symRBSPKd$ Knoop k, Straal s}
+        \Function{doorkruis\_inwendige\_knoop}{$\symRBSPKd$ Knoop k, Straal s}
             \State $richtingId \gets k_{splitsAs}$
             \If {$richtingId < 3$}
                 \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, richtingId}
@@ -292,7 +327,7 @@ $\symRBSPKd$ knoop identiek aan $\symRBSP$ knoop in termen van voorstelling, and
             \EndIf
         \EndFunction
     \end{algorithmic}
-    \caption{Intersecteren van een inwendige $\symRBSPKd$ knoop.}
+    \caption{Doorkruisen van een inwendige $\symRBSPKd$ knoop.}
 \end{dutchalgorithm}
 
 \section{$\symBSPize$ boom}
@@ -315,13 +350,13 @@ Vergelijk representatie met die van de paper
   
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{intersecteer\_inwendige\_knoop}{$\symBSP$ Knoop k, Straal s}
+        \Function{doorkruis\_inwendige\_knoop}{$\symBSP$ Knoop k, Straal s}
             \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{splitPos}$, s}
             \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
             \State \Return $tVlak$, $linksEerst$
         \EndFunction
     \end{algorithmic}
-    \caption{Intersecteren van een inwendige $\symBSP$ knoop.}
+    \caption{Doorkruisen van een inwendige $\symBSP$ knoop.}
 \end{dutchalgorithm}
 
 \section{$\symBSPizefastkd$ boom}
@@ -343,7 +378,7 @@ Vergelijk representatie met die van de paper
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{intersecteer\_inwendige\_knoop}{$\symBSPKd$ Knoop k, Straal s}
+        \Function{doorkruis\_inwendige\_knoop}{$\symBSPKd$ Knoop k, Straal s}
             \State $isKdKnoop \gets k_{flags} < 4$
             \If {$isKdKnoop$}
                 \State $as \gets k_{flags}$
@@ -357,7 +392,7 @@ Vergelijk representatie met die van de paper
             \EndIf
         \EndFunction
     \end{algorithmic}
-    \caption{Intersecteren van een inwendige $\symBSPKd$ knoop.}
+    \caption{Doorkruisen van een inwendige $\symBSPKd$ knoop.}
 \end{dutchalgorithm}
 
 \section{$\symBSPsweep$ boom}
