@@ -1,22 +1,19 @@
-\chapter{$\symBSPsweep$}
+\chapter{$\mathbf{\symBSPsweep}$}
 \label{hoofdstuk:bsp-sweep}
 In dit hoofdstuk wordt een nieuwe soort $\symBSP$ boom besproken: de $\symBSPsweep$ boom.
-Eerst wordt het nut van het opsplitsen van bladknopen in kleinere bladknopen wiskundig besproken.
+Eerst wordt het nut van het opsplitsen van bladknopen in kleinere bladknopen wiskundig besproken en aangetoond met behulp van een voorbeeld.
 Het algemene idee van de $\symBSPsweep$ boom wordt dan besproken en daarna worden een aantal specifieke versies van de $\symBSPsweep$ ($\symBSPrandom$, $\symBSParbitrary$ en $\symBSPcluster$) besproken.
-
-% Duidelijk wiskundig uitleggen
-
- % TODO
- % Beginnen met het probleem te schetsen, aantal paragrafen aan spenderen: 
-%  	- Eerst uitleggen in welke gevallen het nuttig is dat je die vrijheid gebruikt
-%	- In dit soort scene, intuitief ...
 
 \section{Probleemstelling}
     Het doel van acceleratiestructuren is om de totale tijd nodig om een scene te renderen, te minimaliseren.
+    Deze sectie toont aan dat de totale rendertijd afhankelijk is van het aantal driehoeken in de geïntersecteerde bladknopen.
+    In de eerste subsectie wordt wiskundig aangetoond dat het (onder bepaalde aannames) altijd voordelig is om bladknopen met meer dan twee driehoeken op te splitsen in kleinere bladknopen.
+    De tweede subsectie toont een voorbeeld waarbij de $\symKd$ en $\symBSPize$ boom vergeleken worden op basis van de grootte van de bladknopen.
+\subsection{Wiskundige basis}
     Deze rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
     De totale intersectietijd $\symTime_{\symIntersection, \symTotal}$ is afhankelijk van het aantal driehoeken $\symNbPrimitives_\symLeaf$ in de geïntersecteerde bladknopen $\symLeaf$ en het aantal keer $\symTraversalL_\symLeaf$ dat elk van deze bladknopen doorkruist wordt.
     De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
-    Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoek intersectie en $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen. 
+    Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoek intersectie, $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen en $B$ het aantal geïntersecteerde bladknopen.
 \begin{equation}
     \label{eq:rendertijd}
    \symTime_{\symRender} \sim
@@ -76,21 +73,151 @@ In het slechtste geval ($\alpha = 0$) kan aan voorwaarde \ref{eq:vw_splitwinst_g
 Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. 
 Voorwaarde \ref{eq:vw_splitwinst_general} toont dat de kans dat splitsen voordelig is, lineair stijgt met $\symNbPrimitives_{\symLeaf_j}$. 
 De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\alpha$ keer kleiner is dan de intersectietijd. 
-Intuitief lijkt het logisch dat hier in het algemeen aan voldaan is. 
+Intuïtief lijkt het logisch dat hier in het algemeen aan voldaan is. 
 Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan één driehoek op te splitsen in twee kleinere bladknopen.\\
 
-De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vrijheid om op elk niveau van de boom andere splitsingsvlakken te gebruiken en op die manier meer bladknopen kunnen opsplitsen in kleinere bladknopen.\\
+\subsection{Voorbeeld}
+  \begin{figure}
+%   \begin{tikzpicture}[scale=0.6]
+%     \begin{axis}[
+%       axis lines = left,
+%       ylabel = \small Cumulatieve Procentuele bijdrage aan totaal aantal driehoekintersecties,
+%       xlabel = \small Aantal driehoeken in bladknoop,
+%       ymin=0, ymax=100,
+%       width=0.8\textwidth,
+%       height=\textwidth,
+%       cycle multi list={%
+%         color list\nextlist
+%         [2 of]mark list
+%       },
+%       title = \small Invloed grootte bladknopen op totaal aantal intersecties,
+%       legend pos=south east,
+%   ]
+%     \addplot table [x=V1, y=KillerooKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+%     \addlegendentry{$\symKd$ Killeroo}
+%     \addplot table [x=V1, y=FeetKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+%     \addlegendentry{$\symKd$ Killeroo Been}
+
+%     \addplot table [x=V1, y=KillerooBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+%     \addlegendentry{$\symBSPizefastkd$ Killeroo}
+%     \addplot table [x=V1, y=FeetBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+%     \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
+    
+%       \end{axis}
+%     \end{tikzpicture}
+    \begin{subfigure}{0.4\textwidth}
+        \centering
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=1\linewidth]{img/killeroo}
+            \caption{Killeroo scene}
+            \label{fig:killeroo}    
+        \end{subfigure}
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=0.5\linewidth]{img/killerooFeet}
+            \caption{Killeroo Been scene}
+            \label{fig:killeroo-been}    
+        \end{subfigure}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+    \begin{tikzpicture}[scale=0.6]
+        \begin{axis}[
+          axis lines = left,
+          ylabel = \small Cumulatieve bijdrage aan totaal aantal driehoekintersecties,
+          xlabel = \small Aantal driehoeken in bladknoop,
+          ymin=1000000, ymax=180000000,
+          width=1.6\textwidth,
+          height=2\textwidth,
+          cycle multi list={%
+            color list\nextlist
+            [2 of]mark list
+          },
+          title = \small,
+          legend pos=north west,
+      ]
+        \addplot table [x=V1, y=KillerooKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symKd$ Killeroo}
+        \addplot table [x=V1, y=FeetKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symKd$ Killeroo Been}
+    
+        \addplot table [x=V1, y=KillerooBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symBSPizefastkd$ Killeroo}
+        \addplot table [x=V1, y=FeetBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
+        \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
+        
+          \end{axis}
+        \end{tikzpicture}
+        \caption{Cumulatief aantal intersecties}
+        \label{fig:voorbeeld-cumul}
+    \end{subfigure}
+    \label{fig:voorbeeld-bladknopen}
+    \caption[Invloed grootte bladknopen op aantal intersecties]{Invloed grootte bladknopen op aantal intersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij 2 overeenkomt met de som van het aantal intersecties in bladknopen met 1 driehoek en het aantal intersecties in bladknopen met 2 driehoeken.}
+\end{figure}
+Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeld scene dient bij de pbrt \textit{ray tracer}.
+Voor deze scene zijn de $\symKd$ boom en de $\symBSPizefastkd$ boom aan elkaar gewaagd.
+De $\symBSPizefastkd$ boom neemt de bovenhand als er wordt ingezoomd op de benen (figuur \ref{fig:killeroo-been}) van de Killeroo, waar de $\symKd$ boom veel bladknopen met meerdere driehoeken bevat.
+Figuur \ref{fig:voorbeeld-cumul} toont het cumulatief aantal intersecties per groep van bladknopen met hetzelfde aantal driehoeken.
+Voor de gewone Killeroo scene, heeft de $\symKd$ boom slechts een beperkt aantal extra intersecties nodig.
+Bij de ingezoomde scene, komt een groot deel van de intersecties van de $\symKd$ boom door intersecties met bladknopen met een groot aantal driehoeken.
+Dit toont aan dat $\symBSP$ bomen nuttig kunnen zijn omdat ze minder tot geen last hebben van regio's die ze minder goed aankunnen.
+Het aantal knoopdoorkruisingen bij de $\symBSPizefastkd$ boom is zelfs lager dan bij de $\symKd$ boom voor beide scenes.
+Dit komt omdat de $\symBSP$ knopen nauwer aansluiten aan het object waardoor minder stralen de knopen raken.\\
+
+Figuur \ref{fig:killeroo-heatmaps} toont \textit{false color} afbeeldingen van het aantal zichtstraalintersecties van de Killeroo en Killeroo been scene voor zowel de $\symKd$ boom als de $\symBSPizefastkd$ boom. 
+Voor de Killeroo scene zijn de \textit{false color} afbeeldingen van beide bomen zeer gelijkaardig, maar aan de benen heeft de $\symKd$ boom duidelijk meer intersecties nodig.
+Dit wordt bevestigd door de \textit{false color} afbeeldingen van de Killeroo been scene waarop duidelijk zichtbaar is dat de $\symBSPizefastkd$ boom zich beter kan aanpassen aan complexe geometrie.
+Het is ook zichtbaar dat de $\symBSPizefastkd$ boom nauwer aansluit aan de scene dan de $\symKd$ boom.
+Merk op dat, zoals besproken in het vorige hoofdstuk, de $\symBSPizefastkd$ boom nog niet alle vrijheiden van een algemene $\symBSP$ boom gebruikt.\\
+
+\begin{figure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=1\linewidth]{img/killeroo-kd-heatmap}
+            \caption{Killeroo $\symKd$}
+            \label{fig:killeroo-kd-heatmap}    
+        \end{subfigure}
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=1\linewidth]{img/killeroo-bspize-heatmap}
+            \caption{Killeroo $\symBSPizefastkd$}
+            \label{fig:killeroo-bspize-heatmap}    
+        \end{subfigure}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=1\linewidth]{img/killeroo-feet-kd-heatmap}
+            \caption{Killeroo Been $\symKd$}
+            \label{fig:killeroo-been-kd-heatmap}    
+        \end{subfigure}
+        \begin{subfigure}{\textwidth}
+            \centering
+            \includegraphics[width=1\linewidth]{img/killeroo-feet-bspize-heatmap}
+            \caption{Killeroo Been $\symBSPizefastkd$}
+            \label{fig:killeroo-been-bspize-heatmap}    
+        \end{subfigure}
+    \end{subfigure}
+    \caption[\textit{False color} afbeeldingen van de Killeroo en Killeroo Been scene]{\textit{False color} afbeeldingen van de Killeroo en Killeroo Been scene - \small Deze afbeeldingen tonen dat de $\symKd$ boom slecht presteert bij sommige delen van een scene, in dit geval de benen van de Killeroo. Bij de $\symBSPizefastkd$ boom is dit fenomeen veel minder uitgesproken en het valt ook op dat de $\symBSPizefastkd$ boom nauwer aansluit aan de scene.}
+    \label{fig:killeroo-heatmaps}
+\end{figure}
+
+De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vrijheid om op elk niveau van de boom andere splitsingsvlakken te gebruiken en op die manier meer bladknopen kunnen opsplitsen in kleinere bladknopen en nog nauwer kunnen aansluiten aan de scene.\\
 
 
 
-\section{Algemeen idee}
+\section{Basisidee}
     De $\symBSPsweep$ boom is een algemene $\symBSP$ boom waarbij in elke knoop k richtingen bepaald worden en alle $2n$ splitsingsvlakken langs elk van deze richtingen worden bekeken door te sweepen.
     Deze k richtingen kunnen verschillend zijn voor elke knoop en kunnen gekozen worden afhankelijk van de lokale geometrie.
     De $\symRBSP$ boom is een $\symBSPsweep$ boom waarbij de gekozen richtingen in elke knoop hetzelfde zijn.
     De $\symBSPsweep$ boom heeft drie belangrijke ontwerpbeslissingen.
     De belangrijkste ontwerpbeslissing bij de $\symBSPsweep$ boom is de methode die gebruikt wordt om de k richtingen te bepalen.
     Een tweede belangrijke ontwerpbeslissing is de waarde van k.
-    De derde belangrijke ontwerpbeslissing sluit aan bij de eerst en gaat over het al dan niet gebruiken van de $\symKd$ richtingen als de eerste drie van de k richtingen.
+    De derde belangrijke ontwerpbeslissing sluit aan bij de eerste en gaat over het al dan niet gebruiken van de $\symKd$ richtingen als de eerste drie van de k richtingen.
     \\
 
 
@@ -98,7 +225,7 @@ De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vr
     %Snelle traversal voor kd-richtingen
 \section{Gebaseerd op random richtingen}
 De simpelste $\symBSPsweep$ boom, de $\symBSPrandom$ boom, bepaalt in elke knoop k random richtingen onafhankelijk van de geometrie.
-De richtingen worden uniform op de hemisphere gegenereerd.
+De richtingen worden uniform op de hemisfeer gegenereerd.
 Het idee achter deze boom is dat het nuttiger kan zijn om driehoeken via veel verschillende vlakken te proberen splitsen, dan om ze steeds met dezelfde vlakken te proberen splitsen.
 Als de driehoeken in de scene uniform verdeeld zijn, dan is de kans dat twee driehoeken volgens een willekeurige richting gesplitst kunnen worden, even groot als de kans dat ze door een $\symKd$ richting gesplitst kunnen worden.\\
 
@@ -172,7 +299,7 @@ De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2klog(n)$ ($\symO(
     \label{fig:splitsingsvlakken-bsprandomsomekd}
 \end{figure}
 
-De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisphere goed bedekken en omdat scenes die door de mens gemaakt worden, vaak asgealigneerde delen bevatten.
+De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisfeer goed bedekken en omdat scenes die door de mens gemaakt worden, vaak asgealigneerde delen bevatten.
 Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een $\symBSPrandom$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
 Als de $\symBSPrandomsomekd$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ splitsingsvlakken bekeken.
 Van deze $2kn$ zijn er $6n$ die hergebruikt worden, de vlakken volgens de $\symKd$ richtingen.
@@ -328,65 +455,11 @@ Per niveau gebruiken de $\symBSPsweep$ bomen niet altijd meer splitsingsvlakken 
       \# splitsingsvlakken per niveau       &  $2kn$   & $2kn$* & $2kn$*  \\
       totaal \# $\neq$ splitsingsvlakken           &  $2knlog(n)$   & $2(log(\frac{n}{k}) + \frac{1}{2})kn$ & $2(log(\frac{n}{k}) + \frac{1}{2})kn$     \\ \bottomrule
     \end{tabular}
-    \caption[Vergelijking van de nieuwe soorten $\symBSP$ bomen.]{Vergelijking van de nieuwe soorten $\symBSP$ bomen - \small Deze tabel vat een aantal belangrijke eigenschappen van de nieuwe soorten $\symBSP$ bomen samen. *De onderste niveaus van $\symBSParbitrary$ en $\symBSPrandom$ bekijken minder dan $2kn$ splitsingsvlakken.}
+    \caption[Vergelijking van de nieuwe soorten $\symBSP$ bomen.]{Vergelijking van de nieuwe soorten $\symBSP$ bomen - \small Deze tabel vat een aantal belangrijke eigenschappen van de nieuwe soorten $\symBSP$ bomen samen. *De onderste niveaus van $\symBSParbitrary$ en $\symBSPcluster$ bekijken minder dan $2kn$ splitsingsvlakken.}
     \label{tab:boom-vergelijking-sweep}
   \end{table}
 
 
-  \begin{tikzpicture}[scale=0.6]
-    \begin{axis}[
-      axis lines = left,
-      ylabel = \small Cumulatieve Procentuele bijdrage aan totaal aantal driehoekintersecties,
-      xlabel = \small Aantal driehoeken in leafnode,
-      ymin=0, ymax=100,
-      width=0.8\textwidth,
-      height=\textwidth,
-      cycle multi list={%
-        color list\nextlist
-        [2 of]mark list
-      },
-      title = \small Invloed grootte bladknopen op totaal aantal intersecties,
-      legend pos=south east,
-  ]
-    \addplot table [x=V1, y=KillerooKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-    \addlegendentry{$\symKd$ Killeroo}
-    \addplot table [x=V1, y=FeetKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-    \addlegendentry{$\symKd$ Killeroo Been}
-
-    \addplot table [x=V1, y=KillerooBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-    \addlegendentry{$\symBSPizefastkd$ Killeroo}
-    \addplot table [x=V1, y=FeetBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-    \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
-    
-      \end{axis}
-    \end{tikzpicture}
-    \begin{tikzpicture}[scale=0.6]
-        \begin{axis}[
-          axis lines = left,
-          ylabel = \small Cumulatieve bijdrage aan totaal aantal driehoekintersecties,
-          xlabel = \small Aantal driehoeken in leafnode,
-          ymin=1000000, ymax=180000000,
-          width=0.8\textwidth,
-          height=\textwidth,
-          cycle multi list={%
-            color list\nextlist
-            [2 of]mark list
-          },
-          title = \small Invloed grootte bladknopen op totaal aantal intersecties,
-          legend pos=north west,
-      ]
-        \addplot table [x=V1, y=KillerooKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-        \addlegendentry{$\symKd$ Killeroo}
-        \addplot table [x=V1, y=FeetKdTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-        \addlegendentry{$\symKd$ Killeroo Been}
-    
-        \addplot table [x=V1, y=KillerooBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-        \addlegendentry{$\symBSPizefastkd$ Killeroo}
-        \addplot table [x=V1, y=FeetBSPTotal, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-        \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
-        
-          \end{axis}
-        \end{tikzpicture}
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "masterproef"

@@ -1,8 +1,8 @@
 \documentclass[master=cws,masteroption=mmc]{kulemt}
 \setup{title={Het gebruik van de normalen bij het bouwen van BSP acceleratiestructuren},
   author={Jesse Hoobergs},
-  promotor={Prof.\,dr.\,ir.\ Philip Dutré},
-  assessor={Ir.\,W. Eetveel\and W. Eetrest},
+  promotor={Prof.\,dr.\,ir.\ Ph. Dutré},
+  assessor={Dr. B. Verreet\and Prof. dr. R. Vandebril},
   assistant={Ir.\ M. Moulin\and Ir. P. Bartels}}
 % De volgende \setup mag verwijderd worden als geen fiche gewenst is.
 \setup{filingcard,
@@ -52,6 +52,7 @@
      % Set other language requirements
   }
   {\end{algorithm}}
+  \renewcommand{\listalgorithmname}{Lijst van algoritmes}
 
 \include{symbols}
 % Hier kun je dan nog andere pakketten laden of eigen definities voorzien
@@ -88,10 +89,12 @@
 \end{abstract}
 
 % Een lijst van figuren en tabellen is optioneel
-%\listoffigures
-%\listoftables
+\listoffigures
+\listoftables
+\listofalgorithms
+\addcontentsline{toc}{chapter}{Lijst van algoritmes}
 % Bij een beperkt aantal figuren en tabellen gebruik je liever het volgende:
-\listoffiguresandtables
+%\listoffiguresandtables
 % De lijst van symbolen is eveneens optioneel.
 % Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
 \chapter{Lijst van afkortingen en symbolen}
@@ -104,6 +107,7 @@
     $\symKDOP$ & Discrete Oriented Polytope \\ %TODO
     $\symRBSP$ & Restricted Binary Space Partitioning Tree \\
     $\symSA$   & Surface Area \\
+    $\symSAH$   & Surface Area Heuristiek \\
   \end{tabularx}
 \end{flushleft}
 \section*{Symbolen}
