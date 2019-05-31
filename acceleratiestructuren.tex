@@ -6,43 +6,6 @@ Daarna wijdt dit hoofdstuk uit over één specifieke acceleratiestructuur: de \t
 De varianten van de $\symBSP$ boom worden één voor één besproken.
 % TODO
 
-\section{Basisconcepten}
-    
-    \paragraph{Ray tracing}
-    \textit{Ray tracing} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het vormt een beschrijving van een 3D scene om tot een fotorealistische 2D afbeelding. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
-
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.5\linewidth]{img/ray-tracing}
-        \caption[Visuele voorstelling van \textit{ray tracing}]%
-    {Visuele voorstelling van \textit{ray tracing} - \small Door elke pixel worden één of meerdere zichtstralen gestuurd. Schaduwstralen worden gebruikt om de belichting in de scene realistisch te maken. Deze afbeelding is een aangepaste versie van een afbeelding op \url{https://en.wikipedia.org/wiki/Ray_tracing_(graphics)}}
-        \label{fig:raytracing}    
-    \end{figure}
-
-    Om realistische afbeeldingen te maken, wordt belichting in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting waarbij een punt donker is als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen. Dit zijn stralen van het punt naar de lichtbron.  Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar.  Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting is \textit{path tracing} een veelgebruikte techniek. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
-    
-  %  , kleur intersectiepunt is kleur pixel -> path tracing.
-  %  voor realistische beeldgeneratie + referentie,
-
-
-    \paragraph{Acceleratiestructuren}
-    Het doel van acceleratiestructuren is om het aantal straal-driehoek intersecties te verminderen.
-    De simpelste acceleratiestructuur bestaat uit het omhullend volume van de scene.
-    Testen op intersectie met de driehoeken in de scene gebeurt dan enkel als dit omhullend volume intersecteert met de straal.
-    Deze acceleratiestructuur kan worden uitgebreid tot een boomstructuur door dit volume recursief op te delen in kindvolumes.
-    Binaire bomen delen elk omhullend volume op in twee nieuwe volumes, andere acceleratiestructuren zoals bijvoorbeeld octrees, delen het volume op in meer dan twee volumes.
-    \\
-
-    Het volume kan worden opgedeeld op twee manieren: volgens objecten of volgens ruimte.
-    Bij opdeling volgens objecten worden de objecten binnen het volume opgedeeld in meerdere disjuncte groepen en de kindvolumes zijn de omhullende volumes van deze groepen.
-    Na deze opdeling zit elk object in exact één van deze nieuwe volumes, maar de volumes kunnen overlappen.
-    Een voorbeeld van een acceleratiestructuur waarbij de opdeling volgens objecten gebeurt is de \textit{Bounding Volume Hierarchy} ($\symBVH$).
-    Opdeling volgens ruimte betekent dat de ruimte in het volume wordt opgedeeld in meerdere delen.
-    Na deze opdeling overlappen deze nieuwe volumes niet, maar een object ligt nu in minstens één (en mogelijks in meerdere) kindvolume(s).
-    De $\symBSP$ boom deelt de ruimte van het volume steeds op in twee kindvolumes.
-    % TODO: combinatie van Kd en BVH ? SBVH
-    % TODO: check if all abbrev are listed and defined at first usage
-
 \section{$\symBSP$ bomen}
     De $\symBSP$ boom deelt de ruimte van het omhullend volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat aan een bepaalde stopconditie voldaan wordt.
     Het feit dat de $\symBSP$ boom volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als nadeel.

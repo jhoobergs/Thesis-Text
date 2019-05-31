@@ -125,7 +125,7 @@ Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan Ã
     \begin{tikzpicture}[scale=0.6]
         \begin{axis}[
           axis lines = left,
-          ylabel = \small Cumulatieve bijdrage aan totaal aantal driehoekintersecties,
+          ylabel = \small Cumulatieve bijdrage aan totaal aantal straal-driehoekintersecties,
           xlabel = \small Aantal driehoeken in bladknoop,
           ymin=1000000, ymax=180000000,
           width=1.6\textwidth,
@@ -149,11 +149,11 @@ Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan Ã
         
           \end{axis}
         \end{tikzpicture}
-        \caption{Cumulatief aantal intersecties}
+        \caption{Cumulatief aantal straal-driehoekintersecties}
         \label{fig:voorbeeld-cumul}
     \end{subfigure}
     \label{fig:voorbeeld-bladknopen}
-    \caption[Invloed grootte bladknopen op aantal intersecties]{Invloed grootte bladknopen op aantal intersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij 2 overeenkomt met de som van het aantal intersecties in bladknopen met 1 driehoek en het aantal intersecties in bladknopen met 2 driehoeken.}
+    \caption[Invloed grootte bladknopen op aantal intersecties]{Invloed grootte bladknopen op aantal intersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij x overeenkomt met de som van het aantal intersecties in bladknopen met x of minder driehoeken.}
 \end{figure}
 Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeld scene dient bij de pbrt \textit{ray tracer}.
 Voor deze scene zijn de $\symKd$ boom en de $\symBSPizefastkd$ boom aan elkaar gewaagd.
@@ -165,9 +165,9 @@ Dit toont aan dat $\symBSP$ bomen nuttig kunnen zijn omdat ze minder tot geen la
 Het aantal knoopdoorkruisingen bij de $\symBSPizefastkd$ boom is zelfs lager dan bij de $\symKd$ boom voor beide scenes.
 Dit komt omdat de $\symBSP$ knopen nauwer aansluiten aan het object waardoor minder stralen de knopen raken.\\
 
-Figuur \ref{fig:killeroo-heatmaps} toont \textit{false color} afbeeldingen van het aantal zichtstraalintersecties van de Killeroo en Killeroo been scene voor zowel de $\symKd$ boom als de $\symBSPizefastkd$ boom. 
+Figuur \ref{fig:killeroo-heatmaps} toont \textit{false color} afbeeldingen van het aantal zichtstraalintersecties van de Killeroo en Killeroo Been scene voor zowel de $\symKd$ boom als de $\symBSPizefastkd$ boom. 
 Voor de Killeroo scene zijn de \textit{false color} afbeeldingen van beide bomen zeer gelijkaardig, maar aan de benen heeft de $\symKd$ boom duidelijk meer intersecties nodig.
-Dit wordt bevestigd door de \textit{false color} afbeeldingen van de Killeroo been scene waarop duidelijk zichtbaar is dat de $\symBSPizefastkd$ boom zich beter kan aanpassen aan complexe geometrie.
+Dit wordt bevestigd door de \textit{false color} afbeeldingen van de Killeroo Been scene waarop duidelijk zichtbaar is dat de $\symBSPizefastkd$ boom zich beter kan aanpassen aan complexe geometrie.
 Het is ook zichtbaar dat de $\symBSPizefastkd$ boom nauwer aansluit aan de scene dan de $\symKd$ boom.
 Merk op dat, zoals besproken in het vorige hoofdstuk, de $\symBSPizefastkd$ boom nog niet alle vrijheiden van een algemene $\symBSP$ boom gebruikt.\\
 
@@ -441,7 +441,7 @@ Tabel \ref{tab:boom-vergelijking-sweep} vergelijkt de hierboven besproken $\symB
 Alle drie bomen zijn algemene $\symBSP$ bomen die een convex veelvlak hebben als omhullend volume.
 De $\symBSPsweep$ bomen zijn ontworpen om sweeping te ondersteunen en zo efficiÃ«nt de $SAH$ kosten te kunnen berekenen, zonder hulpstructuren.
 De $\symBSPrandom$ boom is onafhankelijk van de lokale geometrie, de twee andere bomen bepalen hun splitsingsvlakken afhankelijk van de lokale geometrie.
-De $\symBSPsweep$ bomen zijn makkelijk uit te breiden naar $\symBSPsweepkd$ bomen die de optimalisatie met de snelle $\symKd$ knoop doorkruising gebruiken.
+De $\symBSPsweep$ bomen zijn makkelijk uit te breiden naar $\symBSPsweepfastkd$ bomen die de optimalisatie met de snelle $\symKd$ knoop doorkruising gebruiken.
 Per niveau gebruiken de $\symBSPsweep$ bomen niet altijd meer splitsingsvlakken dan de bestaande bomen, maar de $\symBSPsweep$ bomen gebruiken in totaal duidelijk meer verschillende splitsingsvlakken dan de bestaande bomen en zouden zich hierdoor beter moeten kunnen aanpassen aan complexe scenes.
 
 \begin{table}[tb]

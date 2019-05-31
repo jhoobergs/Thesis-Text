@@ -6,13 +6,6 @@ Deze implementaties zijn toegevoegd aan de pbrt-v3 \textit{ray tracer} \cite{pbr
 Het hoofdstuk start met een hoogniveau beschrijving van het algoritme om de boom te bouwen en het algoritme om de boom te intersecteren.
 Daarna wordt voor elke type aparte besproken hoe hun knopen voorgesteld worden in het geheugen, hoe inwendige knopen doorkruist worden en hoe het beste splitsingsvlak bepaald wordt.
 
-%\section{Outline BSP-algoritmes}
-%\section{Datastructuren knopen}
-%\section{Bouwalgoritmes}
-%    \subsection{SAH}
-    %Intersectie willekeurig vlak & asgealigneerd
-    % Snellere intersect / aangepast SAH
-%\section{Intersectie-algoritmes}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -572,7 +565,7 @@ Als er geen nuttig $\symKd$ splitsingsvlak of $\symBSP$ splitsingsvlak met deze 
 
 \section{$\symBSPsweep$ boom}
 \label{sec:h4-bspsweep}
-De $\symBSPsweep$ en $\symBSPsweepkd$ bomen maken gebruik van respectievelijk de $\symBSP$ en $\symBSPKd$ knopen.
+De $\symBSPsweepmaybewithkd$ en $\symBSPsweepfastkd$ bomen maken gebruik van respectievelijk de $\symBSP$ en $\symBSPKd$ knopen.
 Hierdoor zijn de doorkruismethodes voor inwendige knopen identiek aan die gebruikt bij de $\symBSPize$ en $\symBSPizefastkd$ bomen.
 Algoritme \ref{alg:bspsweep-beste-split} toont het algoritme om het beste splitsingsvlak te bepalen bij een $\symBSPsweep$ boom.
 Dit algoritme gebruikt de BEPAAL\_RICHTINGEN functie die de specifieke soort $\symBSPsweep$ boom bepaalt.
@@ -736,7 +729,7 @@ Algoritme \ref{alg:bspsweepkd-beste-split} toont deze implementatie.
 %     $\symBSPize$ &  $\symBSP$ \\
 %     $\symBSPizefastkd$ & $\symBSPKd$ \\
 %     $\symBSPsweepmaybewithkd$ & $\symBSP$ \\
-%     $\symBSPsweepkd$ & $\symBSPKd$ \\ \bottomrule
+%     $\symBSPsweepfastkd$ & $\symBSPKd$ \\ \bottomrule
 %     \end{tabular}
 %     \caption[Gebruikte soorten knopen voor alle soorten $\symBSP$ bomen]{Gebruikte soorten knopen voor alle soorten $\symBSP$ bomen - \small}
 %     \label{tab:voorstelling-knoop-boom}

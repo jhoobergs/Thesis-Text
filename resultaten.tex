@@ -106,6 +106,7 @@ De specificaties van het gebruikte computersysteem worden getoond in figuur \ref
       ylabel = #5,
       xlabel = K,
       ymin=#3, ymax=#4,
+      xmin=2,
       width=1.8\textwidth,
       height=2.2\textwidth,
       cycle multi list={%
@@ -413,7 +414,7 @@ Voor elke combinatie van $\symBSP$ boom en k-waarde wordt de uitvoering waarvan 
 Alle onderstaande analyses maken gebruik van die uitvoeringen.
 \subsection{Bespreking bomen}
 \label{h5-richtingen-bespreking}
-\paragraph{Bouwtijd} Figuur \ref{fig:k-bouwtijd} toont de bouwtijden ten opzichte van de bouwtijden van de $\symKd$ boom. De bouwtijden van de $\symBSPsweep$ bomen zijn twee ordergroottes groter dan die van de $\symKd$ boom. De grafieken voor de verschillende scenes (met een verschillend aan driehoeken) zijn zeer gelijkaardig, dus is de complexiteit voor het bouwen van $\symKd$ en $\symBSPsweep$ bomen op dezelfde manier afhankelijk van het aantal driehoeken. De grafieken van de $\symBSPrandom$ bomen zijn alle drie bijna perfecte rechten. De bouwtijd is lineair afhankelijk van k omdat in elke knoop over k richtingen gesweept wordt. Bij de $\symBSParbitrary$ en $\symBSPcluster$ bomen is de afhankelijkheid sublineair omdat er in knopen met minder dan k driehoeken, over minder dan k richtingen gesweept wordt. 
+\paragraph{Bouwtijd} Figuur \ref{fig:k-bouwtijd} toont de bouwtijden ten opzichte van de bouwtijden van de $\symKd$ boom. De bouwtijden van de $\symBSPsweep$ bomen zijn twee ordegroottes groter dan die van de $\symKd$ boom. De grafieken voor de verschillende scenes (met een verschillend aan driehoeken) zijn zeer gelijkaardig, dus is de complexiteit voor het bouwen van $\symKd$ en $\symBSPsweep$ bomen op dezelfde manier afhankelijk van het aantal driehoeken. De grafieken van de $\symBSPrandom$ bomen zijn alle drie bijna perfecte rechten. De bouwtijd is lineair afhankelijk van k omdat in elke knoop over k richtingen gesweept wordt. Bij de $\symBSParbitrary$ en $\symBSPcluster$ bomen is de afhankelijkheid sublineair omdat er in knopen met minder dan k driehoeken, over minder dan k richtingen gesweept wordt. 
 De $\symBSPrandomfastkd$, $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen met $k = 3$ zijn identiek aan de $\symKd$ boom, maar gebouwd met convexe veelvlakken in plaats van asgealigneerde balken.
 Hieruit kunnen we afleiden dat het gebruik van convexe veelvlakken tijdens het bouwen ongeveer 25 (2500\%) keer trager is dan het gebruik van asgealigneerde balken.
 \begin{figure}[h]
@@ -439,7 +440,7 @@ Hieruit kunnen we afleiden dat het gebruik van convexe veelvlakken tijdens het b
 
 
 \paragraph{$\mathbf{\symSAH}$}
-De $\symSAH$ wordt gebruikt om in elke knoop op een greedy manier het beste splitsingsvlak te bepalen. De totale $\symSAH$ kost van de boom kan echter ook berekend worden. Bij de $\symBSPsweep$ bomen die gebruik maken van $\symKd$ richtingen, maar deze behandelen als $\symBSP$ vlakken, wordt $\symCostTraversalBSP$ gebruikt als doorkruiskost. Bij de $\symBSPsweepkd$ bomen wordt de $\symCostTraversalKd$ gebruikt als doorkruiskost voor de $\symKd$ knopen. Voor alle $\symBSP$ splitsingsvlakken - ook degene die gekozen worden met de $\symCostTraversalBSP$ die lineair afhankelijk is van het aantal driehoeken - wordt de vaste $\symCostTraversalBSP$ gebruikt om de totale $\symSAH$ kost te berekenen.
+De $\symSAH$ wordt gebruikt om in elke knoop op een greedy manier het beste splitsingsvlak te bepalen. De totale $\symSAH$ kost van de boom kan echter ook berekend worden. Bij de $\symBSPsweep$ bomen die gebruik maken van $\symKd$ richtingen, maar deze behandelen als $\symBSP$ vlakken, wordt $\symCostTraversalBSP$ gebruikt als doorkruiskost. Bij de $\symBSPsweepfastkd$ bomen wordt de $\symCostTraversalKd$ gebruikt als doorkruiskost voor de $\symKd$ knopen. Voor alle $\symBSP$ splitsingsvlakken - ook degene die gekozen worden met de $\symCostTraversalBSP$ die lineair afhankelijk is van het aantal driehoeken - wordt de vaste $\symCostTraversalBSP$ gebruikt om de totale $\symSAH$ kost te berekenen.
 Op deze manier kan de totale $\symSAH$ kost van alle bomen vergeleken worden.
 Figuur \ref{fig:k-sah} toont deze totale $\symSAH$ kost van de $\symBSPsweep$ bomen ten opzichte van die van de $\symKd$ boom. 
 Voor de Killeroo Been scene valt op dat de $\symBSPrandom^{k=3}$ boom, de $\symBSParbitrary^{k=3}$ boom en de $\symBSPcluster^{k=3}$ boom een lagere $\symSAH$ kost hebben dan de $\symKd$ boom.
@@ -489,7 +490,7 @@ De $\symBSPrandom$ bomen genereren bij stijgend k-waarden steeds bomen met een l
 \label{fig:k-knopen}
 \end{figure}
 \paragraph{Aantal $\symKd$ knopen}
-Voor de $\symBSPsweepkd$ bomen is het interessant om te weten hoeveel inwendige knopen, $\symKd$ knopen zijn en hoeveel er $\symBSP$ knopen zijn.
+Voor de $\symBSPsweepfastkd$ bomen is het interessant om te weten hoeveel inwendige knopen, $\symKd$ knopen zijn en hoeveel er $\symBSP$ knopen zijn.
 Figuur \ref{fig:k-kd-knopen} toont het procentuele aantal $\symKd$ knopen.
 Het procenteel aantal $\symKd$ knopen neemt zeer snel af met een stijgend aantal richtingen en convergeert naar een vast percentage.
 De drie varianten convergeren naar dezelfde waarde omdat de $\symKd$ knopen door de aangepaste $\symSAH$ voornamelijk in de bovenste niveaus van de boom voorkomen, zoals getoond wordt in figuur \ref{fig:k-kd-knopen-diepte}.
@@ -517,7 +518,7 @@ Het kiezen van meer dan 6 richtingen lijkt niet nuttig.
 \plotFastKdVsK{nbKdNodePercConference}{Conference}{10}{110}{Procentueel aantal $\symKd$ knopen}
 \caption{Conference}
 \end{subfigure}
-\caption[Procentueel aantal $\symKd$ knopen]{Procentueel aantal $\symKd$ knopen - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige $\symKd$ knopen van de $\symBSPsweepkd$ bomen ten opzichte van het totaal aantal inwendige knopen in functie van k.}
+\caption[Procentueel aantal $\symKd$ knopen]{Procentueel aantal $\symKd$ knopen - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige $\symKd$ knopen van de $\symBSPsweepfastkd$ bomen ten opzichte van het totaal aantal inwendige knopen in functie van k.}
 \label{fig:k-kd-knopen}
 \end{figure}
 
@@ -532,15 +533,43 @@ Het kiezen van meer dan 6 richtingen lijkt niet nuttig.
           yticklabel style={
               /pgf/number format/.cd,
               fixed,
-              precision=1,
+              precision=0,
               fixed zerofill,
           },
+          yticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber\pgfmathresult
       },
       title=,
       enlargelimits=false,
       axis on top,
       point meta min=0.15,
       point meta max=1,
+  ]     
+      \addplot [matrix plot*, point meta=\thisrow{P}, mesh/check=false, x={D}, y={K}] table []{#1};
+  \end{axis}
+\end{tikzpicture}
+}
+
+\newcommand{\plotHeatmapLeaf}[2] {
+  \begin{tikzpicture}[scale=#2]
+  \begin{axis}[
+      xlabel=$Aantal primitieven$,
+      ylabel=$K$,
+      colorbar,
+      colorbar style={
+          title=,
+          yticklabel style={
+              /pgf/number format/.cd,
+              fixed,
+              precision=2,
+              fixed zerofill,
+          },
+      },
+      title=,
+      enlargelimits=false,
+      axis on top,
+      point meta min=0.5,
+      point meta max=1,
+      xmax=20,
   ]     
       \addplot [matrix plot*, point meta=\thisrow{P}, mesh/check=false, x={D}, y={K}] table []{#1};
   \end{axis}
@@ -593,54 +622,69 @@ Het kiezen van meer dan 6 richtingen lijkt niet nuttig.
 \plotHeatmapDiepteK{data/bspClusterFastKdConferenceDepth.dat}{0.45}
 \skipCaption{Conference - $\symBSPclusterfastkd$}
 \end{subfigure}
-\caption[Procentueel aantal $\symKd$ knopen per niveau]{Procentueel aantal $\symKd$ knopen per niveau - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige $\symKd$ knopen van de $\symBSPsweepkd$ bomen ten opzichte van het totaal aantal inwendige knopen per niveau in functie van de diepte en k.}
+\caption[Procentueel aantal $\symKd$ knopen per niveau]{Procentueel aantal $\symKd$ knopen per niveau - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige $\symKd$ knopen van de $\symBSPsweepfastkd$ bomen ten opzichte van het totaal aantal inwendige knopen per niveau in functie van de diepte en k.}
 \label{fig:k-kd-knopen-diepte}
 \end{figure}
 
 \subsection{Kwaliteit bomen}
 \label{h5-richtingen-kwaliteit}
 \paragraph{Rendertijd}
-De rendertijd is de belangrijkste waarde om de kwaliteit van een boom te vergelijken. Figuur \ref{fig:k-rendertijd} toont de rendertijden ten opzichte van de rendertijden van de $\symKd$ boom.
+De rendertijd is de belangrijkste waarde om de kwaliteit van de $\symBSPsweep$ bomen te vergelijken. Figuur \ref{fig:k-rendertijd} toont de rendertijden van de $\symBSPsweep$ bomen ten opzichte van de rendertijden van de $\symKd$ boom.
+De rendertijd van de $\symBSPsweep$ bomen zonder de $\symKd$ richtingen daalt sterk met stijgende k-waarde, maar enkel bij de Killeroo Been scene worden rendertijden onder die van de $\symKd$ boom bereikt.
+De $\symBSPrandom$ boom is beduidend trager dan de $\symBSParbitrary$ en $\symBSPcluster$ bomen.
+Elk type $\symBSPsweepkd$ boom heeft voor elke scene minstens één k-waarde waarvoor de rendertijd lager is dan die van de $\symKd$ boom.
+De minimale rendertijd ligt meestal bij een k-waarde van ongeveer 5, voor hogere waarden blijft de rendertijd gelijk of stijgt hij zelfs.
+De $\symBSPrandomkd$ boom is vaak trager dan de $\symBSParbitrarykd$ en $\symBSPclusterkd$ bomen, maar het verschil is kleiner dan bij de variant zonder de $\symKd$ richtingen.
+De $\symBSPsweepfastkd$ bomen zijn altijd sneller dan de $\symKd$ boom en het toevoegen van maar één extra richting ($k = 4$) zorgt al voor een reductie van de rendertijd met 20\%.
+Bij de $\symBSPrandomfastkd$ boom blijft de rendertijd monotoon dalen met stijgende k.
+De rendertijden van de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ varianten daarentegen hebben vaak een minimum voor een k-waarde van ongeveer 6 en stijgen nadien terug lichtjes.
 \begin{figure}
   \centering
   \begin{subfigure}[t]{.32\linewidth}
     \centering
 \plotVsK{RendertimeTovKdFeet}{Killeroo Been}{60}{210}{Procentuele rendertijd tov de $\symKd$ boom}
-\caption{Killeroo Been}
+\skipCaptionA{4}{Killeroo Been}
   \end{subfigure}
   \begin{subfigure}[t]{.32\linewidth}
     \centering
 \plotVsK{RendertimeTovKdSponza}{Sponza}{60}{210}{Procentuele rendertijd tov de $\symKd$ boom}
-\caption{Sponza}
+\skipCaptionA{4}{Sponza}
 \end{subfigure}
 \begin{subfigure}[t]{.32\linewidth}
   \centering
 \plotVsK{RendertimeTovKdConference}{Conference}{60}{210}{Procentuele rendertijd tov de $\symKd$ boom}
-\caption{Conference}
+\skipCaptionA{4}{Conference}
 \end{subfigure}
 \caption[Rendertijd in functie van k]{Rendertijd in functie van k - \small Deze grafieken tonen voor elke scene de procentuele rendertijd van de $\symBSPsweep$ bomen ten opzichte van de rendertijd van de $\symKd$ boom in functie van k.}
 \label{fig:k-rendertijd}
 \end{figure}
 
 \paragraph{Aantal intersecties}
-Figuur \ref{fig:k-intersecties}
+De grootste kracht van algemene $\symBSP$ bomen zit in het feit dat ze minder straal-driehoekintersecties nodig hebben dan de $\symKd$ boom.
+Figuur \ref{fig:k-intersecties} toont voor zowel zichtstralen als schaduwstralen het aantal straal-driehoekintersecties van de $\symBSPsweep$ boom ten opzichte van het aantal straal-driehoekintersecties van de $\symKd$ boom in functie van k.
+Deze figuur vertoont een sterke overeenkomst met figuur \ref{fig:k-rendertijd}. 
+Dit is logisch aangezien het aantal straal-driehoekintersecties een grote invloed heeft op de rendertijd.
+Bij de Killeroo Been scene zorgt het toevoegen van één richting ($k = 4$) bij de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen al voor een reductie van het aantal straal-driehoekintersecties met 80\% ten opzichte van de $\symKd$ boom. Bij de $\symBSPrandomfastkd$ met $k = 4$ is deze reductie slechts 35\%. Bij de varianten die de normalen gebruiken stijgt de reductie niet hard voor stijgende k-waardes, in tegenstelling tot de variante met random richten waar de reductie stijgt tot 65\%, wat beduidend minder is dan de varianten met normalen.
+Bij de andere scenes valt op dat de $\symBSPrandomfastkd$ boom voor een k-waarde van 10 een grotere reductie doet dan de twee andere varianten.
+Dit toont aan dat het nuttig zou kunnen zijn om een klein aantal richtingen te bepalen aan de hand van de normalen, en een ander klein aantal richtingen random te genereren. Op die manier zou de reductie snel groot worden en langer blijven stijgen in functie van k.
+
 \begin{figure}
   \centering
   \begin{subfigure}{\linewidth}
   \centering
   \begin{subfigure}[t]{.32\linewidth}
     \centering
-\plotVsK{nbPrimIntTovKdFeet}{}{0}{410}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntTovKdFeet}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Killeroo Been}
   \end{subfigure}
   \begin{subfigure}[t]{.32\linewidth}
     \centering
-\plotVsK{nbPrimIntTovKdSponza}{}{0}{410}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntTovKdSponza}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Sponza}
 \end{subfigure}
 \begin{subfigure}[t]{.32\linewidth}
   \centering
-\plotVsK{nbPrimIntTovKdConference}{}{0}{410}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntTovKdConference}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Conference}
 \end{subfigure}
 \caption{Zichtstralen}
@@ -649,22 +693,22 @@ Figuur \ref{fig:k-intersecties}
   \centering
   \begin{subfigure}[t]{.32\linewidth}
     \centering
-\plotVsK{nbPrimIntPTovKdFeet}{}{0}{510}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntPTovKdFeet}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Killeroo Been}
   \end{subfigure}
   \begin{subfigure}[t]{.32\linewidth}
     \centering
-\plotVsK{nbPrimIntPTovKdSponza}{}{0}{510}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntPTovKdSponza}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Sponza}
 \end{subfigure}
 \begin{subfigure}[t]{.32\linewidth}
   \centering
-\plotVsK{nbPrimIntPTovKdConference}{}{0}{460}{Procentueel aantal straal-driehoek intersecties tov de $\symKd$ boom}
+\plotVsK{nbPrimIntPTovKdConference}{}{0}{400}{Procentueel aantal straal-driehoekintersecties tov de $\symKd$ boom}
 \skipCaptionA{4}{Conference}
 \end{subfigure}
 \caption{Schaduwstralen}
 \end{subfigure}
-\caption[Straal-driehoek intersecties in functie van k]{Straal-driehoek intersecties in functie van k - \small Deze grafieken tonen voor elke scene het procentueel aantal straal-driehoek intersecties van de $\symBSPsweep$ bomen ten opzichte van het aantal straal-driehoek intersecties van de $\symKd$ boom in functie van k. De grafieken voor de zichtstralen en schaduwstralen zijn opgesplitst en gebruiken en verschillende y-as.}
+\caption[Straal-driehoekintersecties in functie van k]{Straal-driehoekintersecties in functie van k - \small Deze grafieken tonen voor elke scene het procentueel aantal straal-driehoekintersecties van de $\symBSPsweep$ bomen ten opzichte van het aantal straal-driehoekintersecties van de $\symKd$ boom in functie van k. De grafieken voor de zichtstralen en schaduwstralen zijn opgesplitst en gebruiken een verschillende y-as.}
 \label{fig:k-intersecties}
 \end{figure}
 
@@ -674,7 +718,13 @@ Figuur \ref{fig:k-intersecties}
 \end{figure}
 
 \paragraph{Aantal doorkruisingen}
-Figuur \ref{fig:k-doorkruisingen}
+Het nadeel van het beter opsplitsen van bladknopen is het stijgend aantal doorkruisingen van inwendige knopen.
+Deze stijging wordt deels tegengegaan door het nauwer aansluiten van de $\symBSP$ boom aan de scene dan de $\symKd$ bomen.
+Figuur \ref{fig:k-doorkruisingen} toont voor zowel zichtstralen als schaduwstralen het aantal doorkruisingen van inwendige knopen van de $\symBSPsweep$ boom ten opzichte van het aantal doorkruisingen van inwendige knopen van de $\symKd$ boom in functie van k.
+Het gaat hierbij over het totaal aantal doorkruisingen van inwendige knopen waarbij doorkruisingen van inwendige $\symKd$ en $\symBSP$ knopen hetzelfde behandeld worden. 
+Bij de Killeroo Been scene daalt het aantal doorkruisingen tot 80\%, dit komt voornamelijk door het nauwer aansluiten van de boom aan de scene.
+De $\symBSPrandomfastkd$ boom zorgt voor een lichtjes stijgend aantal doorkruisingen in functie van k, het stijgt tot ongeveer 10\% boven het aantal van de $\symKd$ boom.
+Bij de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen is het aantal doorkruisingen ongeveer gelijk aan het aantal bij de $\symKd$ boom en onafhankelijk van k.
 \begin{figure}
   \centering
   \begin{subfigure}{\linewidth}
@@ -715,13 +765,13 @@ Figuur \ref{fig:k-doorkruisingen}
 \end{subfigure}
 \caption{Schaduwstralen}
 \end{subfigure}
-\caption[Inwendige knoopdoorkruisingen in functie van k]{Inwendige knoopdoorkruisingen in functie van k - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige knoopdoorkruisingen van de $\symBSPsweep$ bomen ten opzichte van het aantal inwendige knoopdoorkruisingen van de $\symKd$ boom in functie van k. De grafieken voor de zichtstralen en schaduwstralen zijn opgesplitst en gebruiken en verschillende y-as.}
+\caption[Inwendige knoopdoorkruisingen in functie van k]{Inwendige knoopdoorkruisingen in functie van k - \small Deze grafieken tonen voor elke scene het procentueel aantal inwendige knoopdoorkruisingen van de $\symBSPsweep$ bomen ten opzichte van het aantal inwendige knoopdoorkruisingen van de $\symKd$ boom in functie van k. De grafieken voor de zichtstralen en schaduwstralen zijn opgesplitst en gebruiken een verschillende y-as.}
 \label{fig:k-doorkruisingen}
 \end{figure}
 
 
 \paragraph{$\symKd$ doorkruisingen}
-Figuur \ref{fig:k-kd-doorkruisingen-prec}
+Bij de $\symBSPsweepfastkd$ bomen is er een onderscheid tussen het doorkruisen van inwendig $\symKd$ knopen en het doorkruisen van inwendige $\symBSP$ knopen. Figuur \ref{fig:k-kd-knopen} toonde dat het grootste deel van de inwendige knopen, $\symBSP$ knopen zijn en figuur \ref{fig:k-kd-knopen-diepte} toonde dat dit enkel voor de lagere niveaus het geval was en dat de hogere niveaus uit bijna uitsluitend $\symKd$ knopen bestaan. De vraag is nu hoeveel procent van de doorkruisingen van inwendige knopen, door de goedkope $\symKd$ knopen gaan en hoeveel procent er door de dure $\symBSP$ knopen gaan. Figuur \ref{fig:k-kd-doorkruisingen-prec} toont dat het grootste deel van de doorkruisingen door de goedkope $\symKd$ knopen gaan. Dit komt omdat de bovenste niveaus uit bijna enkel $\symKd$ knopen bestaan. Bij grote k-waarden kreeg de $\symBSPrandomfastkd$ boom meer $\symBSP$ knopen op de hogere niveaus, hierdoor daalt het procentueel aantal doorkruisingen door $\symKd$ knopen.
 \begin{figure}
   \centering
   \begin{subfigure}{\linewidth}
@@ -767,11 +817,36 @@ Figuur \ref{fig:k-kd-doorkruisingen-prec}
 \end{figure}
 
 
-\section{Vergelijking}
+\section{Vergelijking met bestaande bomen}
 \label{h5-vergelijken}
+In deze sectie worden de beste $\symBSPsweep$ bomen vergeleken met een aantal bestaande bomen en de nieuwe $\symRBSPKd$ boom.
+De drie $\symBSPsweep$ bomen die gebruikt worden in de vergelijking zijn: de $\symBSPrandomfastkd$ met $k = 10$ en de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen met $k = 6$.
+Voor de $\symRBSPsomekd$ bomen wordt de versie met $k = 13$ gebruikt.
 
-\paragraph{Rendertijd}
-Tabel \ref{tab:bsp-vergelijken-renderbouwtijd}
+\paragraph{Render- en bouwtijd}
+Tabel \ref{tab:bsp-vergelijken-renderbouwtijd} toont de render- en bouwtijden van de verschillende bomen voor de vier scenes.
+De bouwtijd van de algemene $\symBSP$ bomen is 2 à 3 ordegroottes groter dan die van de $\symKd$ boom. 
+De $\symBSPsweep$ bomen hebben kleinere bouwtijden dan de $\symBSPize$ bomen.
+De bouwtijd van de $\symBSPsweep$ bomen stijgt ook trager met stijgende n dan de bouwtijd van de $\symBSPize$ bomen. 
+Voor de Killeroo Been scene duurt het bouwen van de $\symBSPize$ boom 2 keer langer dan het bouwen van de $\symBSPsweep$ bomen met zes richtingen, voor de Museum scene is dit al 9 keer langer. 
+De bouwtijd van de $\symRBSP$ boom is even goed als die van de $\symBSPsweep$ bomen, de grotere waarde komt door het groter aantal richtingen. 
+Dit is logisch omdat de $\symRBSP$ boom een $\symBSPsweep$ boom is die steeds dezelfde richtingen kiest in elke knoop.\\
+
+Op vlak van rendertijd presteren de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen het beste op alle scenes.
+Deze twee bomen hebben bij elke scene een zeer gelijkaardige rendertijd, met een licht voordeel voor de $\symBSParbitraryfastkd$ boom.
+Bij elke scene zijn ze minstens 20\% sneller dan de $\symKd$ boom en bij de Museum scene is het voordeel (bijna 40\%) zelfs nog groter dan bij de Killeroo Been scene.
+De $\symBSPrandomfastkd$ boom presteert op alle scenes het derde beste, behalve op de museum scene waar de $\symRBSPKd$ boom lichtjes beter presteert.
+Deze andere nieuwe boom, de $\symRBSPKd$ boom, presteert ook op alle scenes beter dan de bestaande $\symBSP$ bomen, behalve bij de Conference scene waar het net moet onderdoen voor de $\symBSPizefastkd$ boom.
+Alle algemene $\symBSP$ bomen met de $\symKd$-doorkruisoptimalisatie zijn voor alle scenes sneller dan de $\symKd$ boom, behalve de $\symBSPizefastkd$ boom bij de Sponza scene.\\
+
+Bij de Killeroo Been scene valt op dat de $\symBSPize$ en $\symRBSP$ bomen die geen gebruik maken van de sneller $\symKd$ doorkruising, sneller zijn dan de versies die wel gebruik maken van die snellere doorkruising.
+Dit fenomeen treedt ook op bij de $\symBSPsweep$ bomen en
+toont aan dat de aangepaste versie van de $\symSAH$ in combinatie met de gebruikte parameterwaarden, niet optimaal is.
+De Sponza scene daarentegen is de scene waarbij de $\symKd$-doorkruisoptimalisatie het meeste voordeel biedt.
+Bij de Museum scene valt het op dat de $\symRBSP$ boom een zeer hoge rendertijd heeft.
+De reden hiervoor is dat hij een deel van het dak van het museum niet goed opgesplitst krijgt en enkele bladknopen met meer dan 1000 driehoeken maakt.
+De versie die de aangepaste $\symSAH$ gebruikt, heeft hier geen last van.
+
 \csvstyle{renderbuildtimeTableStyle}{tabular=@{}lcccccccccc@{},
 table head=\toprule  & & \multicolumn{2}{c}{Killeroo Been} & \multicolumn{2}{c}{Sponza} & \multicolumn{2}{c}{Conference} & \multicolumn{2}{c}{Museum} \\ \cmidrule(r){3-4} \cmidrule(r){5-6} \cmidrule(r){7-8} \cmidrule(r){9-10} Boom & K & R  & B & R  & B & R  & B & R & B\\ \midrule,
 late after line=\\,
@@ -787,8 +862,24 @@ head to column names}
   \label{tab:bsp-vergelijken-renderbouwtijd}
 \end{table}
 
-\paragraph{Aantal Intersecties}
-Tabel \ref{tab:bsp-vergelijken-intersecties}
+\paragraph{Aantal intersecties en doorkruisingen}
+De rendertijd wordt voornamelijk bepaald door twee zaken: het aantal straal-driehoekintersecties en het aantal knoopdoorkruisingen. Tabel \ref{tab:bsp-vergelijken-intersecties} toont voor zowel zichtstralen als schaduwstralen het aantal straal-driehoekintersecties bij de verschillend bomen voor de vier scenes.
+Net als bij de rendertijd zorgen de $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen voor de grootste daling in straal-driehoekintersecties. Bij elke scene daalt het aantal straal-driehoekintersecties met minstens 40\% en bij de Killeroo Been scene zelfs met 80\%.
+Bij de Sponza scene daalt het aantal straal-driehoekintersecties het minste, een mogelijke verklaring hiervoor is het feit dat die scene het sterkst gealigneerd is met de assen waardoor $\symKd$ richtingen goed werken.
+De $\symBSPrandomfastkd$ boom heeft het derde minste aantal straal-driehoekintersecties maar het zijn er vaak wel beduidend meer dan bij de twee andere varianten. Dit kan verklaard worden door het feit dat de random richtingen vaak minder goed zijn waardoor vaker de slechte $\symKd$ knopen of slechtsplitsende $\symBSP$ knopen gebruikt worden.
+De $\symBSPsweep$ bomen die in elke knoop andere splitsingsvlakken bekijken, doen beduidend minder intersecties dan de $\symBSPize$ en $\symRBSP$ bomen die steeds dezelfde bekijken.
+De $\symRBSPKd$ boom doet het in elke scene beter dan de $\symBSPizefastkd$ boom en de $\symKd$ boom. \\
+
+Figuur \ref{fig:vergelijking-blad} toont dat bij de algemene $\symBSP$ bomen,bladknopen met weinig driehoeken voor een grotere proportie van het totaal aantal straal-driehoekintersecties zorgen dan bij de $\symKd$ boom. Dit toont dat algemene $\symBSP$ bomen bladknopen beter opsplitsen in kleinere bladknopen en zo het totaal aantal straal-driehoekintersecties verminderen. Tabel \ref{tab:bsp-vergelijken-doorkruisingen} toont voor zowel zichtstralen als schaduwstralen het aantal inwendige knoopdoorkruisingen bij de verschillend bomen voor de vier scenes.
+Door de betere opsplitsing van bladknopen in kleinere bladknopen, hebben de algemene $\symBSP$ bomen meer interne knopen dan de $\symKd$ boom en dit leidt tot meer interne knoopdoorkruisingen. 
+De $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen sluiten echter veel nauwer aan bij de scene, waardoor het totaal aantal interne knoopdoorkruisingen lager is dan bij de $\symKd$ boom voor alle scenes.
+De $\symBSPrandomfastkd$, $\symRBSPKd$ en $\symBSPizefastkd$ bomen sluiten minder goed aan waardoor het aantal doorkruising ongeveer 10\% hoger ligt dan bij de $\symKd$ boom.\\
+
+Tabellen \ref{tab:results-statistics-fc} en \ref{tab:results-statistics-fc-own} tonen de \textit{false color} afbeeldingen van de straal-driehoekintersecties van zicht- en schaduwstralen samen.
+Bij tabel \ref{tab:results-statistics-fc} gebruiken alle \textit{false color} afbeelding van een scene dezelfde kleurschaal zodat verschillende bomen vergeleken kunnen worden, bij tabel \ref{tab:results-statistics-fc-own} is de kleurschaal bij elke afbeelding anders zodat de pijnpunten van de bomen zichtbaar zijn.
+In de eerste tabel valt op dat de $\symBSPsweepfastkd$ bomen over de hele scene minder straal-driehoekintersecties nodig hebben dan de andere bomen. De toevoeging van de $\symKd$ richtingen aan de $\symRBSP$ en $\symBSPize$ bomen zorgt ook voor een duidelijke verbetering. Bij de tweede tabel valt het op dat de $\symBSPsweepfastkd$ bomen minder last hebben van zogenaamde \textit{hotspot} regio's zoals bijvoorbeeld de stoelen in de Conference scene.
+\\
+
 \csvstyle{intersectionsTableStyle}{tabular=@{}lcccccccccc@{},
 table head=\toprule  & & \multicolumn{2}{c}{Killeroo Been} & \multicolumn{2}{c}{Sponza} & \multicolumn{2}{c}{Conference} & \multicolumn{2}{c}{Museum} \\ \cmidrule(r){3-4} \cmidrule(r){5-6} \cmidrule(r){7-8} \cmidrule(r){9-10} Boom & K & ZI & SI & ZI & SI & ZI & SI & ZI & SI\\ \midrule,
 late after line=\\,
@@ -799,12 +890,84 @@ head to column names}
   \sisetup{round-mode=figures, round-precision=3}
   \csvreader[intersectionsTableStyle]{data/vergelijken.csv}{}%
   {$\type$ & \K & \num{\nbPrimIntTovKdFeet}\% & \num{\nbPrimIntPTovKdFeet}\% & \num{\nbPrimIntTovKdSponza}\% & \num{\nbPrimIntPTovKdSponza}\% & \num{\nbPrimIntTovKdConference}\% & \num{\nbPrimIntPTovKdConference}\% & \num{\nbPrimIntTovKdMuseum}\% & \num{\nbPrimIntPTovKdMuseum}\% }% specify your coloumns here
-  \caption[Vergelijking straal-driehoek intersecties van $\symBSP$ bomen]{Vergelijking straal-driehoek intersecties van $\symBSP$ bomen - \small Deze tabel toont statistieken over het procentueel aantal straal-driehoek intersecties van $\symBSP$ bomen ten opzichte van het aantal straal-driehoek intersecties van de $\symKd$ boom voor verschillende scenes. ZI staat voor zichtstaal intersecties en SI voor schaduwstraal intersecties.}
+  \caption[Vergelijking straal-driehoekintersecties van $\symBSP$ bomen]{Vergelijking straal-driehoekintersecties van $\symBSP$ bomen - \small Deze tabel toont statistieken over het procentueel aantal straal-driehoekintersecties van $\symBSP$ bomen ten opzichte van het aantal straal-driehoekintersecties van de $\symKd$ boom voor verschillende scenes. ZI staat voor zichtstaalintersecties en SI voor schaduwstraalintersecties.}
   \label{tab:bsp-vergelijken-intersecties}
 \end{table}
 
-\paragraph{Aantal Doorkruisingen}
-Tabel \ref{tab:bsp-vergelijken-doorkruisingen}
+
+\newcommand{\plotAllFastKdVsAantal}[1] {
+  \begin{tikzpicture}[scale=0.5]
+    \begin{axis}[
+      axis lines = left,
+      ylabel = Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties,
+      xlabel = Aantal driehoeken,
+      ymin=0, ymax=1,
+      xmax=10,
+      width=1.8\textwidth,
+      height=2.2\textwidth,
+      cycle list name=exotic,
+      yticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber\pgfmathresult,
+      %cycle multi list={%
+      %  color list\nextlist
+      %  mark=triangle*
+      %},
+      legend style={at={(0.8,0.05)}, anchor=south},
+      %legend pos=south east
+  ]
+    
+    \addplot table [x=D, y=Pbsppaper, col sep=comma] {#1};
+    \addlegendentry{$\symBSPize$}
+    
+    \addplot table [x=D, y=Pbsppaperkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPizefastkd$}
+    
+    \addplot table [x=D, y=Prbsp, col sep=comma] {#1};
+    \addlegendentry{$\symRBSP$}
+
+    \addplot table [x=D, y=Prbspkd, col sep=comma] {#1};
+    \addlegendentry{$\symRBSPKd$}
+
+    \addplot table [x=D, y=Pkdtree, col sep=comma] {#1};
+    \addlegendentry{$\symKd$}
+
+    \addplot table [x=D, y=Pbsprandomfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPrandomfastkd$}
+
+    \addplot table [x=D, y=Pbsparbitraryfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSParbitraryfastkd$}
+
+    \addplot table [x=D, y=Pbspclusterfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPclusterfastkd$}
+      \end{axis}
+    \end{tikzpicture}
+}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsAantal{data/vergelijken_blad_feet.csv}
+    \skipCaptionA{1}{Killeroo Been}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsAantal{data/vergelijken_blad_sponza.csv}
+    \skipCaptionA{1}{Sponza}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsAantal{data/vergelijken_blad_conference.csv}
+    \skipCaptionA{1}{Conference}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsAantal{data/vergelijken_blad_museum.csv}
+    \skipCaptionA{1}{Museum}
+  \end{subfigure}
+  \caption[Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte]{Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte - \small Elk van deze grafieken toont voor een bepaalde scene voor elke $\symBSP$ boom de cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties (met zicht- en schaduwstralen) in functie van de bladknoopgrootte. Voor een waarde van x op de x-as, wordt het procentueel aan straal-driehoekintersecties dat gebeurt in bladknopen met x of minder driehoeken, getoond.}
+  \label{fig:vergelijking-blad}
+\end{figure}
+
 \csvstyle{traversalsTableStyle}{tabular=@{}lcccccccccc@{},
 table head=\toprule  & & \multicolumn{2}{c}{Killeroo Been} & \multicolumn{2}{c}{Sponza} & \multicolumn{2}{c}{Conference} & \multicolumn{2}{c}{Museum} \\ \cmidrule(r){3-4} \cmidrule(r){5-6} \cmidrule(r){7-8} \cmidrule(r){9-10} Boom & K & ZD & SD & ZD & SD & ZD & SD & ZD & SD\\ \midrule,
 late after line=\\,
@@ -815,12 +978,54 @@ head to column names}
   \sisetup{round-mode=figures, round-precision=3}
   \csvreader[traversalsTableStyle]{data/vergelijken.csv}{}%
   {$\type$ & \K & \num{\nbNodeTravTovKdFeet}\% & \num{\nbNodeTravPTovKdFeet}\% & \num{\nbNodeTravTovKdSponza}\% & \num{\nbNodeTravPTovKdSponza}\% & \num{\nbNodeTravTovKdConference}\% & \num{\nbNodeTravPTovKdConference}\% & \num{\nbNodeTravTovKdMuseum}\% & \num{\nbNodeTravPTovKdMuseum}\% }
-  \caption[Vergelijking inwendige knoopdoorkruisingen van $\symBSP$ bomen]{Vergelijking inwendige knoopdoorkruisingen van $\symBSP$ bomen - \small Deze tabel toont statistieken over het procentueel aantal inwendige knoopdoorkruisingen van $\symBSP$ bomen ten opzichte van het aantal inwendige knoopdoorkruisingen van de $\symKd$ boom voor verschillende scenes. ZD staat voor zichtstaal doorkruisingen en SD voor schaduwstraal doorkruisingen.}
+  \caption[Vergelijking inwendige knoopdoorkruisingen van $\symBSP$ bomen]{Vergelijking inwendige knoopdoorkruisingen van $\symBSP$ bomen - \small Deze tabel toont statistieken over het procentueel aantal inwendige knoopdoorkruisingen van $\symBSP$ bomen ten opzichte van het aantal inwendige knoopdoorkruisingen van de $\symKd$ boom voor verschillende scenes. ZD staat voor zichtstaaldoorkruisingen en SD voor schaduwstraaldoorkruisingen.}
   \label{tab:bsp-vergelijken-doorkruisingen}
 \end{table}
 
+
+\newcommand{\fcImage}[1] {
+  \raisebox{-.5\height}{\includegraphics[height=0.1\textheight]{#1}}
+}
+
+\begin{table}
+  \centering
+  \begin{tabular}{@{}lcccc@{}} \toprule
+  Boom & Killeroo Been & Sponza & Conference & Museum \\ \midrule
+  $\symKd$ & \fcImage{img/fc/feet/kdtree.png} & \fcImage{img/fc/sponza/kdtree.png} & \fcImage{img/fc/conference/kdtree.png} & \fcImage{img/fc/museum/kdtree.png}\\
+  $\symBSPize$ & \fcImage{img/fc/feet/bsppaper.png} & \fcImage{img/fc/sponza/bsppaper.png} & \fcImage{img/fc/conference/bsppaper.png} & \fcImage{img/fc/museum/bsppaper.png}\\
+  $\symBSPizefastkd$ & \fcImage{img/fc/feet/bsppaperkd.png} & \fcImage{img/fc/sponza/bsppaperkd.png} & \fcImage{img/fc/conference/bsppaperkd.png} & \fcImage{img/fc/museum/bsppaperkd.png}\\
+  $\symBSParbitraryfastkd$ & \fcImage{img/fc/feet/bsparbitraryfastkd.png} & \fcImage{img/fc/sponza/bsparbitraryfastkd.png} & \fcImage{img/fc/conference/bsparbitraryfastkd.png} & \fcImage{img/fc/museum/bsparbitraryfastkd.png}\\
+  $\symBSPclusterfastkd$ & \fcImage{img/fc/feet/bspclusterfastkd.png} & \fcImage{img/fc/sponza/bspclusterfastkd.png} & \fcImage{img/fc/conference/bspclusterfastkd.png} & \fcImage{img/fc/museum/bspclusterfastkd.png}\\
+  $\symBSPrandomfastkd$ & \fcImage{img/fc/feet/bsprandomfastkd.png} & \fcImage{img/fc/sponza/bsprandomfastkd.png} & \fcImage{img/fc/conference/bsprandomfastkd.png} & \fcImage{img/fc/museum/bsprandomfastkd.png}\\
+  $\symRBSP$ & \fcImage{img/fc/feet/rbsp.png} & \fcImage{img/fc/sponza/rbsp.png} & \fcImage{img/fc/conference/rbsp.png} & \\
+  $\symRBSPKd$ & \fcImage{img/fc/feet/rbspkd.png} & \fcImage{img/fc/sponza/rbspkd.png} & \fcImage{img/fc/conference/rbspkd.png} & \fcImage{img/fc/museum/rbspkd.png}\\\bottomrule
+ \end{tabular}
+  \caption[\textit{False color} afbeeldingen straal-driehoekintersecties, gelijke kleurwaarden]{\textit{False color} afbeeldingen straal-driehoekintersecties, gelijke kleurwaarden - \small \textit{False color} afbeeldingen van de vier scenes voor alle bomen. Voor alle scenes gebruiken alle bomen dezelfde kleurwaarden waarblij donkerblauw lage waarden voorstelt en geel hoge waarden. De $\symRBSP$ boom is weggelaten bij de Museum scene omdat die zoveel meer intersecties doet, dat de \textit{false color} afbeelding van alle andere bomen volledig blauw zouden zijn.}
+  \label{tab:results-statistics-fc}
+\end{table}
+
+\begin{table}
+  \centering
+  \begin{tabular}{@{}lcccc@{}} \toprule
+  Boom & Killeroo Been & Sponza & Conference & Museum \\ \midrule
+  $\symKd$ & \fcImage{img/fc/feet/own-kdtree.png} & \fcImage{img/fc/sponza/own-kdtree.png} & \fcImage{img/fc/conference/own-kdtree.png} & \fcImage{img/fc/museum/own-kdtree.png}\\
+  $\symBSPize$ & \fcImage{img/fc/feet/own-bsppaper.png} & \fcImage{img/fc/sponza/own-bsppaper.png} & \fcImage{img/fc/conference/own-bsppaper.png} & \fcImage{img/fc/museum/own-bsppaper.png}\\
+  $\symBSPizefastkd$ & \fcImage{img/fc/feet/own-bsppaperkd.png} & \fcImage{img/fc/sponza/own-bsppaperkd.png} & \fcImage{img/fc/conference/own-bsppaperkd.png} & \fcImage{img/fc/museum/own-bsppaperkd.png}\\
+  $\symBSParbitraryfastkd$ & \fcImage{img/fc/feet/own-bsparbitraryfastkd.png} & \fcImage{img/fc/sponza/own-bsparbitraryfastkd.png} & \fcImage{img/fc/conference/own-bsparbitraryfastkd.png} & \fcImage{img/fc/museum/own-bsparbitraryfastkd.png}\\
+  $\symBSPclusterfastkd$ & \fcImage{img/fc/feet/own-bspclusterfastkd.png} & \fcImage{img/fc/sponza/own-bspclusterfastkd.png} & \fcImage{img/fc/conference/own-bspclusterfastkd.png} & \fcImage{img/fc/museum/own-bspclusterfastkd.png}\\
+  $\symBSPrandomfastkd$ & \fcImage{img/fc/feet/own-bsprandomfastkd.png} & \fcImage{img/fc/sponza/own-bsprandomfastkd.png} & \fcImage{img/fc/conference/own-bsprandomfastkd.png} & \fcImage{img/fc/museum/own-bsprandomfastkd.png}\\
+  $\symRBSP$ & \fcImage{img/fc/feet/own-rbsp.png} & \fcImage{img/fc/sponza/own-rbsp.png} & \fcImage{img/fc/conference/own-rbsp.png} & \fcImage{img/fc/museum/own-rbsp.png}\\
+  $\symRBSPKd$ & \fcImage{img/fc/feet/own-rbspkd.png} & \fcImage{img/fc/sponza/own-rbspkd.png} & \fcImage{img/fc/conference/own-rbspkd.png} & \fcImage{img/fc/museum/own-rbspkd.png}\\\bottomrule
+ \end{tabular}
+  \caption[\textit{False color} afbeeldingen straal-driehoekintersecties, verschillende kleurwaarden]{\textit{False color} afbeeldingen straal-driehoekintersecties, verschillende kleurwaarden - \small \textit{False color} afbeeldingen van de vier scenes voor alle bomen. Elke \textit{false color} afbeelding gebruikt zijn eigen kleurwaarden waarblij donkerblauw lage waarden voorstelt en geel hoge waarden.}
+  \label{tab:results-statistics-fc-own}
+\end{table}
+
 \paragraph{$\symKd$ knopen}
-Tabel \ref{tab:bsp-vergelijken-kdknopen}
+De $\symBSPsweepfastkd$ bomen hebben een gelijk aantal of lichtjes hoger aantal knoopdoorkruisingen dan de $\symKd$ boom. Dit aantal is de som van het aantal goedkope $\symKd$ knoopdoorkruisingen en het aantal dure $\symBSP$ knoopdoorkruisingen. Tabel \ref{tab:bsp-vergelijken-kdknopen} toont voor elke scene voor elke $\symBSP$ boom hoeveel procent van de inwendige knopen, $\symKd$ knopen zijn en voor zowel zichtstralen als schaduwstralen hoeveel procent van de knoopdoorkruisingen, doorkruisingen door deze $\symKd$ knopen zijn. Het valt op dat het grootste deel (80 à 90\%) van de doorkruisingen, door de goedkope $\symKd$ doorkruisingen gaat, terwijl het procenteel aantal $\symKd$ knopen veel lager ligt. In vergelijking met de $\symBSPizefastkd$ boom hebben de $\symBSPsweepfastkd$ bomen procentueel minder $\symKd$ knopen, maar het procentueel aantal $\symKd$ doorkruisingen is ongeveer gelijk.
+Dit betekent dat de $\symBSPsweepfastkd$ bomen elk van hun $\symKd$ knopen gemiddeld vaker doorkruisen dan de $\symBSPizefastkd$ boom en op die manier de snellere $\symKd$ doorkruising beter benutten.
+De $\symBSPize$ en $\symRBSP$ bomen bevatten $\symKd$ knopen, maar deze worden behandeld als algemene $\symBSP$ knopen, daarom zijn hun doorkruisingen in de tabel op 0 gezet. De tabel toont duidelijk dat de aangepaste heuristiek zorgt dat er meer $\symKd$ knopen in de $\symBSPizefastkd$ en $\symRBSPKd$ bomen zitten. Figuur \ref{fig:vergelijking-kd-diepte} toont dat dit het geval is op alle niveaus van de boom en dat de bovenste niveaus van de bomen met aangepaste heuristiek bijna uitsluitend uit $\symKd$ knopen bestaan.
+
 \csvstyle{kdtraversalsTableStyle}{tabular=@{}lccccccc@{},
 table head=\toprule  & & \multicolumn{3}{c}{Killeroo Been} & \multicolumn{3}{c}{Sponza} \\ \cmidrule(r){3-5} \cmidrule(r){6-8} Boom & K & $\symKd$ & ZD $\symKd$ & SD $\symKd$ & $\symKd$ & ZD $\symKd$ & SD $\symKd$\\ \midrule,
 late after line=\\,
@@ -848,6 +1053,82 @@ head to column names}
   \caption[Vergelijking verhouding $\symKd$-$\symBSP$ knopen van $\symBSP$ bomen]{Vergelijking verhouding $\symKd$ knopen en $\symKd$ doorkruisingen knopen van $\symBSP$ bomen - \small Deze tabel toont statistieken over het procentueel aantal inwendig $\symKd$ knopen, het procentueel aantal $\symKd$ zichtstraaldoorkruisngen (ZD) en het procentueel aantal $\symKd$ schaduwstraaldoorkruisngen (SD).}
   \label{tab:bsp-vergelijken-kdknopen}
 \end{table}
+
+\newcommand{\plotAllFastKdVsD}[1] {
+  \begin{tikzpicture}[scale=0.5]
+    \begin{axis}[
+      axis lines = left,
+      ylabel = Procentueel aantal $\symKd$ knopen,
+      xlabel = Diepte,
+      ymin=0, ymax=1,
+      width=1.8\textwidth,
+      height=2.2\textwidth,
+      cycle list name=exotic,
+      yticklabel=\pgfmathparse{100*\tick}\pgfmathprintnumber\pgfmathresult,
+      %cycle multi list={%
+      %  color list\nextlist
+      %  mark=triangle*
+      %},
+      legend style={at={(0.4,0.05)}, anchor=south},
+      %legend pos=south west
+  ]
+    
+    \addplot table [x=D, y=Pbsppaper, col sep=comma] {#1};
+    \addlegendentry{$\symBSPize$}
+    
+    \addplot table [x=D, y=Pbsppaperkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPizefastkd$}
+    
+    \addplot table [x=D, y=Prbsp, col sep=comma] {#1};
+    \addlegendentry{$\symRBSP$}
+
+    \addplot table [x=D, y=Prbspkd, col sep=comma] {#1};
+    \addlegendentry{$\symRBSPKd$}
+
+    \addplot table [x=D, y=Pkdtree, col sep=comma] {#1};
+    \addlegendentry{$\symKd$}
+
+    \addplot table [x=D, y=Pbsprandomfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPrandomfastkd$}
+
+    \addplot table [x=D, y=Pbsparbitraryfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSParbitraryfastkd$}
+
+    \addplot table [x=D, y=Pbspclusterfastkd, col sep=comma] {#1};
+    \addlegendentry{$\symBSPclusterfastkd$}
+      \end{axis}
+    \end{tikzpicture}
+}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsD{data/vergelijken_kd_diepte_feet.csv}
+    \skipCaptionA{1}{Killeroo Been}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsD{data/vergelijken_kd_diepte_sponza.csv}
+    \skipCaptionA{1}{Sponza}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsD{data/vergelijken_kd_diepte_conference.csv}
+    \skipCaptionA{1}{Conference}
+  \end{subfigure}
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \plotAllFastKdVsD{data/vergelijken_kd_diepte_museum.csv}
+    \skipCaptionA{1}{Museum}
+  \end{subfigure}
+  \caption[Procentueel aantal $\symKd$ knopen per niveau]{Procentueel aantal $\symKd$ knopen per niveau - \small Elk van deze grafieken toont voor een bepaalde scene voor elke $\symBSP$ boom het procentueel aantal $\symKd$ knopen in functie van de diepte.}
+  \label{fig:vergelijking-kd-diepte}
+\end{figure}
+
+%\plotHeatmapLeaf{data/bspArbitraryFastKdConferenceLeaf.dat}{0.45}
+%\plotHeatmapLeaf{data/bspRandomFastKdConferenceLeaf.dat}{0.45}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "masterproef"
