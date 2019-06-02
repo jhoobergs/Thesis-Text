@@ -1,7 +1,7 @@
 \chapter{Conclusie}
 \label{hoofdstuk:conclusie}
 
-\subsection{Conclusies $\symBSPsweep$}
+\section{Conclusies $\symBSPsweep$}
 De $\symBSPsweep$ boom is een zeer nuttig en uitbreidbaar concept om algemene $\symBSP$ bomen te bouwen.
 De lokale geometrie van de knoop kan zeer makkelijk in rekening gebracht worden om goede splitsingsrichtingen te genereren.
 Door het sweepen blijft de bouwtijd relatief beperkt in verhouding met andere algemene $\symBSP$ bomen.
@@ -15,11 +15,11 @@ Deze bomen zullen in de praktijk echter nooit gebruikt worden omdat ze als opsta
 
 De $\symBSPrandomfastkd$ boom toont dat het kiezen van andere splitsingsrichtingen in elke knoop, de boom veel beter maakt. 
 Zelfs zonder rekening te houden met de lokale geometrie, kan dan een boom gebouwd worden die beter is dan de $\symKd$ boom of goed uitgedachte $\symBSPizefastkd$ boom.
-De $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen tonen dat het kiezen van splitsingrichtingen afhankelijk van de lokale geometrie deze boom nog beduidend beter kan maken.
+De $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen tonen dat het kiezen van splitsingsrichtingenen afhankelijk van de lokale geometrie deze boom nog beduidend beter kan maken.
 Deze bomen tonen ook dat het toevoegen van slechts één richting bovenop de $\symKd$ richtingen, al een groot effect kan hebben op het aantal straal-driehoekintersecties en de rendertijd.
 De clustering biedt geen voordeel ten opzicht van het kiezen van willekeurig normalen.
 
-\subsection{Toekomstig onderzoek}
+\section{Toekomstig onderzoek}
 Toekomstig onderzoek zou zich moeten toespitsen op een aantal zaken: het verbeteren van de bouwtijd, het bepalen van het beste aantal richtingen en het bepalen van betere richtingen.
 Het verbeteren van de bouwtijd zou kunnen door gebruik te maken van de methode van \authorBudge{} \cite{Budge} om de $\symSA$ van de gesplitste volumes incrementeel te berekenen in plaats van steeds helemaal vanaf nul.
 Bepaalde delen van het bouwproces zijn ook goed paralleliseerbaar. 

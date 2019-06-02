@@ -329,7 +329,7 @@ Het splitsen van de omhullende volumes en het berekenen van de oppervlaktes is c
 \section{$\symRBSPKd$ boom}
 \label{sec:h4-rbspkd}
 De $\symRBSPKd$ boom is een nieuw concept dat in dit werk voor het eerst wordt voorgesteld.
-Het combineert het concept van de $\symRBSP$ boom met de snelle $\symKd$ knoop doorkruistechniek van \authorIze{} \cite{ize}.
+Het combineert het concept van de $\symRBSP$ boom met de snelle $\symKd$ knoopdoorkruistechniek van \authorIze{} \cite{ize}.
 De $\symRBSPKd$ knoop is identiek aan de $\symRBSP$ knoop in termen van representatie (tabel \ref{tab:voorstelling-rbsp-knoop}), maar de doorkruismethode is aangepast om $\symKd$ knopen sneller te kunnen doorkruisen.
 Algoritme \ref{alg:rbspkd-inwendige-doorkruising} toont de aangepaste versie van het doorkruisalgoritme.\\
 
@@ -423,7 +423,7 @@ Dit is 2.5 keer meer dan de $\symKd$ en $\symRBSP$ knopen en toont één van de 
 \end{table}   
 
 Algoritme \ref{alg:bsp-inwendige-doorkruising} toont het algoritme om inwendige $\symBSP$ knopen te doorkruisen.
-Het gebruikt, net als de $\symRBSP$ knoop doorkruising, de functie VLAK\_INTERSECTIE (algoritme \ref{alg:vlak-intersectie}) om te intersecteren met een willekeurig geörienteerd vlak.
+Het gebruikt, net als de $\symRBSP$ knoopdoorkruising, de functie VLAK\_INTERSECTIE (algoritme \ref{alg:vlak-intersectie}) om te intersecteren met een willekeurig geörienteerd vlak.
   
 \begin{dutchalgorithm}
     \begin{algorithmic}       
@@ -558,7 +558,7 @@ Als er geen nuttig $\symKd$ splitsingsvlak of $\symBSP$ splitsingsvlak met deze 
             \State \Return $None, None, \infty$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPize$ boom.}
+    \caption{Beste split voor een bouwknoop b bij een $\symBSPizefastkd$ boom.}
     \label{alg:bspizekd-beste-split}
 \end{dutchalgorithm}
 
@@ -715,7 +715,7 @@ Algoritme \ref{alg:bspsweepkd-beste-split} toont deze implementatie.
             \State \Return $None, None, \infty$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPKd$  boom.}
+    \caption{Beste split voor een bouwknoop b bij een $\symBSPsweepkd$  boom.}
     \label{alg:bspsweepkd-beste-split}
 \end{dutchalgorithm}
 

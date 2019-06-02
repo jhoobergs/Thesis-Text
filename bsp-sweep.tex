@@ -1,19 +1,19 @@
 \chapter{$\mathbf{\symBSPsweep}$}
 \label{hoofdstuk:bsp-sweep}
-In dit hoofdstuk wordt een nieuwe soort $\symBSP$ boom besproken: de $\symBSPsweep$ boom.
+In dit hoofdstuk wordt een nieuw soort $\symBSP$ boom besproken: de $\symBSPsweep$ boom.
 Eerst wordt het nut van het opsplitsen van bladknopen in kleinere bladknopen wiskundig besproken en aangetoond met behulp van een voorbeeld.
 Het algemene idee van de $\symBSPsweep$ boom wordt dan besproken en daarna worden een aantal specifieke versies van de $\symBSPsweep$ ($\symBSPrandom$, $\symBSParbitrary$ en $\symBSPcluster$) besproken.
 
 \section{Probleemstelling}
     Het doel van acceleratiestructuren is om de totale tijd nodig om een scene te renderen, te minimaliseren.
     Deze sectie toont aan dat de totale rendertijd afhankelijk is van het aantal driehoeken in de geïntersecteerde bladknopen.
-    In de eerste subsectie wordt wiskundig aangetoond dat het (onder bepaalde aannames) altijd voordelig is om bladknopen met meer dan twee driehoeken op te splitsen in kleinere bladknopen.
+    In de eerste subsectie wordt wiskundig aangetoond dat het (onder bepaalde aannames) altijd voordelig is om bladknopen met meer dan één driehoek op te splitsen in kleinere bladknopen.
     De tweede subsectie toont een voorbeeld waarbij de $\symKd$ en $\symBSPize$ boom vergeleken worden op basis van de grootte van de bladknopen.
 \subsection{Wiskundige basis}
-    Deze rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
+    De rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
     De totale intersectietijd $\symTime_{\symIntersection, \symTotal}$ is afhankelijk van het aantal driehoeken $\symNbPrimitives_\symLeaf$ in de geïntersecteerde bladknopen $\symLeaf$ en het aantal keer $\symTraversalL_\symLeaf$ dat elk van deze bladknopen doorkruist wordt.
     De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
-    Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoek intersectie, $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen en $B$ het aantal geïntersecteerde bladknopen.
+    Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoekintersectie, $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen en $B$ het aantal geïntersecteerde bladknopen.
 \begin{equation}
     \label{eq:rendertijd}
    \symTime_{\symRender} \sim
@@ -53,58 +53,31 @@ Analoog kan worden ingezien dat de maximale waarde voor deze som gelijk is aan $
     \symTraversalL_{\symLeaf_{j}} \leq \symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} \leq 2\symTraversalL_{\symLeaf_{j}}
 \end{equation}
 
-In het algemeen geval geldt dat $\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} = (2 * (1-\alpha) + \alpha) \symTraversalL_{\symLeaf_{j}}$ waarbij $\alpha$ het procentueel aantal doorkruisingen is dat door slechts één van de twee kindknopen gaat.
+In het algemeen geval geldt dat $\symTraversalL_{\symLeaf_{j1}} + \symTraversalL_{\symLeaf_{j2}} = (2 * (1-\beta) + \beta) \symTraversalL_{\symLeaf_{j}}$ waarbij $\beta$ het procentueel aantal doorkruisingen is dat door slechts één van de twee kindknopen gaat.
 In dit geval leidt voorwaarde \ref{eq:vw_splitwinst_res} tot voorwaarde \ref{eq:vw_splitwinst_general}.
 \begin{equation}
     \label{eq:vw_splitwinst_general}
-    (2 * (1-\alpha) + \alpha) \symTraversalL_{\symLeaf_{j}} \leq
+    (2 * (1-\beta) + \beta) \symTraversalL_{\symLeaf_{j}} \leq
     2\symTraversalL_{\symLeaf_j} - \frac{2\symTraversalL_{\symLeaf_j}\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} \symTime_{\symIntersection}}
     \Leftrightarrow
-    2 - \alpha \leq 2 - \frac{2\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} \symTime_{\symIntersection}}
+    2 - \beta \leq 2 - \frac{2\symTime_{\symTraversal}}{\symNbPrimitives_{\symLeaf_j} \symTime_{\symIntersection}}
     \Leftrightarrow
-    \symTime_{\symTraversal} \leq \frac{\alpha \symNbPrimitives_{\symLeaf_j} }{2}\symTime_{\symIntersection}
+    \symTime_{\symTraversal} \leq \frac{\beta \symNbPrimitives_{\symLeaf_j} }{2}\symTime_{\symIntersection}
 \end{equation}
 
-In het ideale geval ($\alpha = 1$) leidt voorwaarde \ref{eq:vw_splitwinst_general} tot $\symTime_{\symTraversal} \leq \frac{\symNbPrimitives_{\symLeaf_j}}{2}\symTime_{\symIntersection}$.
-Het opsplitsen van een knoop met twee elementen, kan hierdoor pas voordelig zijn als de doorkruistijd kleiner is dan de intersectietijd.
+In het ideale geval ($\beta = 1$) leidt voorwaarde \ref{eq:vw_splitwinst_general} tot $\symTime_{\symTraversal} \leq \frac{\symNbPrimitives_{\symLeaf_j}}{2}\symTime_{\symIntersection}$.
+Het opsplitsen van een knoop met twee driehoeken, kan hierdoor pas voordelig zijn als de doorkruistijd kleiner is dan de intersectietijd.
 Aangezien de doorkruistijd in de realiteit beduidend kleiner is dan de intersectietijd, is het in dit ideale geval altijd voordelig om een kindknoop op te splitsen, ongeacht het aantal driehoeken in de knoop.
-In het slechtste geval ($\alpha = 0$) kan aan voorwaarde \ref{eq:vw_splitwinst_general} enkel voldaan zijn als de doorkruistijd gelijk is aan nul. Dit is onmogelijk waardoor opsplitsen nooit voordelig kan zijn in dit geval. \\
+In het slechtste geval ($\beta = 0$) kan aan voorwaarde \ref{eq:vw_splitwinst_general} enkel voldaan zijn als de doorkruistijd gelijk is aan nul. Dit is onmogelijk waardoor opsplitsen nooit voordelig kan zijn in dit geval. \\
 
-Het is moeilijk om de waarde van $\alpha$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. 
+Het is moeilijk om de waarde van $\beta$ te voorspellen, deze is namelijk afhankelijk van de exacte stralen die tijdens het renderen gevolgd worden, de specifieke driehoeken in de knoop en het splitsingsvlak. 
 Voorwaarde \ref{eq:vw_splitwinst_general} toont dat de kans dat splitsen voordelig is, lineair stijgt met $\symNbPrimitives_{\symLeaf_j}$. 
-De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\alpha$ keer kleiner is dan de intersectietijd. 
+De voorwaarde toont ook dat het splitsen van een knoop met twee driehoeken, voordelig is wanneer de doorkruistijd $\beta$ keer kleiner is dan de intersectietijd. 
 Intuïtief lijkt het logisch dat hier in het algemeen aan voldaan is. 
 Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan één driehoek op te splitsen in twee kleinere bladknopen.\\
 
 \subsection{Voorbeeld}
   \begin{figure}
-%   \begin{tikzpicture}[scale=0.6]
-%     \begin{axis}[
-%       axis lines = left,
-%       ylabel = \small Cumulatieve Procentuele bijdrage aan totaal aantal driehoekintersecties,
-%       xlabel = \small Aantal driehoeken in bladknoop,
-%       ymin=0, ymax=100,
-%       width=0.8\textwidth,
-%       height=\textwidth,
-%       cycle multi list={%
-%         color list\nextlist
-%         [2 of]mark list
-%       },
-%       title = \small Invloed grootte bladknopen op totaal aantal intersecties,
-%       legend pos=south east,
-%   ]
-%     \addplot table [x=V1, y=KillerooKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-%     \addlegendentry{$\symKd$ Killeroo}
-%     \addplot table [x=V1, y=FeetKd, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-%     \addlegendentry{$\symKd$ Killeroo Been}
-
-%     \addplot table [x=V1, y=KillerooBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-%     \addlegendentry{$\symBSPizefastkd$ Killeroo}
-%     \addplot table [x=V1, y=FeetBSP, col sep=comma] {data/killeroo_feet_kd_bsp.csv};
-%     \addlegendentry{$\symBSPizefastkd$ Killeroo Been}
-    
-%       \end{axis}
-%     \end{tikzpicture}
     \begin{subfigure}{0.4\textwidth}
         \centering
         \begin{subfigure}{\textwidth}
@@ -153,17 +126,17 @@ Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan �
         \label{fig:voorbeeld-cumul}
     \end{subfigure}
     \label{fig:voorbeeld-bladknopen}
-    \caption[Invloed grootte bladknopen op aantal intersecties]{Invloed grootte bladknopen op aantal intersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij x overeenkomt met de som van het aantal intersecties in bladknopen met x of minder driehoeken.}
+    \caption[Invloed grootte bladknopen op het aantal straal-driehoekintersecties]{Invloed grootte bladknopen op het aantal straal-driehoekintersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij x overeenkomt met de som van het aantal intersecties in bladknopen met x of minder driehoeken.}
 \end{figure}
-Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeld scene dient bij de pbrt \textit{ray tracer}.
+Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeld scene dient bij de pbrt \cite{pbrt} \textit{ray tracer}.
 Voor deze scene zijn de $\symKd$ boom en de $\symBSPizefastkd$ boom aan elkaar gewaagd.
 De $\symBSPizefastkd$ boom neemt de bovenhand als er wordt ingezoomd op de benen (figuur \ref{fig:killeroo-been}) van de Killeroo, waar de $\symKd$ boom veel bladknopen met meerdere driehoeken bevat.
 Figuur \ref{fig:voorbeeld-cumul} toont het cumulatief aantal intersecties per groep van bladknopen met hetzelfde aantal driehoeken.
 Voor de gewone Killeroo scene, heeft de $\symKd$ boom slechts een beperkt aantal extra intersecties nodig.
 Bij de ingezoomde scene, komt een groot deel van de intersecties van de $\symKd$ boom door intersecties met bladknopen met een groot aantal driehoeken.
-Dit toont aan dat $\symBSP$ bomen nuttig kunnen zijn omdat ze minder tot geen last hebben van regio's die ze minder goed aankunnen.
+Dit toont aan dat algemene $\symBSP$ bomen nuttig kunnen zijn omdat ze in principe alle niet-intersecterende driehoeken van elkaar kunnen scheiden en er dus minder regio's zijn met veel grote bladknopen.
 Het aantal knoopdoorkruisingen bij de $\symBSPizefastkd$ boom is zelfs lager dan bij de $\symKd$ boom voor beide scenes.
-Dit komt omdat de $\symBSP$ knopen nauwer aansluiten aan het object waardoor minder stralen de knopen raken.\\
+Dit komt omdat de algemene $\symBSP$ bomen nauwer aansluiten aan het object waardoor minder stralen de knopen raken.\\
 
 Figuur \ref{fig:killeroo-heatmaps} toont \textit{false color} afbeeldingen van het aantal zichtstraalintersecties van de Killeroo en Killeroo Been scene voor zowel de $\symKd$ boom als de $\symBSPizefastkd$ boom. 
 Voor de Killeroo scene zijn de \textit{false color} afbeeldingen van beide bomen zeer gelijkaardig, maar aan de benen heeft de $\symKd$ boom duidelijk meer intersecties nodig.
@@ -206,7 +179,7 @@ Merk op dat, zoals besproken in het vorige hoofdstuk, de $\symBSPizefastkd$ boom
     \label{fig:killeroo-heatmaps}
 \end{figure}
 
-De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vrijheid om op elk niveau van de boom andere splitsingsvlakken te gebruiken en op die manier meer bladknopen kunnen opsplitsen in kleinere bladknopen en nog nauwer kunnen aansluiten aan de scene.\\
+De volgende secties bespreken nieuwe $\symBSP$ bomen die gebruik maken van de vrijheid om op elk niveau van de boom andere splitsingsvlakken te gebruiken. Op die manier kunnen ze meer bladknopen opsplitsen in kleinere bladknopen en nog nauwer aansluiten aan de scene.\\
 
 
 
@@ -300,7 +273,7 @@ De $\symBSPrandom$ boom probeert elke driehoek via gemiddeld $2klog(n)$ ($\symO(
 \end{figure}
 
 De $\symKd$ richtingen zijn in praktische scenes vaak beter dan willekeurige richtingen omdat ze loodrecht op elkaar staan waardoor ze de hemisfeer goed bedekken en omdat scenes die door de mens gemaakt worden, vaak asgealigneerde delen bevatten.
-Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoop doorkruising gebruikt kan worden. Een $\symBSPrandom$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
+Dit geeft aanleiding tot een boom die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel de overige $k - 3$ richtingen random genereert: de $\symBSPrandomkd$ boom. Een extra voordeel is dat de snellere $\symKd$ knoopdoorkruising gebruikt kan worden. Een $\symBSPrandom$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSPrandomfastkd$. 
 Als de $\symBSPrandomsomekd$ boom perfect gebalanceerd is, worden in elk niveau $2kn$ splitsingsvlakken bekeken.
 Van deze $2kn$ zijn er $6n$ die hergebruikt worden, de vlakken volgens de $\symKd$ richtingen.
 Dit zorgt voor $2(k-3)n$ verschillende splitsingsvlakken per niveau, zodat in totaal $2(k-3)nlog(n) + 6n$ verschillende splitsingsvlakken bekeken worden.
@@ -322,8 +295,8 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
     De autopartitie vlakken van \authorIze{} maken ook gebruik van de normalen, maar de normaal van een driehoek wordt enkel voor die driehoek zelf gebruikt.
     
 \subsection{Willekeurige normaal}
-    De $\symBSParbitrary$ boom is een $\symBSPsweep$ boom waarbij in elke knoop de normalen van k willekeurige driehoeken gekozen worden als splitsingrichtingen.
-    Als er k of minder driehoeken in de knoop zitten, worden alle normalen als splitsingrichting genomen.
+    De $\symBSParbitrary$ boom is een $\symBSPsweep$ boom waarbij in elke knoop de normalen van k willekeurige driehoeken gekozen worden als splitsingsrichtingenen.
+    Als er k of minder driehoeken in de knoop zitten, worden alle normalen als splitsingsrichtingen genomen.
     In het algemeen zijn er n driehoeken met n verschillende normalen waardoor er in totaal $2n^2$ mogelijke splitsingsvlakken zijn.
     Figuur \ref{fig:splitsingsvlakken-bsparbitrary-top} toont het aantal splitsingsvlakken gebruikt per knoop in de bovenste niveaus van de boom.
     Deze figuur is identiek aan de figuur voor de $\symBSPrandom$ boom. \\
@@ -339,7 +312,7 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
     In de bovenste $log(n) - log(k) = log(\frac{n}{k})$ niveaus worden $2log(\frac{n}{k})kn$ verschillende splitsingsvlakken bekeken.
     Het niveau eronder gebruikt nog $kn$ nieuwe splitsingsvlakken zodat in totaal $2(log(\frac{n}{k}) + \frac{1}{2})kn$ verschillende splitsingsvlakken worden gebruikt.
     Figuur \ref{fig:splitsingsvlakken-bsparbitrary-bottom} toont dit visueel.
-    Als de boom perfect gebalanceerd is, probeert de $\symBSParbitrary$ boom elke driehoek via gemiddeld $2klog(\frac{n}{k} + \frac{1}{2})$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken. Dit aantal is minder dan bij de $\symBSPrandom$ boom, die ook in de lagere niveaus steeds k splitsingrichtingen genereert.\\
+    Als de boom perfect gebalanceerd is, probeert de $\symBSParbitrary$ boom elke driehoek via gemiddeld $2klog(\frac{n}{k} + \frac{1}{2})$ ($\symO(log(n))$) vlakken te splitsen van de andere driehoeken. Dit aantal is minder dan bij de $\symBSPrandom$ boom, die ook in de lagere niveaus steeds k splitsingsrichtingenen genereert.\\
 
     Net als bij de $\symBSPrandom$ boom kan een versie van de $\symBSParbitrary$ boom gemaakt worden die als eerste drie richtingen steeds de $\symKd$ richtingen kiest en enkel voor de overige $k - 3$ richtingen willekeurige normalen selecteert: de $\symBSParbitrarykd$ boom. Een $\symBSParbitrary$ boom die altijd de $\symKd$ richtingen gebruikt en de doorkruising van $\symKd$ knopen optimaliseert, wordt aangeduid als $\symBSParbitraryfastkd$. Als de $\symBSParbitrarysomekd$ boom perfect gebalanceerd is, worden in totaal $2(log(\frac{n}{k-3}) + \frac{1}{2})(k-3)n + 6n$ verschillende splitsingsvlakken bekeken. De analyse hiervoor is analoog aan de analyse voor $\symBSPrandomsomekd$.
 
@@ -410,8 +383,8 @@ De $\symBSPrandomsomekd$ boom probeert elke driehoek via gemiddeld $\symO(log(n)
     \caption{Onderste $log(k)$ niveaus}
     \label{fig:splitsingsvlakken-bsparbitrary-bottom}
  \end{subfigure}
-   \caption[Splitsingsvlakken $\symBSParbitrary$]%
-    {Splitsingsvlakken $\symBSParbitrary$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSPrandom$ boom.} %TODO: meer uitleg
+   \caption[Splitsingsvlakken $\symBSParbitrary$ en $\symBSPcluster$]%
+    {Splitsingsvlakken $\symBSParbitrary$ en $\symBSPcluster$ - \small Per niveau het aantal ($\#$) splitsingsvlakken en het totaal aantal verschillende ($\# \neq$) splitsingsvlakken gebruikt in bovenliggende niveaus bij de $\symBSParbitrary$ en $\symBSPcluster$ bomen.}
 \end{figure}
 
     
@@ -441,7 +414,7 @@ Tabel \ref{tab:boom-vergelijking-sweep} vergelijkt de hierboven besproken $\symB
 Alle drie bomen zijn algemene $\symBSP$ bomen die een convex veelvlak hebben als omhullend volume.
 De $\symBSPsweep$ bomen zijn ontworpen om sweeping te ondersteunen en zo efficiënt de $SAH$ kosten te kunnen berekenen, zonder hulpstructuren.
 De $\symBSPrandom$ boom is onafhankelijk van de lokale geometrie, de twee andere bomen bepalen hun splitsingsvlakken afhankelijk van de lokale geometrie.
-De $\symBSPsweep$ bomen zijn makkelijk uit te breiden naar $\symBSPsweepfastkd$ bomen die de optimalisatie met de snelle $\symKd$ knoop doorkruising gebruiken.
+De $\symBSPsweep$ bomen zijn makkelijk uit te breiden naar $\symBSPsweepfastkd$ bomen die de optimalisatie met de snelle $\symKd$ knoopdoorkruising gebruiken.
 Per niveau gebruiken de $\symBSPsweep$ bomen niet altijd meer splitsingsvlakken dan de bestaande bomen, maar de $\symBSPsweep$ bomen gebruiken in totaal duidelijk meer verschillende splitsingsvlakken dan de bestaande bomen en zouden zich hierdoor beter moeten kunnen aanpassen aan complexe scenes.
 
 \begin{table}[tb]

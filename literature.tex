@@ -5,7 +5,7 @@
 Raytracing is een computergraphics techniek om tweedimensionale beelden te genereren van een virtuele driedimensionale wereld bestaande uit driehoeken of andere primitieven.
 Door elke pixel worden één (of meerdere) stralen gestuurd vanuit een oogpunt.
 Voor elke straal wordt dan de dichtstbijzijnde intersectie met een driehoek in de scene berekend.
-De kleur van de pixel is dan het gemiddelde van de kleuren van de straal - driehoek intersectiepunten.
+De kleur van de pixel is dan het gemiddelde van de kleuren van de straal-driehoekintersectiepunten.
 
 Om deze intersecties efficiënt te kunnen berekenen, wordt gebruik gemaakt van ruimtelijke en/of hiërarchische gegevensstructuren.
 De drie hoofdklassen van acceleratie datastructuren in moderne raytracing zijn: Kd-bomen, uniform grid (mogelijks met meerdere niveaus) en as-gealigneerde bounding volume hiërarchieën (BVH). 
@@ -49,16 +49,16 @@ Restricted Binary Space Partitioning bomen of afgekort RBSP-bomen werden geïntr
 RBSP-bomen zijn BSP-bomen waarbij de mogelijke splitsingsvlakken beperkt worden tot een kleine verzameling van richtingen voordat de boom geconstrueerd wordt. 
 RBSP-bomen lijken op Kd-bomen omdat ze beiden splitsingsvlakken uit een voorafbepaalde verzameling richtingen kiezen.
 Tegelijkertijd lijken ze meer op algemene BSP-bomen omdat de vlakken niet as-gealigneerd moeten zijn en het aantal vlakken niet gelimiteerd is tot drie.
-De RBSP-boom kan de objecten strakker omhullen en dit zorgt voor minder doorkruisstappen en driehoek intersecties dan Kd-bomen. 
+De RBSP-boom kan de objecten strakker omhullen en dit zorgt voor minder doorkruisstappen en straal-driehoekintersecties dan Kd-bomen. 
 De rendertijd van de RBSP-boom van \cite{Kammaje} was groter dan die van de Kd-boom.
 \authorIze{ }zien hiervoor twee mogelijke redenen. 
 De eerste reden is dat het doorkruisen van de RBSP-boom te verschillend is van het doorkruisen van de Kd-boom en te duur blijkt te zijn.
 Een andere mogelijke reden is dat de RBSP-boom in de lage takken van de boom hetzelfde probleem heeft als de Kd-boom, namelijk dat het niet in staat is om de driehoeken van elkaar af te splitsen.
-De rendertijd, aantal node doorkruisingen en aantal driehoek intersecties daalt wel als het aantal splitsingsvlakken stijgt \cite{Kammaje}.
+De rendertijd, aantal node doorkruisingen en aantal straal-driehoekintersecties daalt wel als het aantal splitsingsvlakken stijgt \cite{Kammaje}.
 \authorKammaje{ }observeerden experimenteel een complexiteit van $\symO(m^{1.6}*n*log^2(n))$ voor het bouw algoritme met $m$ het aantal splitsingsassen $n$ het aantal driehoeken.
 Budge (\cite{Budge}) optimaliseerde het bouwen en doorkruisen van RBSP-bomen.
 
-De manier waarop een node uiteindelijk wordt opgedeeld in twee delen kan een grote impact hebben op het aantal doorkruisstappen en driehoek intersecties.
+De manier waarop een node uiteindelijk wordt opgedeeld in twee delen kan een grote impact hebben op het aantal doorkruisstappen en straal-driehoekintersecties.
 Voor een Kd-boom is de Surface Area Heuristiek (SAH) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
 De SAH schat de kost van een splitsingsvlak door te veronderstellen dat beide helften bladeren worden. 
 De verwachte kost om een node {\symNodeExample} te splitsen in nodes ${\symLeft}$ en ${\symRight}$ is dan: $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$ met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
@@ -87,7 +87,7 @@ Als ze deze rechtstreeks in de SAH gebruiken, leidt dit tot overmatig gebruik va
 De reden hiervoor is de veronderstelling dat een split bladeren genereert met een kost die lineair is in het aantal driehoeken.
 Dit werkt goed als er maar één doorkruis kost is, omdat de doorkruis kost enkel beïnvloedt of de node gesplitst wordt of niet.
 In \cite{Ize} bepaald de doorkruis kost niet alleen of er gesplitst moet worden, maar ook of de kostelijker te doorkruisen BSP split te verkiezen is boven de goedkopere Kd split.
-De lineaire intersectie kost zal snel de constante doorkruis kost overstijgen waardoor de optimale split uiteindelijk bijna volledig gebaseerd zal zijn op welke split resulteert in minder driehoek intersectie testen.
+De lineaire intersectie kost zal snel de constante doorkruis kost overstijgen waardoor de optimale split uiteindelijk bijna volledig gebaseerd zal zijn op welke split resulteert in minder straal-driehoekintersectie testen.
 Om dit op te lossen, laten ze $\symCostTraversalBSP$ lineair variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$. waarbij $\alpha$ een instelbare parameter is. \authorIze{ }gebruiken 0.1 als waarde voor $\alpha$.
 Als er na het evalueren van alle splitsingsvlakken geen splitsingsvlak gevonden is dat de kost kleiner maakt dan de kost om een blad node te maken, worden alle BSP splitsingsvlakken opnieuw geëvalueerd maar nu met een vaste kost.
 
@@ -127,7 +127,7 @@ Het originele straal segment clippen ze net zoals bij de Kd-boom met de originel
 Dit heeft als voordeel dat het stralen die het hele object missen, zeer snel kan afwijzen. 
 \authorKammaje{ }gebruikten een complexer bounding volume.
 
-\authorIze{ }maken gebruik van Traversal Based Triangle Intersection wat de meeste expliciete straal - driehoek intersectietesten overbodig maakt.
+\authorIze{ }maken gebruik van Traversal Based Triangle Intersection wat de meeste expliciete straal-driehoekintersectietesten overbodig maakt.
 
 \subsection{Een item}
 

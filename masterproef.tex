@@ -137,29 +137,29 @@
 \begin{preface}
   Het maken van een masterproef is een uitdaging die je niet alleen aangaat. Ik zou daarom dit voorwoord in de eerste plaats willen gebruiken om Matthias Moulin te bedanken voor de uitstekende begeleiding in het eerste semester en om Pieterjan Bartels te bedanken om deze taak in het tweede semester met glans over te nemen. Ze hebben me met hun feedback geholpen bij het vormgeven van de ontwikkelde methoden en deze thesistekst. Verder zou ik ook mijn promotor Philip Dutré willen bedanken om dit onderwerp ter beschikking te stellen, voor de vrijheid waarmee ik dit onderwerp mocht aanpakken en voor de nuttige feedback en discussies tijdens de tussentijdse presentaties. Hiernaast wil ik nog graag de voltallige jury bedanken voor het lezen van deze thesis.\\
 
-  Tot slot wil ik graag mijn familie en vrienden bedanken voor hun steun tijdens dit volledige academiejaar. In het bijzonder wil ik Jorik Jooken bedanken om deze thesistekst na te lezen.
+  Tot slot wil ik graag mijn familie en vrienden bedanken voor hun steun tijdens dit volledige academiejaar. In het bijzonder wil ik Jens Claes en Jorik Jooken bedanken om deze thesistekst na te lezen.
 \end{preface}
 
 \tableofcontents*
 
 \begin{abstract}
-\textit{Ray tracing} is een computergrafiek techniek waarbij stralen door de virtuele 3D scene gestuurd worden om een realistische 2D afbeelding te genereren.
-Om het aantal straal-driehoekintersecties te verminderen, wordt gebruikt van acceleratiestructuren.
+\textit{Ray tracing} is een computergrafiek techniek waarbij stralen door een virtuele 3D scene gestuurd worden om een realistische 2D afbeelding te genereren.
+Om het aantal straal-driehoekintersecties te verminderen, wordt gebruik gemaakt van acceleratiestructuren.
 Acceleratiestructuren zorgen dat stralen enkel geïntersecteerd worden met driehoeken die mogelijks snijden.
 Eén van de meestgebruikte acceleratiestructuren zijn  \textit{Binary Space Partitioning} ($\symBSP$) bomen.
 Bij de $\symBSP$ boom wordt het omhullend volume van de scene recursief opgesplitst in kindvolumes via een splitsingsvlak.
 In de praktijk wordt altijd de $\symKd$ boom gebruikt, een specifiek soort $\symBSP$ boom, die enkel splitst via asgealigneerde splitsingsvlakken.\\
 
 In deze masterproef introduceren we een nieuw soort algemene $\symBSP$ boom: de $\symBSPsweep$ boom.
-De $\symBSPsweep$ boom laat toe om in elke knoop een aantal richtingen te bepalen afhankelijk van de driehoeken in die knoop
-en het beste vlak van alle vlakken met als normaal één van die richtingen, wordt gebruikt om de knoop te splitsen.
+De $\symBSPsweep$ boom laat toe om in elke knoop een aantal richtingen te bepalen afhankelijk van de driehoeken in die knoop.
+Het beste vlak van alle vlakken met als normaal één van die richtingen, wordt gebruikt om de knoop te splitsen.
 Drie soorten $\symBSPsweep$ boom zijn ontworpen: één soort die in elke knoop random richtingen genereert ($\symBSPrandom$) en twee soorten die richtingen genereren afhankelijk van de normalen van de driehoeken in de knoop ($\symBSParbitrary$ en $\symBSPcluster$).
 De $\symBSParbitrary$ boom kiest de normalen van enkele willekeurige driehoeken in de knoop als richtingen en de $\symBSPcluster$  boom bepaalt een clustering van de normalen van de driehoeken in de knoop en gebruikt de centra van deze clusters als richtingen.
 Er is ook een optimalisatie van de $\symBSPsweep$ boom uitgewerkt: de $\symBSPsweepfastkd$ boom die asgealigneerde splitsingsvlakken bevoordeeld omdat ze computationele voordelen hebben.\\
 
 De drie $\symBSPsweepfastkd$ soorten zijn duidelijk beter dan de bestaande $\symBSP$ bomen. 
 Van de drie soorten $\symBSPsweepfastkd$ bomen zijn de twee soorten die gebruik maken van de normalen, beduidend beter dan de soort die random richtingen bepaalt.
-Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met meer dan 40\% en de rendertijd met meer dan 20\% ten opzichte van de $\symKd$ boom. De bouwtijd is twee ordegroottes groter dan die van de $\symKd$ boom, maar wel kleiner dan die van elke andere $\symBSP$ boom.
+Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met meer dan 40\% en de rendertijd met meer dan 20\% ten opzichte van de $\symKd$ boom. De bouwtijd is twee ordegroottes groter dan die van de $\symKd$ boom, maar wel kleiner dan die van elke andere algemene $\symBSP$ boom.
 \end{abstract}
 
 % Een lijst van figuren en tabellen is optioneel
@@ -171,35 +171,49 @@ Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met me
 %\listoffiguresandtables
 % De lijst van symbolen is eveneens optioneel.
 % Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
-\chapter{Lijst van afkortingen en symbolen}
-\section*{Afkortingen}
+\chapter{Lijst van afkortingen}
+%\section*{Afkortingen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{20mm}X@{}}
     $\symBSP$ & Binary Space Partitioning \\
     $\symBVH$ & Bounding Volume Hierarchy \\
-    $\symKDOP$ & Discrete Oriented Polytope \\ %TODO
-    $\symRBSP$ & Restricted Binary Space Partitioning Tree \\
+    $\symKDOP$ & Discrete Oriented Polytope met k richtingen \\ %TODO
+    $\symRBSP$ & Restricted Binary Space Partitioning \\
     $\symSA$   & Surface Area \\
     $\symSAH$  & Surface Area Heuristiek \\
   \end{tabularx}
 \end{flushleft}
-\section*{Symbolen}
+\chapter{Lijst van symbolen}
+%\section*{Symbolen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{25mm}X@{}}
-    $\symBSParbitrary$ & $\symBSP$ boom die per knoop random normalen als splitsrichtingen gebruikt. \\
-    $\symBSParbitrarykd$ & $\symBSParbitrary$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsrichtingen. \\
+    $\alpha$ & Een parameter om $\symCostTraversalBSP$ lineair te laten variëren met het aantal driehoeken. \\
+    $\beta$ & Het procentueel aantal doorkruisingen door een inwendige knoop dat door slechts één van de twee kindknopen gaat. \\
+    $\symBSParbitrary$ & $\symBSP$ boom die per knoop willekeurige normalen als splitsingsrichtingen gebruikt. \\
+    $\symBSParbitrarykd$ & $\symBSParbitrary$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsingsrichtingen. \\
     $\symBSParbitraryfastkd$ & $\symBSParbitrarykd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
-    $\symBSPcluster$ & $\symBSP$ boom die per knoop een clustering van de normalen berekend en de centrums van deze clusters als splitsrichtingen gebruikt. \\
-    $\symBSPclusterkd$ & $\symBSPcluster$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsrichtingen. \\
+    $\symBSPcluster$ & $\symBSP$ boom die per knoop een clustering van de normalen berekent en de centra van deze clusters als splitsingsrichtingen gebruikt. \\
+    $\symBSPclusterkd$ & $\symBSPcluster$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de splitsingsrichtingen. \\
     $\symBSPclusterfastkd$ & $\symBSPclusterkd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
-    $\symBSPrandom$ & $\symBSP$ boom die per knoop random richtingen als splitsrichtingen gebruikt. \\
-    $\symBSPrandomkd$ & $\symBSPrandom$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de random splitsrichtingen. \\
+    $\symBSPrandom$ & $\symBSP$ boom die per knoop random richtingen als splitsingsrichtingen gebruikt. \\
+    $\symBSPrandomkd$ & $\symBSPrandom$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de random splitsingsrichtingen. \\
     $\symBSPrandomfastkd$ & $\symBSPrandomkd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
-    $\symCostTraversalBSP$ & De kost om een BSP knoop te doorkruisen. \\
-    $\symCostTraversalKd$ & De kost om een Kd knoop te doorkruisen. \\
-    $\symRBSPKd$ & $\symRBSP$ waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+    $\symCostTraversal$ & De kost om een inwendige knoop te doorkruisen. \\
+    $\symCostTraversalBSP$ & De kost om een inwendige BSP knoop te doorkruisen. \\
+    $\symCostTraversalKd$ & De kost om een inwendige Kd knoop te doorkruisen. \\
+    $\symCost_{\symIntersection}$ & De kost te intersecteren met een primitief. \\
+    $\symNbPrimitives$ & Het aantal primitieven\\
+    $\symTime_{\symTraversal}$ & De tijd nodig om één inwendige knoop te doorkruisen. \\
+    $\symTime_{\symTraversal, \symTotal}$ & De totale tijd gespendeerd aan het doorkruisen van een boom. \\
+    $\symTime_{\symIntersection}$ & De tijd nodig om te intersecteren met één primitief. \\
+    $\symTime_{\symIntersection, \symTotal}$ & De totale tijd gespendeerd aan het intersecteren met primitieven. \\
+    $\symTime_{\symRender}$ & De rendertijd\\
+    
+
+    $\symRBSP$ & $\symBSP$ boom die in elke knoop dezelfde verzameling richtingen als splitsingsrichtingen gebruikt. \\
+    $\symRBSPKd$ & $\symRBSP$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
   
   \end{tabularx}
 \end{flushleft}

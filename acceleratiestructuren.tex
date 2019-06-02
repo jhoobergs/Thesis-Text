@@ -1,12 +1,10 @@
-\chapter{Voorgaand werk}
+\chapter{$\mathbf{\symBSP}$ bomen}
 \label{hoofdstuk:voorgaand-werk}
-Dit hoofdstuk start met een korte uitleg over enkele basisconcepten: \textit{ray tracing} en acceleratiestructuren.
-\textit{Ray tracing} vereist acceleratiestructuren om efficiënt driehoeken in de scene te kunnen zoeken.
-Daarna wijdt dit hoofdstuk uit over één specifieke acceleratiestructuur: de \textit{Binary Space Partitioning} ($\symBSP$) boom.
-De varianten van de $\symBSP$ boom worden één voor één besproken.
-% TODO
+Dit hoofdstuk start met een korte uitleg over het concept van $\symBSP$ bomen.
+Daarna wijdt dit hoofdstuk uit over de verschillende varianten van de $\symBSP$ boom: de $\symKd$ boom, $\symRBSP$ boom en de algemene $\symBSP$ boom van \authorIze{} \cite{ize} ($\symBSPize$).
+Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
 
-\section{$\symBSP$ bomen}
+\section{Concept}
     De $\symBSP$ boom deelt de ruimte van het omhullend volume recursief op door te splitsen volgens een willekeurig georiënteerd vlak totdat aan een bepaalde stopconditie voldaan wordt.
     Het feit dat de $\symBSP$ boom volgens willekeurig georiënteerde vlakken splitst, is zowel een voor- als nadeel.
     Het zorgt ervoor dat de $\symBSP$ boom zich heel goed kan aanpassen aan de scene en alle niet-intersecterende driehoeken in principe kan scheiden (zie figuur \ref{fig:splitsing-bsp}).
@@ -20,7 +18,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
         \label{fig:splitsing-bsp}    
     \end{figure}    
     \paragraph{Het bouwen van de boom}
-    Het splitsingsvlak dat een knoop opdeelt in twee delen, kan een grote impact hebben op het aantal doorkruisstappen en het aantal driehoekintersecties.
+    Het splitsingsvlak dat een knoop opdeelt in twee delen, kan een grote impact hebben op het aantal doorkruisstappen en het aantal straal-driehoekintersecties.
     Het bouwalgoritme moet voor elke knoop het beste splitsingsvlak bepalen en als splitsen volgens dat vlak voordelig is, de knoop opsplitsen in twee kindknopen.
     Heuristieken voorspellen hoe goed een splitsing volgens een bepaald splitsingsvlak is.   
     Het algoritme stopt met het splitsen van de knoop als een stopconditie bereikt wordt.
@@ -51,7 +49,7 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     \authorIze{} \cite{ize} geven drie (volgens hun foute) ruimverspreide aannames over algemene $\symBSP$ bomen die ervoor zorgen dat $\symKd$ bomen hoger ingeschat worden.
     Ten eerste wordt er aangenomen dat algemene $\symBSP$ bomen nooit sneller kunnen zijn dan $\symKd$ bomen omdat het doorkruisen van een $\symBSP$ boom beduidend duurder is.
     De beperkte precisie van vlottende komma getallen wordt gezien als het tweede probleem omdat het $\symBSP$ bomen numeriek onstabiel zou maken.
-    De derde aanname is dat door de grotere flexibileit (= grotere verzameling van mogelijke splitsingsvlakken) het veel moeilijker is om een $\symBSP$ boom te bouwen dan om een $\symKd$ boom te bouwen.
+    De derde aanname is dat door de grotere flexibileit (= grotere verzameling van mogelijke splitsingsvlakken) het veel moeilijker is om een goede $\symBSP$ boom te bouwen dan om een goede $\symKd$ boom te bouwen.
     \\
 
     Voor een Kd-boom is de Surface Area Heuristiek ($\symSAH$) de beste gekende methode om bomen met minimale verwachtte kost te bouwen.
@@ -93,20 +91,20 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Een belangrijke ontwerpbeslissing bij $\symRBSP$ bomen is het kiezen van de verzameling splitsingsrichtingen. 
     Volgens \authorBudge{} \cite{Budge} werkt in principe elke verzameling met minstens drie niet-evenwijdige richtingen, maar is het gewenst om richtingen te kiezen die samen de eenheidsbol goed bedekken.
     \authorKammaje{} \cite{Kammaje} genereren punten langs een spiraal op gelijk verdeelde breedtegraden volgens de gouden ratio.
-    \authorBudge{} \cite{Budge} gebruiken de verzamelingen die ze de standaard richtingen van \authorKlosowki{} \cite{klosowski1998efficient} noemen.
+    \authorBudge{} \cite{Budge} gebruiken de verzamelingen die ze de standaardrichtingen van \authorKlosowki{} \cite{klosowski1998efficient} noemen.
     Deze richtingen gebruiken enkel waarden uit de verzameling $\{-1, 0, 1\}$ als x, y en z coördinaat. %TODO meer uitwijden ?
     \\
 
     \authorKammaje{} \cite{Kammaje} toonden aan dat de SAH ook gebruikt kan worden voor $\symRBSP$ bomen. Net zoals bij de $\symKd$ boom moeten voor elke splitsingsrichting de eindpunten van de driehoeken gesorteerd worden en $2n$ splitsingsvlakken bekeken worden. In totaal bekijkt de $\symRBSP$ boom dus $2kn$ splitsingsvlakken. Het bouwen van de $\symRBSP$ boom is computationeel duurder dan het bouwen van de $\symKd$ boom door het grotere aantal richtingen en het feit dat het splitsen en het berekenen van de oppervlakte van een \symKDOP{} computationeel duurder is dan het splitsen en het berekenen van de oppervlakte van een balk. \authorBudge{} \cite{Budge} vonden een oplossing voor dit tweede probleem door een methode te ontwikkelen waarmee de kind \symKDOP s en hun oppervlaktes incrementeel berekend kunnen worden tijdens het sweepen.\\
 
-    De huidige $\symRBSP$ implementaties zijn superieur ten opzichte van de $\symKd$ boom in termen van het aantal driehoekintersecties en het aantal doorkruisingen, maar moeten onderdoen in termen van rendertijd.
+    De huidige $\symRBSP$ implementaties zijn superieur ten opzichte van de $\symKd$ boom in termen van het aantal straal-driehoekintersecties en het aantal doorkruisingen, maar moeten onderdoen in termen van rendertijd.
     \authorIze{} \cite{ize} menen dat de $\symRBSP$ boom de slechtste eigenschappen van zowel de $\symKd$ boom als de algemene $\symBSP$ boom overneemt. 
     Net als de $\symKd$ boom kan het geen rekening houden met de lokale geometrie en zich dus niet aanpassen aan complexe geometrie.
     Net als bij de algemene $\symBSP$ boom moet de intersectie met een willekeurig georiënteerd vlak berekend worden om knopen te doorkruisen. \authorBudge{} \cite{Budge} tonen aan dat deze tweede eigenschap minder erg is bij de $\symRBSP$ boom dan bij de algemene $\symBSP$ boom omdat het mogelijk is om alle scalaire producten op voorhand (en dus maar één keer) te berekenen.
 
 \section{Algemene $\symBSP$ Bomen in de praktijk}
     \label{sec:h2-bspizefastkd}
-    \authorIze{} \cite{ize} ontwikkelden de eerste algemene $\symBSP$ boom voor \textit{ray tracing}.
+    \authorIze{} \cite{ize} ontwikkelden de eerste (en enige) algemene $\symBSP$ boom voor \textit{ray tracing}.
     In tegenstelling tot de $\symKd$ en $\symRBSP$ boom kan $\symBSPize$ wel splitsingsvlakken kiezen afhankelijk van de geometrie.
     De $\symBSPize$ boom gebruikt de splitsingsvlakken van de $\symKd$ boom en elke driehoek in de knoop bepaalt nog vier extra splitsingsvlakken.
     Deze vier vlakken zijn: het vlak van de driehoek zelf (autopartitie) en de drie vlakken loodrecht op de driehoek door elk van de drie zijden.
@@ -132,30 +130,21 @@ De varianten van de $\symBSP$ boom worden één voor één besproken.
     Deze kosten rechtstreeks in de $SAH$ gebruiken, zorgt ervoor dat voornamelijk $\symBSP$ knopen gecreëerd worden.
     De reden hiervoor is dat de intersectieterm van de $SAH$ lineair varieert in het aantal driehoeken en die intersectieterm domineert snel de constante doorkruisterm waardoor $\symBSP$ splitsingen, die de driehoeken beter splitsen, gekozen worden.
     Deze lineaire afhankelijkheid is geen probleem als de $SAH$ enkel moet beslissen of een knoop gesplitst wordt of niet, maar wel als het moet bepalen of een knoop al dan niet gesplitst wordt en of dit best door een goedkoep $\symKd$ vlak of door een duur $\symBSP$ vlak gedaan wordt.
-    \authorIze{} \cite{ize} lossen dit probleem op door ook $\symCostTraversalBSP$ lineair te laten variëren in het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$ waarbij $\alpha$ een instelbare parameter is.
+    \authorIze{} \cite{ize} lossen dit probleem op door ook $\symCostTraversalBSP$ lineair te laten variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$ waarbij $\alpha$ een instelbare parameter is.
     Als er na het testen van alle splitsingsvlakken geen splitsingsvlak gevonden is dat zorgt dat de kost om te splitsen lager is dan de kost om een bladknoop te creëren, worden alle $\symBSP$ vlakken opnieuw getest, maar deze keer met een constante $\symCostTraversalBSP$. Dit blijkt veel beter te werken dan een constante kost. Merk op dat deze optimalisatie gebruikt kan worden bij elke $\symBSP$ boom die de $\symKd$ richtingen bekijkt. Aangezien de $\symKd$ richtingen bij alle huidige $\symRBSP$ implementaties steeds in de verzameling splitsingsrichtingen zitten, kan de optimalisatie ook gebruikt worden om een $\symRBSPKd$ boom te bouwen.\\
     
     De $\symBSPizefastkd$ boom is in veel scenes even snel of zelfs sneller dan de $\symKd$ boom.
     De niet geöptimaliseerde $\symBSPize$ boom is voor sommige scenes ook al beter dan de $\symKd$ boom. 
-    De winst wordt behaald door het lagere aantal straal driehoek intersecties.
-    Het aantal knoopdoorkruisingen stijgt echter, waardoor de totale verbetering wordt afgezwakt. De $\symBSPizefastkd$ boom toont veel minder variatie in rendertijd per pixel dan de $\symKd$ boom die duidelijke hotspot regio's heeft. Dit toont aan dat de $\symBSP$ boom beter kan omgaan met complexe geometrie.
-    % amdahl ?
-    % TODO: afbeelding van rendertijd killeroo ?
+    De winst wordt behaald door het lagere aantal straal-driehoekintersecties.
+    Het aantal knoopdoorkruisingen stijgt echter, waardoor de totale verbetering wordt afgezwakt. De $\symBSPizefastkd$ boom toont veel minder variatie in rendertijd per pixel dan de $\symKd$ boom die duidelijke hotspot regio's heeft. Dit toont aan dat algemene $\symBSP$ bomen beter kunnen omgaan met complexe geometrie.
 
-    %Voordelen
-    %    Knopen kunnen beter worden opgesplist
-    %Nadelen
-    %    Duurder om te traversen
-    %    Duurder om te bouwen (berekening SA van veelvlak vs SA van balk)
-    %    Grote zoekruimte om beste splitsingsvlak te vinden
- 
-\section{Vergelijking}
+\section{Samenvatting}
 \paragraph{Bouwen en intersecteren} 
 Tabel \ref{tab:boom-vergelijking} vergelijkt de hierboven besproken $\symBSP$ bomen.
 Hoe algemener de $\symBSP$ boom, hoe complexer het omhullend volume en hoe nauwer de boom kan aansluiten aan de scene.
 Als voor elke driehoek in de knoop, dezelfde vlakken bekeken worden, kan sweeping toegepast worden om efficiënt de $SAH$ kosten te berekenen.
-Als sweeping niet kan, zoals bij de geometrie-afhankelijke vlakken bij de $\symBSPize$ boom, is het berekenen van de $SAH$ kosten moeilijker en moet een hulpstructuur gebruikt worden.
-Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\symKd$ knoop doorkruising gebruikt worden. Voor de $\symRBSP$ boom is dit nog nooit gedaan.
+Als sweeping niet kan, zoals bij de geometrie-afhankelijke vlakken van de $\symBSPize$ boom, is het berekenen van de $SAH$ kosten moeilijker en moet een hulpstructuur gebruikt worden.
+Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\symKd$ knoopdoorkruising gebruikt worden. Voor de $\symRBSP$ boom is dit nog nooit gedaan.
 
 \begin{table}[tb]
     \centering
@@ -171,9 +160,10 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
     \caption[Vergelijking van de bestaande soorten $\symBSP$ bomen.]{Vergelijking van de bestaande soorten $\symBSP$ bomen - \small Deze tabel vat een aantal belangrijke eigenschappen van de bestaande soorten $\symBSP$ bomen samen. }
     \label{tab:boom-vergelijking}
   \end{table}
+  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
 
   \paragraph{Aantal verschillende splitsingsvlakken}
-  Eén van de belangrijkste eigenschappen van een $\symBSP$ algoritme is zijn vermogen om zich aan te passen aan complexe geometrie.
+  Eén van de belangrijkste eigenschappen van een $\symBSP$ boom is zijn vermogen om zich aan te passen aan complexe geometrie.
   Het totaal aantal verschillende splitsingsvlakken dat bekeken wordt tijdens het bouwen van de boom, draagt bij tot dit vermogen.
   Voor een scene met $n$ driehoeken, bekijkt een $\symKd$ boom $6n$ verschillende splitsingsvlakken. 
   Elk niveau van de boom bekijkt exact dezelfde splitsingsvlakken. Figuur \ref{fig:splitsingsvlakken-kd} toont dit visueel.
@@ -186,7 +176,7 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   Geen van bovenstaande bomen gebruikt de volledige vrijheid van een $\symBSP$ boom om op elk niveau andere splitsingsvlakken te nemen en op die manier beperken ze hun vermogen om zich aan te passen aan complexe geometrie.
   Driehoeken die in de wortelknoop door geen enkel vlak van elkaar kunnen worden gesplitst, kunnen nooit van elkaar gesplitst worden.
   Het volgende hoofdstuk introduceert nieuwe $\symBSP$ bomen die deze vrijheid wel benutten.
-  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
+
 
   \tikzset{every tree node/.style={minimum width=2em,draw,circle},
   blank/.style={draw=none},
