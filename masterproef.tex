@@ -7,7 +7,7 @@
 % De volgende \setup mag verwijderd worden als geen fiche gewenst is.
 \setup{filingcard,
   translatedtitle={Using the normals to build BSP acceleration structures.},
-  udc=621.3,
+  udc=681.3,
   shortabstract={In deze masterproef introduceren we een nieuw soort algemene Binary Space Partitioning ($\symBSP$) boom: de $\symBSPsweep$ boom.  De $\symBSPsweep$ boom laat toe om in elke knoop een aantal richtingen te bepalen afhankelijk van de driehoeken in die knoop  en het beste vlak van alle vlakken met als normaal één van die richtingen, wordt gebruikt om de knoop te splitsen.  Drie soorten $\symBSPsweep$ boom zijn ontworpen: één soort die in elke knoop random richtingen genereert ($\symBSPrandom$) en twee soorten die richtingen genereren afhankelijk van de normalen van de driehoeken in de knoop ($\symBSParbitrary$ en $\symBSPcluster$).  De $\symBSParbitrary$ boom kiest de normalen van enkele willekeurige driehoeken in de knoop als richtingen en de $\symBSPcluster$  boom bepaalt een clustering van de normalen van de driehoeken in de knoop en gebruikt de centra van deze clusters als richtingen.  Er is ook een optimalisatie van de $\symBSPsweep$ boom uitgewerkt: de $\symBSPsweepfastkd$ boom die asgealigneerde splitsingsvlakken bevoordeeld omdat ze computationele voordelen hebben.\\
   De drie $\symBSPsweepfastkd$ soorten zijn duidelijk beter dan de bestaande $\symBSP$ bomen. Van de drie soorten $\symBSPsweepfastkd$ bomen zijn de twee soorten die gebruik maken van de normalen, beduidend beter dan de soort die random richtingen bepaalt. Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met meer dan 40\% en de rendertijd met meer dan 20\% ten opzichte van de $\symKd$ boom. De bouwtijd is twee ordegroottes groter dan die van de $\symKd$ boom, maar wel kleiner dan die van elke andere $\symBSP$ boom.}}
 % Verwijder de "%" op de volgende lijn als je de kaft wil afdrukken
@@ -121,7 +121,7 @@
 
 % Tenslotte wordt hyperref gebruikt voor pdf bestanden.
 % Dit mag verwijderd worden voor de af te drukken versie.
-\usepackage[pdfusetitle,colorlinks,plainpages=false]{hyperref}
+\usepackage[pdfusetitle,hidelinks,plainpages=false]{hyperref}
 
 %%%%%%%
 % Om wat tekst te genereren wordt hier het lipsum pakket gebruikt.
@@ -171,21 +171,22 @@ Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met me
 %\listoffiguresandtables
 % De lijst van symbolen is eveneens optioneel.
 % Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
-\chapter{Lijst van afkortingen}
-%\section*{Afkortingen}
+\chapter{Lijst van afkortingen en symbolen}
+\section*{Afkortingen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{20mm}X@{}}
     $\symBSP$ & Binary Space Partitioning \\
     $\symBVH$ & Bounding Volume Hierarchy \\
-    $\symKDOP$ & Discrete Oriented Polytope met k richtingen \\ %TODO
+    $\symKDOP$ & Discrete Oriented Polytope met k richtingen \\
     $\symRBSP$ & Restricted Binary Space Partitioning \\
     $\symSA$   & Surface Area \\
     $\symSAH$  & Surface Area Heuristiek \\
   \end{tabularx}
 \end{flushleft}
-\chapter{Lijst van symbolen}
-%\section*{Symbolen}
+\pagebreak
+%\chapter{Lijst van symbolen}
+\section*{Symbolen}
 \begin{flushleft}
   \renewcommand{\arraystretch}{1.1}
   \begin{tabularx}{\textwidth}{@{}p{25mm}X@{}}
@@ -200,6 +201,7 @@ Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met me
     $\symBSPrandom$ & $\symBSP$ boom die per knoop random richtingen als splitsingsrichtingen gebruikt. \\
     $\symBSPrandomkd$ & $\symBSPrandom$ boom waarbij de drie richtingen volgens de hoofdassen altijd deel uitmaken van de random splitsingsrichtingen. \\
     $\symBSPrandomfastkd$ & $\symBSPrandomkd$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
+    k & Het aantal splitsingsrichtingen dat in elke knoop bekeken wordt. \\
     $\symCostTraversal$ & De kost om een inwendige knoop te doorkruisen. \\
     $\symCostTraversalBSP$ & De kost om een inwendige BSP knoop te doorkruisen. \\
     $\symCostTraversalKd$ & De kost om een inwendige Kd knoop te doorkruisen. \\
@@ -210,8 +212,6 @@ Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met me
     $\symTime_{\symIntersection}$ & De tijd nodig om te intersecteren met één primitief. \\
     $\symTime_{\symIntersection, \symTotal}$ & De totale tijd gespendeerd aan het intersecteren met primitieven. \\
     $\symTime_{\symRender}$ & De rendertijd\\
-    
-
     $\symRBSP$ & $\symBSP$ boom die in elke knoop dezelfde verzameling richtingen als splitsingsrichtingen gebruikt. \\
     $\symRBSPKd$ & $\symRBSP$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
   

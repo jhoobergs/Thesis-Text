@@ -3,7 +3,7 @@
 In dit hoofdstuk wordt de implementatie van volgende $\symBSP$ bomen besproken: $\symKd$ boom, $\symRBSP$ boom, $\symRBSPKd$ boom, $\symBSPize$ boom, $\symBSPizefastkd$ boom, $\symBSPrandom$ boom, $\symBSPrandomkd$ boom, $\symBSPrandomfastkd$ boom, $\symBSParbitrary$ boom, $\symBSParbitrarykd$ boom, $\symBSParbitraryfastkd$ boom, $\symBSPcluster$ boom, $\symBSPclusterkd$ boom en $\symBSPclusterfastkd$ boom.
 Deze implementaties zijn toegevoegd aan de pbrt-v3 \textit{ray tracer} \cite{pbrt} en zijn beschikbaar op \url{https://github.com/jhoobergs/Thesis-pbrt-v3}.\\
 
-Het hoofdstuk start met een hoogniveau beschrijving van het algoritme om de boom te bouwen en het algoritme om de boom te intersecteren.
+Het hoofdstuk start met een hoog niveau beschrijving van het algoritme om een $\symBSP$ boom te bouwen en het algoritme om deze bomen te intersecteren.
 Daarna wordt voor elke type aparte besproken hoe hun knopen voorgesteld worden in het geheugen, hoe inwendige knopen doorkruist worden en hoe het beste splitsingsvlak bepaald wordt.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -39,6 +39,8 @@ Het bouwalgoritme voor $\symBSP$ bomen heeft een aantal parameters:
     \item $\symCostTraversalBSP$: De aparte doorkruiskost voor $\symBSP$ knopen. Deze parameter is nodig voor de $\symSAH$ heuristiek.
     \item $\symMaxPrims$: Elke knoop met $\symMaxPrims$ of minder primitieven wordt direct een bladknoop, er wordt niet geprobeerd om de knoop te splitsen.
     \item $\symMaxDepth$: De maximale diepte van de boom.
+    \item $maxIteraties$: Het maximale aantal iteraties bij de K-means clustering van de $\symBSPcluster$ boom.
+    \item $\alpha$: Een parameter om $\symCostTraversalBSP$ lineair te laten variëren met het aantal driehoeken. Deze parameter wordt gebruikt bij het bouwen van bomen met de snelle $\symKd$ knoopdoorkruising.
 \end{itemize}
 \begin{dutchalgorithm}
     \begin{algorithmic}
@@ -50,7 +52,7 @@ Het bouwalgoritme voor $\symBSP$ bomen heeft een aantal parameters:
                 \State \Call{maak\_blad\_knoop}{b}
                 \State $continue$
             \EndIf
-            \State $besteSplit \gets $ \Call{bepaal\_beste\_split}{b}
+            \State $besteSplit \gets $ \Call{bepaal\_beste\_splitsing}{b}
             \State $nietSplitKost \gets  b_{\symNbPrimitives}*\symCost_\symIntersection$
             \If {$besteSplit_{kost} > nietSplitKost$}
                 \State $b_{slechteAanpassingen} \gets b_{slechteAanpassingen} + 1$
@@ -70,9 +72,9 @@ Het bouwalgoritme voor $\symBSP$ bomen heeft een aantal parameters:
 Algoritme \ref{alg:bsp-bouw} toont de algemene vorm van het bouwalgoritme voor $\symBSP$ bomen.
 Elk type $\symBSP$ boom wordt bepaald door de specifieke implementatie van de volgende functies:
 \begin{enumerate}
-    \item BEPAAL\_BESTE\_SPLIT(bouwknoop): Deze functie bepaalt de beste splitsing voor de knoop. Het resultaat bevat het splitsingsvlak en de bijhorende $\symSAH$ kost.
+    \item BEPAAL\_BESTE\_SPLITSING(bouwknoop): Deze functie bepaalt de beste splitsing voor de knoop. Het resultaat bevat het splitsingsvlak en de bijhorende $\symSAH$ kost.
     \item MAAK\_BLAD\_KNOOP(bouwknoop): Deze functie maakt een bladknoop van de huidige bouwknoop.
-    \item MAAK\_INWENDIGE\_KNOOP(bouwknoop): Deze functie maakt een inwendige knoop van de huidige bladknoop.
+    \item MAAK\_INWENDIGE\_KNOOP(bouwknoop): Deze functie maakt een inwendige knoop van de huidige bouwknoop.
 \end{enumerate}
 De eerste functie omvat de specifieke eigenschappen van het type $\symBSP$ boom en bepaalt de kracht van dat type $\symBSP$ boom. 
 Het resultaat van de tweede en derde functie is een specifieke representatie voor bladknopen / inwendige knopen die nuttig is voor het specifieke type $\symBSP$ boom.
@@ -81,18 +83,19 @@ De exacte implementaties van de functies om deze representaties in te vullen, zi
 
 
 Samengevat gaat Algoritme \ref{alg:bsp-bouw} voor elke knoop, die nog voldoende primitieven bevat en niet op de maximale diepte ligt, de beste splitsing bepalen en afhankelijk van de $\symSAH$ waarde bepalen of een splitsing moet gebeuren. 
-Aangezien een slechte splitsing op een bepaald niveau, kan leiden tot een nuttige split op een lager niveau, wordt een knoop toch gesplitst als splitsen nadelig is volgens de $\symSAH$ heuristiek.
-Zulke \textit{slechte aanpassingen} worden niet gedaan als de kost van de beste split vier keer hoger is dan de kost om niet te splitsen en als er bovendien minder dan 16 primitieven in de knoop zitten.
+Aangezien een slechte splitsing op een bepaald niveau, kan leiden tot een nuttige splitsing op een lager niveau, wordt een knoop toch gesplitst als splitsen nadelig is volgens de $\symSAH$ heuristiek.
+Zulke \textit{slechte aanpassingen} worden niet gedaan als de kost van de beste splitsing vier keer hoger is dan de kost om niet te splitsen en als er bovendien minder dan 16 primitieven in de knoop zitten.
 Elk lusvrij pad van de wortelknoop naar elke andere knoop, mag maximaal twee zulke \textit{slechte aanpassingen} bevatten.
 Dit komt neer op het feit dat een \textit{slechte aanpassing} enkel mag gebeuren als er minder dan twee voorouderknopen een \textit{slechte aanpassing} gedaan hebben.
 Dit concept is overgenomen van de originele implementatie van de $\symKd$ boom in \textit{pbrt-v3}.
 
 \subsection{Intersectie-algoritme}
 Het intersectie-algoritme bepaalt het intersectiepunt tussen een straal en de $\symBSP$ boom.
-Een straal wordt voorgesteld met de parametervoorstelling $\vec{s} = \vec{o} + t\vec{d}$.
+Een straal wordt voorgesteld met de parametervoorstelling $\vec{s} = \vec{o} + t\vec{d}$ met $\vec{o}$ het startpunt en $\vec{d}$ de richtingsvector.
 Algoritme \ref{alg:bsp-intersectie} toont de algemene vorm van het intersectie-algoritme voor $\symBSP$ bomen.
 Dit intersectie-algoritme is ontworpen voor zichtstralen en bepaalt dus het dichtste intersectiepunt.
-De aanpassing naar een algoritme dat controleert of er een intersectiepunt bestaat, wat gebruikt kan worden voor schaduwstralen, is triviaal en wordt niet verder besproken.\\
+De aanpassing naar een algoritme dat controleert of er een intersectiepunt bestaat, in plaats van te zoeken naar het dichtstbijzijnde, is triviaal en wordt niet verder besproken.
+Deze aanpassing is nodig voor de intersectie van schaduwstralen.\\
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
@@ -134,7 +137,7 @@ De aanpassing naar een algoritme dat controleert of er een intersectiepunt besta
                     \If {$stack \neq \emptyset$}
                         \State $k, tMin, tMax \gets $\Call{pop}{$stack$}
                     \Else
-                        \State $break$
+                        \State $k \gets None$
                     \EndIf
                 \EndIf
             \EndWhile
@@ -148,15 +151,15 @@ De aanpassing naar een algoritme dat controleert of er een intersectiepunt besta
 
 Het algoritme maakt gebruik van de volgende functies:
 \begin{enumerate}
-    \item DOORKRUIS\_INWENDIGE\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de gegeven straal met het splitsingsvlak van de gegeven inwendige knoop. Het resultaat bevat tVlak, de t waade waarvoor de straal intersecteert met het vlak en linksEerst, een boolean die aangeeft of de straal eerst door de linkerkindknoop gaat of niet.
+    \item DOORKRUIS\_INWENDIGE\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de gegeven straal met het splitsingsvlak van de gegeven inwendige knoop. Het resultaat bevat tVlak, de t-waarde waarvoor de straal intersecteert met het vlak en linksEerst, een booleaanse waarde die aangeeft of de straal eerst door de linkerkindknoop gaat of niet.
     \item INTERSECTEER\_BLAD\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de primitieven in de gegeven bladknoop met de gegeven straal.     
-    \item INTERSECTEER(volume, straal): Deze functie bepaalt de intersectie van het omhullend volume van de boom en de straal. Het resultaat bevat een booleaans waarde, die aanduidt of het volume geraakt wordt door de straal. Als het volume geraakt wordt, bevat het ook de waarde tMin, de t waarde waarvoor de straal het volume binnengaan, en tMax, de t waarde waarvoor de straal het volume verlaat.
+    \item INTERSECTEER(volume, straal): Deze functie bepaalt de intersectie van het omhullend volume van de boom en de straal. Het resultaat bevat een booleaanse waarde, die aanduidt of het volume geraakt wordt door de straal. Als het volume geraakt wordt, bevat het ook de waarde tMin, de t waarde waarvoor de straal het volume binnengaan, en tMax, de t waarde waarvoor de straal het volume verlaat.
 \end{enumerate}
 
 De eerste functie is afhankelijk van de specifieke representatie voor bladknopen / inwendige knopen die gebruikt worden voor het specifieke type $\symBSP$ boom.
 Bij de bespreking van de knooprepresentaties in de volgende secties, wordt steeds de implementatie van deze functie voor die knooprepresentatie getoond.
 De tweede functie is hetzelfde voor alle knopen die besproken worden, elke driehoek in de bladknoop wordt op intersectie met de straal getest.
-De derde functie bepaalt de intersectie van het omhullend volume van de $\symBSP$ boom met de straal. 
+De derde functie bepaalt de intersectie van het omhullend volume van de volledige $\symBSP$ boom (= omhullend volume wortelknoop) met de straal. 
 Bij alle besproken bomen wordt dit voorgesteld door een asgealigneerde balk.
 Intersectie berekenen met een asgealigneerde balk is triviaal.
 
@@ -186,20 +189,20 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
     \centering
     \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
     Inwendig & bits & Blad & bits \\ \midrule
-    tSplit & 32 & primitief Offset & 32 \\
+    tSplit & 32 & primitiefOffset & 32 \\
     flags  & 2  &  flags   & 2    \\
     tweedeKindIndex & 30 & $\symNbPrimitives$ & 30 \\ \hline \hline
     & 64 & & 64    \\ \bottomrule
     \end{tabular}
-    \caption[Voorstelling $\symKd$ knoop]{Voorstelling $\symKd$ knoop - \small }
+    \caption[Voorstelling $\symKd$ knoop]{Voorstelling $\symKd$ knoop - \small Deze tabel toont de nodige variabelen voor zowel inwendige als blad $\symKd$ knopen.}
     \label{tab:voorstelling-kd-knoop}
 \end{table}            
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{doorkruis\_inwendige\_knoop}{$\symKd$ Knoop k, Straal s}
-            \State $as <- k_{splitsAs}$
-            \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
-            \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
+            \State $as \gets k_{flags}$
+            \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{tSplit}$, s, $\frac{1}{\vec{s_d}}$, as}
+            \State $linksEerst \gets \vec{s_o}[as] < k_{tSplit}$ \Or $(\vec{s_o}[as] = k_{tSplit}$ \And $\vec{s_d}[as] \leq 0)$
             \State \Return $tVlak$, $linksEerst$
         \EndFunction
     \end{algorithmic}
@@ -209,7 +212,7 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{kd\_vlak\_afstand}{splitPositie, s, inverseRichting, as}
-            \State \Return $(splitPos - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
+            \State \Return $(splitPositie - \vec{s_o}[as]) * \vec{inverseRichting}[as]$
         \EndFunction
     \end{algorithmic}
     \caption{Intersectie tussen een asgealigneerd vlak en een straal.}
@@ -217,31 +220,33 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
 \end{dutchalgorithm}
 Algoritme \ref{alg:kd-inwendige-doorkruising} toont het algoritme om inwendige $\symKd$ knopen te doorkruisen.
 Het gebruikt de functie KD\_VLAK\_INTERSECTIE (algoritme \ref{alg:kd-vlak-intersectie}) om te intersecteren met een asgealigneerd vlak.
-De inverse van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.\\
+De inverse van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.
+Daarnaast bepaalt het algoritme aan de hand van de oorsprong en de richting van de straal of deze straal eerst door linkse of rechtste kindknoop gaat.
+\\
 
 Algoritme \ref{alg:kd-beste-split} toont het algoritme om het beste splitsingsvlak te bepalen bij een $\symKd$ boom.
 Het gebruikt de SAH functie die de SAH kost berekent voor het splitsingsvlak.
-Deze functie gebruikt de oppervlaktes $\symSA_{rechts}$ en $\symSA_{links}$ van de gesplitste volumes en de aantallen primitieven $n_{links}$ en $n_{rechts}$ in de nieuwe knopen samen met de oppervlakte $bouwknoop_{\symSA}$ van de huidige knoop.
+Deze functie gebruikt de oppervlaktes $\symSA_{rechts}$ en $\symSA_{links}$ van de gesplitste volumes en de aantallen primitieven $n_{links}$ en $n_{rechts}$ in de nieuwe knopen samen met de oppervlakte $bouwKnoop_{\symSA}$ van de huidige knoop.
 Het splitsen in kindvolumes en het berekenen van deze oppervlaktes is triviaal omdat de omhullende volumes asgealigneerde balken zijn.
 De waarden voor $n_{links}$ en $n_{rechts}$ worden efficiënt berekend door te sweepen.
 
-%TODO: beste split algo
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
             \For{$as \in \{0, 1, 2\}$}
                 \State $\forall i: randen[2i]\gets$ \Call{linkerrand}{$b_{primitieven}[i]$, as}
                 \State $\forall i: randen[2i+1]\gets$ \Call{rechterrand}{$b_{primitieven}[i]$, as}
                 \State \Call{sorteer}{randen}
-                \State $n_{links}, n_{rechts} \gets 0, bouwknoop_n$
+                \State $n_{links}, n_{rechts} \gets 0, bouwKnoop_n$
                 \For{$rand \in randen$}
                     \If{$rand_{isRechts}$}
                         \State $n_{rechts} \gets n_{rechts} - 1$
                     \EndIf
+                    \State $\symSA_{links}$, $\symSA_{rechts} \gets $ \Call{split}{$bouwKnoop_{volume}$, as, $rand_t$}
                     \State $kost \gets$ \Call{SAH}{$\symCostTraversal$,$\symCost_\symIntersection$,$\symSA_{links}$,
                     $\symSA_{rechts}$,
-                    $n_{links}$, $n_{rechts}$, $bouwknoop_{\symSA}$}
+                    $n_{links}$, $n_{rechts}$, $bouwKnoop_{\symSA}$}
                     \If{$kost < besteKost$}
                         \State $besteKost, besteAs, besteT \gets kost, as, rand_t$
                     \EndIf
@@ -253,7 +258,7 @@ De waarden voor $n_{links}$ en $n_{rechts}$ worden efficiënt berekend door te s
             \State \Return $besteAs, besteT, besteKost$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symKd$ boom.}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symKd$ boom.}
     \label{alg:kd-beste-split}
 \end{dutchalgorithm}
 
@@ -269,7 +274,7 @@ Net als bij de $\symKd$ knoop worden zowel inwendige $\symRBSP$ knopen als blad 
 Als de \textit{flags} variabele gelijk is aan $k$ (het aantal richtingen), is het een bladknoop.
 Bij inwendige knopen stelt die variabele de index voor van de richting waarlangs gesplitst wordt.
 De \textit{flags} variabele heeft hierdoor $\lceil log_2(k+1) \rceil$ bits nodig.
-Om te zorgen dat het totaal aantal bits op 64 blijft, wordt het aantal bits voor de \textit{tweedeKindIndex} variabele bij de inwendige $\symRBSP$ knoop en de \textit{n}  variable bij de blad $\symRBSP$ knoop verlaagt tot $32 - \lceil log_2(k+1) \rceil$.
+Om te zorgen dat het totaal aantal bits 64 blijft, wordt het aantal bits voor de \textit{tweedeKindIndex} variabele bij de inwendige $\symRBSP$ knoop en de \textit{n}  variable bij de blad $\symRBSP$ knoop verlaagt tot $32 - \lceil log_2(k+1) \rceil$.
 Dit impliceert dat de $\symRBSP$ boom $2^{(\lceil log_2(k+1) \rceil - 2)}$ keer minder knopen kan bevatten.
 Het maximaal aantal primitieven in een bladknoop daalt met dezelfde factor.
 Voor het aantal primitieven vormt dit geen probleem, aangezien bladknopen steeds kleine aantallen primitieven bevatten.
@@ -278,28 +283,28 @@ Voor een $\symRBSP$ boom met $k = 13$ richtingen (maximaal $2^{28}$ knopen), bet
         \centering
         \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
         Inwendig & bits & Blad & bits \\ \midrule
-        tSplit & 32 & primitief Offset & 32 \\
+        tSplit & 32 & primitiefOffset & 32 \\
         flags  & $\lceil log_2(k+1) \rceil$  &  flags   & $\lceil log_2(k+1) \rceil$   \\
         tweedeKindIndex & $32 - \lceil log_2(k+1) \rceil$ & $\symNbPrimitives$ &  $32 - \lceil log_2(k+1) \rceil$ \\ \hline \hline
         & 64 & & 64    \\ \bottomrule
         \end{tabular}
-    \caption[Voorstelling $\symRBSP$ knoop]{Voorstelling $\symRBSP$ knoop - \small }
+    \caption[Voorstelling $\symRBSP$ knoop]{Voorstelling $\symRBSP$ knoop - \small Deze tabel toont de nodige variabelen voor zowel inwendige als blad $\symRBSP$ knopen.}
     \label{tab:voorstelling-rbsp-knoop}    
 \end{table}   
 
 Algoritme \ref{alg:rbsp-inwendige-doorkruising} toont het algoritme om inwendige $\symRBSP$ knopen te doorkruisen.
 Het gebruikt de functie VLAK\_INTERSECTIE (algoritme \ref{alg:vlak-intersectie}) om te intersecteren met een willekeurig geörienteerd vlak.
 In vergelijking met de intersectie van een asgealigneerd vlak (algoritme \ref{alg:kd-vlak-intersectie}), moeten twee extra scalaire producten en een deling uitgerekend worden.
-Aangezien het aantal richtingen waarmee deze scalaire producten berekend moeten worden, beperkt is, kunnen deze per straal éénmalig op voorhand berekend worden.
+Aangezien, bij een $\symRBSP$ boom, het aantal richtingen waarmee deze scalaire producten berekend moeten worden, beperkt is, kunnen deze per straal éénmalig op voorhand berekend worden.
 Deze techniek is toegepast door \authorBudge{} \cite{Budge}.
 Omdat het effect hiervan, zeker bij stijgende k waarden, niet altijd positief was, is dit niet toegepast.\\
 % TODO
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{doorkruis\_inwendige\_knoop}{$\symRBSP$ Knoop k, Straal s}
-            \State $richtingId \gets k_{splitsAs}$
-            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{splitPos}$, s}
-            \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+            \State $richtingId \gets k_{flags}$
+            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{tSplit}$, s}
+            \State $linksEerst \gets projOorsprong < k_{tSplit}$ \Or $(projOorsprong = k_{tSplit}$ \And $invProjRichting \leq 0)$
             \State \Return $tVlak$, $linksEerst$
         \EndFunction
     \end{algorithmic}
@@ -313,7 +318,7 @@ Omdat het effect hiervan, zeker bij stijgende k waarden, niet altijd positief wa
             \State $projOorsprong \gets \vec{normaal} \cdot \vec{s_o}$
             \State $invProjRichting \gets \frac{1}{\vec{normaal} \cdot \vec{s_d}}$
             \State $afstand \gets (splitPos - projOorsprong) * invProjRichting $
-            \State \Return projOorsprong, invProjRichting, afstand
+            \State \Return afstand, projOorsprong, invProjRichting
         \EndFunction
     \end{algorithmic}
     \caption{Intersectie tussen een vlak en een straal.}
@@ -336,14 +341,14 @@ Algoritme \ref{alg:rbspkd-inwendige-doorkruising} toont de aangepaste versie van
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{doorkruis\_inwendige\_knoop}{$\symRBSPKd$ Knoop k, Straal s}
-            \State $richtingId \gets k_{splitsAs}$
+            \State $richtingId \gets k_{flags}$
             \If {$richtingId < 3$}
-                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, richtingId}
-                \State $linksEerst \gets \vec{s_o}[richtingId] < k_{splitPos}$ \Or $(\vec{s_o}[richtingId] = k_{splitPos}$ \And $s_d[richtingId] \leq 0)$
+                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{tSplit}$, s, $\frac{1}{\vec{s_d}}$, richtingId}
+                \State $linksEerst \gets \vec{s_o}[richtingId] < k_{tSplit}$ \Or $(\vec{s_o}[richtingId] = k_{tSplit}$ \And $\vec{s_d}[richtingId] \leq 0)$
                 \State \Return $tVlak$, $linksEerst$
             \Else
-                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{splitPos}$, s}
-                 \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{richtingen[richtingId]}$, $k_{tSplit}$, s}
+                 \State $linksEerst \gets projOorsprong < k_{tSplit}$ \Or $(projOorsprong = k_{tSplit}$ \And $invProjRichting \leq 0)$
                 \State \Return $tVlak$, $linksEerst$
             \EndIf
         \EndFunction
@@ -353,18 +358,15 @@ Algoritme \ref{alg:rbspkd-inwendige-doorkruising} toont de aangepaste versie van
 \end{dutchalgorithm}
 
 Het algoritme om het beste splitsingsvlak te bepalen bij een $\symRBSPKd$ boom wordt getoond in algoritme \ref{alg:rbspkd-beste-split}.
-De sweeping over de k richtingen wordt opgesplitst in twee delen: sweeping over de $\symKd$ richtingen en de sweeping over de $\symBSP$ richtingen.
+De sweeping over de k richtingen wordt opgesplitst in twee delen: de sweeping over de $\symKd$ richtingen en de sweeping over de $\symBSP$ richtingen.
 Het eerste deel berekent de $\symSAH$ kost met $\symCostTraversalKd$ als doorkruiskost.
 Het tweede deel berekent twee $\symSAH$ kosten, één met een $\symCostTraversalBSP$ kost die lineair afhankelijk is van het aantal driehoeken en één met een vaste $\symCostTraversalBSP$ kost.
 Deze eerste kost wordt rechtstreeks vergeleken met de beste kost van de $\symKd$ richtingen.
 De tweede kost wordt enkel gebruikt als er geen voordelig $\symKd$ of $\symBSP$ splitsingsvlak gevonden wordt via de eerste kost.
 
-%Het bepalen van de linker- en rechterrand van de primitieven langs de as, vereist scalaire producten in tegenstelling tot bij de $\symKd$ boom.
-%Het splitsen van de omhullende volumes en het bereken van de oppervlaktes is complexer omdat met \symKDOP{}s gewerkt moet worden in plaats van met asgealigneerde balken.
-
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
             \State $besteAsVast$, $besteTVast$, $besteKostVast$ $\gets None$, $None$, $\infty$
             \For{$as \in \{0, 1, 2\}$}
@@ -383,22 +385,21 @@ De tweede kost wordt enkel gebruikt als er geen voordelig $\symKd$ of $\symBSP$ 
                     \State Update $besteAsVast$, $besteTVast$, $besteKostVast$ als dit splitsingsvlak beter is dan het huidige beste splitsingsvlak met vaste $\symBSP$ doorkruiskost.   
                 \EndFor                 
             \EndFor
-            \If{$besteKost < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKost < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAs, besteT, besteKost$
             \EndIf
-            \If{$besteKostVast < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKostVast < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAsVast, besteTVast, besteKostVast$
             \EndIf
             \State \Return $None, None, \infty$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symRBSPKd$ boom.}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symRBSPKd$ boom.}
     \label{alg:rbspkd-beste-split}
 \end{dutchalgorithm}
 
 \section{$\symBSPize$ boom}
 \label{sec:h4-bspize}
-% TODO Vergelijk representatie met die van de paper
 De $\symBSPize$ boom maakt gebruik van algemene $\symBSP$ knopen. 
 Tabel \ref{tab:voorstelling-bsp-knoop} toont de representatie van zowel inwendige $\symBSP$ knopen als blad $\symBSP$ knopen.
 De representatie van de $\symBSP$ knopen is identiek aan de representatie van de paper van \authorIze{} \cite{ize}.
@@ -406,19 +407,19 @@ Net als bij de $\symKd$ en $\symRBSP$ knopen bevatten zowel inwendige $\symBSP$ 
 De \textit{flags} variabele wordt bij de $\symBSP$ boom enkel gebruikt om aan te geven of het een inwendige knoop (waarde 0) of een bladknoop (waarde 1) is.
 Om de oriëntatie van het splitsingsvlak voor te stellen, zijn drie vlottend komma getallen nodig.
 De \textit{splitsRichting} variabele bij inwendige $\symBSP$ knopen stelt de normaal van het splitsingsvlak voor.
-De nodige geheugenruimte voor de inwendige $\symBSP$ knopen en de blad $\symBSP$ knopen is verschillend, maar aangezien elke knoop evenveel geheugen moet innemen, neemt elke knoop 160 bits geheugen in.
+De nodige geheugenruimte voor de inwendige $\symBSP$ knopen en de blad $\symBSP$ knopen is verschillend, maar aangezien elke knoop - in de huidige implementatie - evenveel geheugen moet innemen, neemt elke knoop 160 bits geheugen in.
 Dit is 2.5 keer meer dan de $\symKd$ en $\symRBSP$ knopen en toont één van de nadelen van algemene $\symBSP$ bomen.\\
 \begin{table}
         \centering
         \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
             Inwendig & bits & Blad & bits \\ \midrule
-            tSplit & 32 & primitief Offset & 32 \\
+            tSplit & 32 & primitiefOffset & 32 \\
             flags  & 1  &  flags   & 1    \\
             tweedeKindIndex & 31 & $\symNbPrimitives$ & 31 \\
-            splitRichting & 96 &  &  \\ \hline \hline
+            splitsRichting & 96 &  &  \\ \hline \hline
             & 160 & & 64    \\ \bottomrule
         \end{tabular}
-    \caption[Voorstelling $\symBSP$ knoop]{Voorstelling $\symBSP$ knoop - \small }
+    \caption[Voorstelling $\symBSP$ knoop]{Voorstelling $\symBSP$ knoop - \small Deze tabel toont de nodige variabelen voor zowel inwendige als blad $\symBSP$ knopen.}
     \label{tab:voorstelling-bsp-knoop}
 \end{table}   
 
@@ -428,8 +429,8 @@ Het gebruikt, net als de $\symRBSP$ knoopdoorkruising, de functie VLAK\_INTERSEC
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{doorkruis\_inwendige\_knoop}{$\symBSP$ Knoop k, Straal s}
-            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{splitPos}$, s}
-            \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+            \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{tSplit}$, s}
+            \State $linksEerst \gets projOorsprong < k_{tSplit}$ \Or $(projOorsprong = k_{tSplit}$ \And $invProjRichting \leq 0)$
             \State \Return $tVlak$, $linksEerst$
         \EndFunction
     \end{algorithmic}
@@ -450,9 +451,8 @@ Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze 
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
-            \State $besteAsVast$, $besteTVast$, $besteKostVast$ $\gets None$, $None$, $\infty$
             \For{$as \in \{0, 1, 2\}$}
                 \State Sorteer eindpunten langs de as
                 \For{elk vlak langs de as}
@@ -463,7 +463,7 @@ Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze 
             \State $bvh \gets BOUW\_BVH(b)$
             \For{$primitief \in bouwKnoop_{primitieven}$}
                 \For{elk splitsingsvlak bij het primitief}
-                    \State Bereken het aantal driehoeken links en rechts van het splitsingvlak met de $\symBVH$ boom
+                    \State Bereken het aantal primitieven links en rechts van het splitsingvlak met behulp van de $\symBVH$ boom
                     \State Bereken de $\symSAH$ kost met een vaste $\symCostTraversalBSP$ 
                     \State Update $besteAs$, $besteT$, $besteKost$ als dit splitsingsvlak beter is dan het huidige beste splitsingsvlak.
                 \EndFor       
@@ -471,7 +471,7 @@ Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze 
             \State \Return $bestAs, besteT, besteKost$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPize$ boom.}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symBSPize$ boom.}
     \label{alg:bspize-beste-split}
 \end{dutchalgorithm}
 
@@ -480,7 +480,7 @@ Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze 
 \label{sec:h4-bspizefastkd}
 De $\symBSPizefastkd$ boom maakt gebruik van $\symBSPKd$ knopen. 
 Deze $\symBSPKd$ knopen zijn identiek aan $\symBSP$ knopen, met uitzondering van het aantal bits gebruikt door de \textit{flags} en \textit{tweedeKindIndex} variabelen. 
-De \textit{flags} variabele heeft drie bits nodig, de waarden 0, 1 en 2 stellen de x,y en z as voor, waarde 3 betekent dat het een bladknoop is en waarde 4 betekent dat het een algemene $\symBSP$ knoop is met willekeurig splitsingsvlak.
+De \textit{flags} variabele heeft drie bits nodig, de waarden 0, 1 en 2 stellen de x, y en z as voor, waarde 3 betekent dat het een bladknoop is en waarde 4 betekent dat het een algemene $\symBSP$ knoop is met willekeurig splitsingsvlak.
 Om het aantal bits een veelvoud van 32 te laten blijven, wordt de grootte van de \textit{tweedeKindIndex} variabele met 2 verminderd.
 Hierdoor kan de $\symBSPizefastkd$ boom vier keer minder knopen bevatten dan de $\symBSPize$ boom.
 Tabel \ref{tab:voorstelling-bspkd-knoop} toont de representatie van zowel inwendige $\symBSPKd$ knopen als blad $\symBSPKd$ knopen.\\
@@ -489,13 +489,13 @@ Tabel \ref{tab:voorstelling-bspkd-knoop} toont de representatie van zowel inwend
     \centering
     \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
         Inwendig & bits & Blad & bits \\ \midrule
-        tSplit & 32 & primitief Offset & 32 \\
+        tSplit & 32 & primitiefOffset & 32 \\
         flags  & 3  &  flags   & 3   \\
         tweedeKindIndex & 29 & $\symNbPrimitives$ & 29 \\
-        splitRichting & 96 &  &  \\ \hline \hline
+        splitsRichting & 96 &  &  \\ \hline \hline
         & 160 & & 64    \\ \bottomrule
     \end{tabular}
-\caption[Voorstelling $\symBSPKd$ knoop]{Voorstelling $\symBSPKd$ knoop - \small }
+\caption[Voorstelling $\symBSPKd$ knoop]{Voorstelling $\symBSPKd$ knoop - \small Deze tabel toont de nodige variabelen voor zowel inwendige als blad $\symBSPKd$ knopen.}
 \label{tab:voorstelling-bspkd-knoop}
 \end{table}   
 
@@ -509,12 +509,12 @@ Algoritme \ref{alg:bspkd-inwendige-doorkruising} toont de aangepaste versie van 
             \State $isKdKnoop \gets k_{flags} < 4$
             \If {$isKdKnoop$}
                 \State $as \gets k_{flags}$
-                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{splitPos}$, s, $\frac{1}{\vec{s_d}}$, as}
-                \State $linksEerst \gets \vec{s_o}[as] < k_{splitPos}$ \Or $(\vec{s_o}[as] = k_{splitPos}$ \And $s_d[as] \leq 0)$
+                \State $tVlak \gets $ \Call{kd\_vlak\_afstand}{$k_{tSplit}$, s, $\frac{1}{\vec{s_d}}$, as}
+                \State $linksEerst \gets \vec{s_o}[as] < k_{tSplit}$ \Or $(\vec{s_o}[as] = k_{tSplit}$ \And $\vec{s_d}[as] \leq 0)$
                 \State \Return $tVlak$, $linksEerst$
             \Else
-                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{splitPos}$, s}
-                 \State $linksEerst \gets projOorsprong < k_{splitPos}$ \Or $(projOorsprong = k_{splitPos}$ \And $invProjRichting \leq 0)$
+                \State $tVlak, projOorsprong, invProjRichting \gets $ \Call{vlak\_afstand}{$\vec{k_{splitsRichting}}$, $k_{tSplit}$, s}
+                 \State $linksEerst \gets projOorsprong < k_{tSplit}$ \Or $(projOorsprong = k_{tSplit}$ \And $invProjRichting \leq 0)$
                 \State \Return $tVlak$, $linksEerst$
             \EndIf
         \EndFunction
@@ -529,7 +529,7 @@ Zoals besproken in sectie \ref{sec:h2-bspizefastkd} wordt gebruik gemaakt van ee
 Als er geen nuttig $\symKd$ splitsingsvlak of $\symBSP$ splitsingsvlak met deze $\symCostTraversalBSP$ gevonden wordt, worden de $\symBSP$ splitsingsvlakken opnieuw bekeken met een vaste $\symCostTraversalBSP$.
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
             \State $besteAsVast$, $besteTVast$, $besteKostVast$ $\gets None$, $None$, $\infty$
             \For{$as \in \{0, 1, 2\}$}
@@ -542,23 +542,23 @@ Als er geen nuttig $\symKd$ splitsingsvlak of $\symBSP$ splitsingsvlak met deze 
             \State $bvh \gets BOUW\_BVH(b)$
             \For{$primitief \in bouwKnoop_{primitieven}$}
                 \For{elk splitsingsvlak bij het primitief}
-                    \State Bereken het aantal driehoeken links en rechts van het splitsingvlak met de $\symBVH$ boom
+                    \State Bereken het aantal primitieven links en rechts van het splitsingvlak met behulp van de $\symBVH$ boom
                     \State Bereken de $\symSAH$ kost met een $\symCostTraversalBSP$ die lineair afhankelijk is van het aantal primitieven als doorkruiskost 
                     \State Update $besteAs$, $besteT$, $besteKost$ als dit splitsingsvlak beter is dan het huidige beste splitsingsvlak    
                     \State Bereken de $\symSAH$ kost met een vaste $\symCostTraversalBSP$ als doorkruiskost
                     \State Update $besteAsVast$, $besteTVast$, $besteKostVast$ als dit splitsingsvlak beter is dan het huidige beste splitsingsvlak met vaste $\symBSP$ doorkruiskost.             
                 \EndFor       
             \EndFor
-            \If{$besteKost < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKost < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAs, besteT, besteKost$
             \EndIf
-            \If{$besteKostVast < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKostVast < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAsVast, besteTVast, besteKostVast$
             \EndIf
             \State \Return $None, None, \infty$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPizefastkd$ boom.}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symBSPizefastkd$ boom.}
     \label{alg:bspizekd-beste-split}
 \end{dutchalgorithm}
 
@@ -569,12 +569,12 @@ De $\symBSPsweepmaybewithkd$ en $\symBSPsweepfastkd$ bomen maken gebruik van res
 Hierdoor zijn de doorkruismethodes voor inwendige knopen identiek aan die gebruikt bij de $\symBSPize$ en $\symBSPizefastkd$ bomen.
 Algoritme \ref{alg:bspsweep-beste-split} toont het algoritme om het beste splitsingsvlak te bepalen bij een $\symBSPsweep$ boom.
 Dit algoritme gebruikt de BEPAAL\_RICHTINGEN functie die de specifieke soort $\symBSPsweep$ boom bepaalt.
-Zoals de naam suggereert wordt in elke knoop langs elk splitsrichting gesweept om het beste splitsingsvlak op een efficiënte manier te vinden.
+Zoals de naam van de boom suggereert wordt in elke knoop langs elk splitsingsrichting gesweept om het beste splitsingsvlak op een efficiënte manier te vinden.
 Hierdoor is er geen nood aan een hulpstructuur zoals bij de $\symBSPize$ boom.
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
             \State $richtingen \gets $ \Call{bepaal\_richtingen}{bouwKnoop, k}
             \For{$richting \in richtingen$}
@@ -587,14 +587,14 @@ Hierdoor is er geen nood aan een hulpstructuur zoals bij de $\symBSPize$ boom.
             \State \Return $bestAs, besteT, besteKost$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPsweepmaybewithkd$  boom.}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symBSPsweepmaybewithkd$  boom.}
     \label{alg:bspsweep-beste-split}
 \end{dutchalgorithm}
 
 \paragraph{$\mathbf{\symBSPrandom}$ boom}
 De $\symBSPrandom$ boom kiest op elk niveau k random richtingen.
 Algoritme \ref{alg:bsprandom-richtingen} toont de implementatie van de BEPAAL\_RICHTINGEN functie voor de $\symBSPrandom$ boom. 
-Deze functie gebruikt de UPDATE\_ZIN functie die zorgt dat zin van de richting zo gekozen wordt dat de x-component van de vector positief is.
+Deze functie gebruikt de UPDATE\_ZIN functie die zorgt dat de zin van de richting zo gekozen wordt dat de eerste niet-nul component van de vector positief is. Als de x- en y-component bijvoorbeeld beiden nul zijn, wordt gezorgd dat de z-component positief is.
 Dit is nodig omdat de vlakken langs een richting identiek zijn aan de vlakken langs zijn omgekeerde richting.
 
 \begin{dutchalgorithm}
@@ -604,9 +604,9 @@ Dit is nodig omdat de vlakken langs een richting identiek zijn aan de vlakken la
             \For{$i \in \{0,1,2,...,k-1\}$}
                     \State $\phi \gets $ \Call{uniform}{0, $2\pi$}
                     \State $\theta \gets acos($\Call{uniform}{-1, 1}$)$
-                    \State $richting \gets \{ sin(\theta)cos(\phi), sin(\theta)sin(\phi), cos(\theta) \}$
-                    \State $richting \gets $ \Call{update\_zin}{richting}
-                    \State \Call{add}{richtingen, richting}
+                    \State $\vec{richting} \gets \{ sin(\theta)cos(\phi), sin(\theta)sin(\phi), cos(\theta) \}$
+                    \State $\vec{richting} \gets $ \Call{update\_zin}{$\vec{richting}$}
+                    \State \Call{add}{richtingen, $\vec{richting}$}
             \EndFor
             \State \Return $richtingen$
         \EndFunction
@@ -624,10 +624,10 @@ Algoritme \ref{alg:bsparbitrary-richtingen} toont de implementatie van de BEPAAL
     \begin{algorithmic}       
         \Function{bepaal\_richtingen}{b, k}
             \State $richtingen \gets \emptyset$
-            \While{$richtingen_{lengte} < $\Call{min}{$k-1$,$b_n - 1$}}
-                    \State $richting \gets b_{primitieven}[$\Call{random\_int}{0, $b_n$}$]_{normaal}$
-                    \State $richting \gets $ \Call{update\_zin}{richting}
-                    \State \Call{add}{richtingen, richting}
+            \While{$richtingen_{lengte} < $ \Call{min}{$k-1$,$b_n - 1$}}
+                    \State $\vec{richting} \gets \vec{b_{primitieven}[\Call{random\_int}{0, b_n}]_{normaal}}$
+                    \State $\vec{richting} \gets $ \Call{update\_zin}{$\vec{richting}$}
+                    \State \Call{add}{richtingen, $\vec{richting}$}
             \EndWhile
             \State \Return $richtingen$
         \EndFunction
@@ -645,30 +645,30 @@ Als er tijdens het bepalen van de clusters, een cluster leeg wordt, worden alle 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
         \Function{bepaal\_richtingen}{b, k}
-            \State $\forall i \in \{0,1,...,b_n-1\}: normalen[i] \gets $\Call{update\_zin}{$b_{primitieven}[i]_{normaal}$}
+            \State $\forall i \in \{0,1,...,b_n-1\}: \vec{normalen[i]} \gets $\Call{update\_zin}{$\vec{b_{primitieven}[i]_{normaal}}$}
             \If{$b_n \leq k$}
                 \State \Return $normalen$
             \EndIf
             \State $clusterCentra \gets \emptyset$
             \While{$clusterCentra_{lengte} < k$}
-                \State $clusterCentrum \gets normalen[$\Call{random\_int}{0, $b_n$}$]$
-                \State \Call{add}{clusterCentra, clusterCentrum}
+                \State $\vec{clusterCentrum} \gets \vec{normalen[\Call{random\_int}{0, b_n}]}$
+                \State \Call{add}{clusterCentra, $\vec{clusterCentrum}$}
             \EndWhile
             \State $iteratie \gets 0$
             \State $oudeClusterCentra \gets clusterCentra$
-            \While{$iteratie < maxIteraties$ \And ($iteraties = 0$ \Or $oudeClusterCentra \neq clusterCentra$ )}
+            \While{$iteratie < maxIteraties$ \And ($iteratie = 0$ \Or $oudeClusterCentra \neq clusterCentra$ )}
                 \State $\forall i \in \{0,1..k-1\}: clusters[i] \gets \{\vec{n} | \vec{n} \in normalen, \neg\exists j: j \neq i, \angle(\vec{clusterCentra[i]}, \vec{n}) > \angle(\vec{clusterCentra[j]}, \vec{n})\} $
                 \State $oudeClusterCentra \gets clusterCentra$
                 \For{$i \in \{0,1,2..k-1\}$}
                     \If{$clusters[i] = \emptyset$}
                         \State $clusterCentra \gets \emptyset$
                         \While{$clusterCentra_{lengte} < k$}
-                            \State $clusterCentrum \gets normalen[$\Call{random\_int}{0, $b_n$}$]$
-                            \State \Call{add}{clusterCentra, clusterCentrum}
+                            \State $\vec{clusterCentrum} \gets \vec{normalen[\Call{random\_int}{0, b_n}]}$
+                            \State \Call{add}{clusterCentra, $\vec{clusterCentrum}$}
                             \State $break$
                         \EndWhile
                     \EndIf
-                    \State $clusterCentra[i] \gets $ \Call{gemiddelde}{$clusters[i]$}
+                    \State $\vec{clusterCentra[i]} \gets $ \Call{gemiddelde}{$clusters[i]$}
                 \EndFor
                 \State $iteratie \gets iteratie + 1$
             \EndWhile
@@ -681,12 +681,12 @@ Als er tijdens het bepalen van de clusters, een cluster leeg wordt, worden alle 
 
 De implementaties van de $\symBSPrandomkd$, $\symBSParbitrarykd$ en $\symBSPclusterkd$ bomen zijn bijna identiek aan de implementaties van de $\symBSPrandom$, $\symBSParbitrary$ en $\symBSPcluster$ bomen.
 Het enige verschil is dat de $\symKd$ richtingen steeds gebruikt worden en dat er maar $k - 3$ richtingen gegenereert worden via de BEPAAL\_RICHTINGEN functies.
-De implementaties van de $\symBSPrandomfastkd$, $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen hebben een aangepaste BEPAAL\_BESTE\_SPLIT methode die de aangepaste $\symSA$ heuristiek van de $\symBSPizefastkd$ boom toepast.
-Algoritme \ref{alg:bspsweepkd-beste-split} toont deze implementatie.
+De implementaties van de $\symBSPrandomfastkd$, $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen hebben een aangepaste BEPAAL\_BESTE\_SPLITSING methode die de aangepaste $\symSA$ heuristiek van de $\symBSPizefastkd$ boom toepast.
+Algoritme \ref{alg:bspsweepfastkd-beste-split} toont deze implementatie.
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_beste\_split}{bouwKnoop}
+        \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
             \State $besteAsVast$, $besteTVast$, $besteKostVast$ $\gets None$, $None$, $\infty$
             \State $richtingen \gets $ \Call{bepaal\_richtingen}{b}
@@ -706,17 +706,17 @@ Algoritme \ref{alg:bspsweepkd-beste-split} toont deze implementatie.
                 \EndFor
                 \EndIf   
             \EndFor
-            \If{$besteKost < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKost < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAs, besteT, besteKost$
             \EndIf
-            \If{$besteKostVast < bouwknoop_{\symNbPrimitives}*\symCost_\symIntersection$}
+            \If{$besteKostVast < bouwKnoop_{\symNbPrimitives}*\symCost_\symIntersection$}
                 \State \Return $besteAsVast, besteTVast, besteKostVast$
             \EndIf
             \State \Return $None, None, \infty$
         \EndFunction
     \end{algorithmic}
-    \caption{Beste split voor een bouwknoop b bij een $\symBSPsweepkd$  boom.}
-    \label{alg:bspsweepkd-beste-split}
+    \caption{Beste splitsing voor een bouwknoop b bij een $\symBSPsweepfastkd$  boom.}
+    \label{alg:bspsweepfastkd-beste-split}
 \end{dutchalgorithm}
 
 % \begin{table}
