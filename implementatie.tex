@@ -1,7 +1,7 @@
 \chapter{Implementatie}
 \label{hoofdstuk:implementatie}
 In dit hoofdstuk wordt de implementatie van volgende $\symBSP$ bomen besproken: $\symKd$ boom, $\symRBSP$ boom, $\symRBSPKd$ boom, $\symBSPize$ boom, $\symBSPizefastkd$ boom, $\symBSPrandom$ boom, $\symBSPrandomkd$ boom, $\symBSPrandomfastkd$ boom, $\symBSParbitrary$ boom, $\symBSParbitrarykd$ boom, $\symBSParbitraryfastkd$ boom, $\symBSPcluster$ boom, $\symBSPclusterkd$ boom en $\symBSPclusterfastkd$ boom.
-Deze implementaties zijn toegevoegd aan de pbrt-v3 \textit{ray tracer} \cite{pbrt} en zijn beschikbaar op \url{https://github.com/jhoobergs/Thesis-pbrt-v3}.\\
+Deze implementaties zijn toegevoegd aan de pbrt-v3 \textit{ray tracer} \cite{pbrt} en zijn beschikbaar op \textit{Github} \cite{gh}.\\
 
 Het hoofdstuk start met een hoog niveau beschrijving van het algoritme om een $\symBSP$ boom te bouwen en het algoritme om deze bomen te intersecteren.
 Daarna wordt voor elke type apart besproken hoe hun knopen voorgesteld worden in het geheugen, hoe inwendige knopen doorkruist worden en hoe het beste splitsingsvlak bepaald wordt.
@@ -220,7 +220,7 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
 \end{dutchalgorithm}
 Algoritme \ref{alg:kd-inwendige-doorkruising} toont het algoritme om inwendige $\symKd$ knopen te doorkruisen.
 Het gebruikt de functie KD\_VLAK\_INTERSECTIE (algoritme \ref{alg:kd-vlak-intersectie}) om te intersecteren met een asgealigneerd vlak.
-De inverse van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.
+De vector waarvan elke component gelijk is aan de inverse van de overeenkomstige component van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.
 Daarnaast bepaalt het algoritme aan de hand van de oorsprong en de richting van de straal of deze straal eerst door de linkse of rechtste kindknoop gaat.
 \\
 

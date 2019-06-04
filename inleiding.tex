@@ -3,7 +3,7 @@
 
 \section{Fysisch gebaseerd renderen}
 \paragraph{Ray tracing}
-\textit{Ray tracing} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het genereert afbeeldingen (= renderen) door stralen te sturen door een scene \cite{groundup}. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
+\textit{Ray tracing} \cite{appel1968some} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het genereert afbeeldingen (= renderen) door stralen te sturen door een scene \cite{Suffern:2007:RTG:1324795}. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
 
 \begin{figure}
     \centering
@@ -13,10 +13,7 @@
     \label{fig:raytracing}    
 \end{figure}
 
-Om realistische afbeeldingen te genereren, wordt belichting in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting waarbij een punt donker is als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen. Dit zijn stralen van het punt naar de lichtbron. Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar. Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting - licht dat via reflecties en refracties punten belicht - is \textit{path tracing} \cite{kajiya1986rendering} een veelgebruikte techniek. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
-
-%  voor realistische beeldgeneratie + referentie,
-
+Om realistische afbeeldingen te genereren, wordt belichting in het intersectiepunt in rekening gebracht. De eenvoudigste vorm van belichting is directe belichting waarbij een punt donker is als er niet rechtstreeks licht van een lichtbron op valt. Om dit te ondersteunen in \textit{ray tracing} wordt gebruikt gemaakt van schaduwstralen. Dit zijn stralen van het punt naar de lichtbron. Deze schaduwstralen worden geïntersecteerd met de scene, als een intersectiepunt tussen het punt en de lichtbron gevonden wordt, is de lichtbron niet zichtbaar. Bij elke intersectie wordt aan de hand van schaduwstralen gekeken of het punt belicht wordt of niet, als het niet belicht wordt, is de kleur zwart. Voor indirecte belichting - licht dat via reflecties en refracties punten belicht - is \textit{path tracing} \cite{kajiya1986rendering} een veelgebruikte techniek. \textit{Path tracing} reflecteert stralen in het intersectiepunt afhankelijk van het materiaal en als deze straal na een aantal botsingen een lichtbron raakt, krijgt het intersectiepunt een belichting van die lichtbron.    
 
 \paragraph{Acceleratiestructuren}
 Het doel van acceleratiestructuren is om de totale tijd nodig om een scene te renderen, te minimaliseren.
@@ -36,7 +33,7 @@ Het volume kan worden opgedeeld op twee manieren: volgens objecten of volgens ru
 Bij opdeling volgens objecten worden de objecten binnen het volume opgedeeld in meerdere disjuncte groepen en de kindvolumes zijn de omhullende volumes van deze groepen.
 Na deze opdeling zit elk object in exact één van deze nieuwe volumes, maar de volumes kunnen overlappen.
 Figuur \ref{fig:opdeling-object} toont dit visueel.
-Een voorbeeld van een acceleratiestructuur waarbij de opdeling volgens objecten gebeurt is de \textit{Bounding Volume Hierarchy} ($\symBVH$).
+Een voorbeeld van een acceleratiestructuur waarbij de opdeling volgens objecten gebeurt is de \textit{Bounding Volume Hierarchy} ($\symBVH$) \cite{goldsmith1987automatic}.
 Opdeling volgens ruimte betekent dat de ruimte in het volume wordt opgedeeld in meerdere delen.
 Na deze opdeling overlappen deze nieuwe volumes niet, maar een object ligt nu in minstens één (en mogelijks in meerdere) kindvolume(s).
 Figuur \ref{fig:opdeling-ruimte} toont dit visueel.
@@ -45,13 +42,13 @@ Deze masterproef focust op $\symBSP$ bomen.
 
 \begin{figure}
     \centering
-    \begin{subfigure}[t]{0.48\linewidth}
+    \begin{subfigure}[t]{0.49\linewidth}
         \centering
     \includegraphics[width=\linewidth]{img/objectSplit}
     \caption{Object}
     \label{fig:opdeling-object} 
     \end{subfigure}
-    \begin{subfigure}[t]{0.48\linewidth}
+    \begin{subfigure}[t]{0.5\linewidth}
         \centering
     \includegraphics[width=\linewidth]{img/volumeSplit}
     \caption{Ruimte}
@@ -68,7 +65,7 @@ Deze boom splitst knopen enkel op via asgealigneerde splitsingsvlakken waardoor 
 Het nadeel hiervan is dat de $\symKd$ boom zich niet goed kan aanpassen aan complexe niet-asgealigneerde geometrie waardoor bepaalde regio's veel straal-driehoekintersecties nodig hebben.\\
 
 Algemene $\symBSP$ bomen kunnen hiervoor theoretisch gezien een oplossing bieden.
-Het ontwerpen van een algemene $\symBSP$ boom die efficiënter is dan de $\symKd$ boom bij het \textit{ray tracen}, is een moeilijk probleem.
+Het ontwerpen van een algemene $\symBSP$ boom die efficiënter is dan de $\symKd$ boom bij het \textit{ray tracen}, is een uitdagend probleem.
 Eén van de moeilijkheden bij het bouwen van een algemene $\symBSP$ boom is het kiezen van goede splitsingsvlakken uit het grote aantal mogelijke splitsingsvlakken.
 In tegenstelling tot de $\symKd$ boom, waarbij enkel asgealigneerde vlakken mogelijk zijn, zijn alle vlakken mogelijk bij een algemene $\symBSP$ boom.
 In deze masterproef wordt onderzocht of het mogelijk is om goede splitsingvlakken te bepalen afhankelijk van de normalen van de driehoeken in de scene.\\

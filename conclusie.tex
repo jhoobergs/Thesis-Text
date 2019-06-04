@@ -2,7 +2,7 @@
 \label{hoofdstuk:conclusie}
 
 \section{Conclusies $\symBSPsweep$}
-De $\symBSPsweep$ boom is een zeer nuttig en uitbreidbaar concept om algemene $\symBSP$ bomen te bouwen.
+De ontworpen $\symBSPsweep$ boom is een zeer nuttig en uitbreidbaar concept om algemene $\symBSP$ bomen te bouwen.
 De lokale geometrie van de knoop kan zeer makkelijk in rekening gebracht worden om goede splitsingsrichtingen te genereren.
 Door het sweepen blijft de bouwtijd relatief beperkt in verhouding met de enige andere algemene $\symBSP$ boom: de $\symBSPize$ boom.
 De bouwtijd is wel twee ordegroottes groter dan die van de $\symKd$ boom.
@@ -17,8 +17,9 @@ De $\symBSPrandomfastkd$ boom toont dat het kiezen van andere splitsingsrichting
 Zelfs zonder rekening te houden met de lokale geometrie, kan dan een boom gebouwd worden die beter is dan de $\symKd$ boom of goed uitgedachte $\symBSPizefastkd$ boom. 
 Dit komt voornamelijk door het grotere aantal verschillende splitsingsvlakken - $O(nlog(n))$ in plaats van $O(n)$ - dat bekeken wordt tijdens het bouwen.
 De $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$ bomen tonen dat het kiezen van splitsingsrichtingen afhankelijk van de lokale geometrie deze boom nog beduidend beter kan maken.
-Deze bomen tonen ook dat het toevoegen van slechts één richting bovenop de $\symKd$ richtingen, al een groot effect kan hebben op het aantal straal-driehoekintersecties en de rendertijd.
-De clustering biedt geen voordeel ten opzichte van het kiezen van willekeurige normalen.
+Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met meer dan 40\% en de rendertijd met meer dan 20\% ten opzichte van de $\symKd$ boom.
+Deze bomen tonen ook dat het toevoegen van slechts één richting bovenop de $\symKd$ richtingen, al een groot effect kan hebben op deze waarden.
+De clustering lijkt geen voordeel te bieden ten opzichte van het kiezen van willekeurige normalen.
 
 \section{Toekomstig onderzoek}
 Toekomstig onderzoek zou zich moeten toespitsen op een aantal zaken: het verbeteren van de bouwtijd, het bepalen van het beste aantal richtingen en het bepalen van betere richtingen.
