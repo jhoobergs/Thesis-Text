@@ -4,7 +4,7 @@ In dit hoofdstuk wordt de implementatie van volgende $\symBSP$ bomen besproken: 
 Deze implementaties zijn toegevoegd aan de pbrt-v3 \textit{ray tracer} \cite{pbrt} en zijn beschikbaar op \url{https://github.com/jhoobergs/Thesis-pbrt-v3}.\\
 
 Het hoofdstuk start met een hoog niveau beschrijving van het algoritme om een $\symBSP$ boom te bouwen en het algoritme om deze bomen te intersecteren.
-Daarna wordt voor elke type aparte besproken hoe hun knopen voorgesteld worden in het geheugen, hoe inwendige knopen doorkruist worden en hoe het beste splitsingsvlak bepaald wordt.
+Daarna wordt voor elke type apart besproken hoe hun knopen voorgesteld worden in het geheugen, hoe inwendige knopen doorkruist worden en hoe het beste splitsingsvlak bepaald wordt.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -153,7 +153,7 @@ Het algoritme maakt gebruik van de volgende functies:
 \begin{enumerate}
     \item DOORKRUIS\_INWENDIGE\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de gegeven straal met het splitsingsvlak van de gegeven inwendige knoop. Het resultaat bevat tVlak, de t-waarde waarvoor de straal intersecteert met het vlak en linksEerst, een booleaanse waarde die aangeeft of de straal eerst door de linkerkindknoop gaat of niet.
     \item INTERSECTEER\_BLAD\_KNOOP(knoop, straal): Deze functie bepaalt de intersectie van de primitieven in de gegeven bladknoop met de gegeven straal.     
-    \item INTERSECTEER(volume, straal): Deze functie bepaalt de intersectie van het omhullend volume van de boom en de straal. Het resultaat bevat een booleaanse waarde, die aanduidt of het volume geraakt wordt door de straal. Als het volume geraakt wordt, bevat het ook de waarde tMin, de t waarde waarvoor de straal het volume binnengaan, en tMax, de t waarde waarvoor de straal het volume verlaat.
+    \item INTERSECTEER(volume, straal): Deze functie bepaalt de intersectie van het omhullend volume van de boom en de straal. Het resultaat bevat een booleaanse waarde, die aanduidt of het volume geraakt wordt door de straal. Als het volume geraakt wordt, bevat het ook de waarde tMin, de t-waarde waarvoor de straal het volume binnengaat, en tMax, de t-waarde waarvoor de straal het volume verlaat.
 \end{enumerate}
 
 De eerste functie is afhankelijk van de specifieke representatie voor bladknopen / inwendige knopen die gebruikt worden voor het specifieke type $\symBSP$ boom.
@@ -221,7 +221,7 @@ Elk element in die lijst met een index tussen \textit{primitiefOffset} en $\text
 Algoritme \ref{alg:kd-inwendige-doorkruising} toont het algoritme om inwendige $\symKd$ knopen te doorkruisen.
 Het gebruikt de functie KD\_VLAK\_INTERSECTIE (algoritme \ref{alg:kd-vlak-intersectie}) om te intersecteren met een asgealigneerd vlak.
 De inverse van de richting van de straal ($\frac{1}{\vec{s_d}}$) moet voor elke straal slechts één keer berekend worden.
-Daarnaast bepaalt het algoritme aan de hand van de oorsprong en de richting van de straal of deze straal eerst door linkse of rechtste kindknoop gaat.
+Daarnaast bepaalt het algoritme aan de hand van de oorsprong en de richting van de straal of deze straal eerst door de linkse of rechtste kindknoop gaat.
 \\
 
 Algoritme \ref{alg:kd-beste-split} toont het algoritme om het beste splitsingsvlak te bepalen bij een $\symKd$ boom.
@@ -297,7 +297,7 @@ Het gebruikt de functie VLAK\_INTERSECTIE (algoritme \ref{alg:vlak-intersectie})
 In vergelijking met de intersectie van een asgealigneerd vlak (algoritme \ref{alg:kd-vlak-intersectie}), moeten twee extra scalaire producten en een deling uitgerekend worden.
 Aangezien, bij een $\symRBSP$ boom, het aantal richtingen waarmee deze scalaire producten berekend moeten worden, beperkt is, kunnen deze per straal éénmalig op voorhand berekend worden.
 Deze techniek is toegepast door \authorBudge{} \cite{Budge}.
-Omdat het effect hiervan, zeker bij stijgende k waarden, niet altijd positief was, is dit niet toegepast.\\
+Omdat het effect hiervan, zeker bij stijgende $k$-waarden, niet altijd positief was, is dit niet toegepast.\\
 % TODO
 \begin{dutchalgorithm}
     \begin{algorithmic}       
@@ -326,7 +326,7 @@ Omdat het effect hiervan, zeker bij stijgende k waarden, niet altijd positief wa
 \end{dutchalgorithm}
 
 Het algoritme om het beste splitsingsvlak te bepalen bij een $\symRBSP$ boom is zeer gelijkaardig aan het algoritme voor de $\symKd$ boom.
-In plaats van te sweepen over de drie assen, wordt er gesweept over alle k richtingen.
+In plaats van te sweepen over de drie assen, wordt er gesweept over alle $k$ richtingen.
 Het bepalen van de linker- en rechterrand van de primitieven langs de as, vereist scalaire producten in tegenstelling tot bij de $\symKd$ boom.
 Het splitsen van de omhullende volumes en het berekenen van de oppervlaktes is complexer omdat met \symKDOP{}s gewerkt moet worden in plaats van met asgealigneerde balken.
 \authorBudge{} \cite{Budge} ontwikkelden een methode om deze splitsingsen en oppervlaktes incrementeel te berekenen tijdens het sweepen, deze methode wordt niet gebruikt.
@@ -358,7 +358,7 @@ Algoritme \ref{alg:rbspkd-inwendige-doorkruising} toont de aangepaste versie van
 \end{dutchalgorithm}
 
 Het algoritme om het beste splitsingsvlak te bepalen bij een $\symRBSPKd$ boom wordt getoond in algoritme \ref{alg:rbspkd-beste-split}.
-De sweeping over de k richtingen wordt opgesplitst in twee delen: de sweeping over de $\symKd$ richtingen en de sweeping over de $\symBSP$ richtingen.
+De sweeping over de $k$ richtingen wordt opgesplitst in twee delen: de sweeping over de $\symKd$ richtingen en de sweeping over de $\symBSP$ richtingen.
 Het eerste deel berekent de $\symSAH$ kost met $\symCostTraversalKd$ als doorkruiskost.
 Het tweede deel berekent twee $\symSAH$ kosten, één met een $\symCostTraversalBSP$ kost die lineair afhankelijk is van het aantal driehoeken en één met een vaste $\symCostTraversalBSP$ kost.
 Deze eerste kost wordt rechtstreeks vergeleken met de beste kost van de $\symKd$ richtingen.
@@ -481,7 +481,7 @@ Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze 
 De $\symBSPizefastkd$ boom maakt gebruik van $\symBSPKd$ knopen. 
 Deze $\symBSPKd$ knopen zijn identiek aan $\symBSP$ knopen, met uitzondering van het aantal bits gebruikt door de \textit{flags} en \textit{tweedeKindIndex} variabelen. 
 De \textit{flags} variabele heeft drie bits nodig, de waarden 0, 1 en 2 stellen de x, y en z as voor, waarde 3 betekent dat het een bladknoop is en waarde 4 betekent dat het een algemene $\symBSP$ knoop is met willekeurig splitsingsvlak.
-Om het aantal bits een veelvoud van 32 te laten blijven, wordt de grootte van de \textit{tweedeKindIndex} variabele met 2 verminderd.
+Om het aantal bits een veelvoud van 32 te laten blijven, wordt de grootte van de \textit{tweedeKindIndex} variabele met 2 bits verminderd.
 Hierdoor kan de $\symBSPizefastkd$ boom vier keer minder knopen bevatten dan de $\symBSPize$ boom.
 Tabel \ref{tab:voorstelling-bspkd-knoop} toont de representatie van zowel inwendige $\symBSPKd$ knopen als blad $\symBSPKd$ knopen.\\
 
@@ -576,7 +576,7 @@ Hierdoor is er geen nood aan een hulpstructuur zoals bij de $\symBSPize$ boom.
     \begin{algorithmic}       
         \Function{bepaal\_beste\_splitsing}{bouwKnoop}
             \State $besteAs$, $besteT$, $besteKost$ $\gets None$, $None$, $\infty$
-            \State $richtingen \gets $ \Call{bepaal\_richtingen}{bouwKnoop, k}
+            \State $richtingen \gets $ \Call{bepaal\_richtingen}{bouwKnoop, $k$}
             \For{$richting \in richtingen$}
                 \State Sorteer eindpunten volgens de richting
                 \For{elk vlak volgens de richting}
@@ -592,14 +592,14 @@ Hierdoor is er geen nood aan een hulpstructuur zoals bij de $\symBSPize$ boom.
 \end{dutchalgorithm}
 
 \paragraph{$\mathbf{\symBSPrandom}$ boom}
-De $\symBSPrandom$ boom kiest op elk niveau k random richtingen.
+De $\symBSPrandom$ boom kiest op elk niveau $k$ random richtingen.
 Algoritme \ref{alg:bsprandom-richtingen} toont de implementatie van de BEPAAL\_RICHTINGEN functie voor de $\symBSPrandom$ boom. 
 Deze functie gebruikt de UPDATE\_ZIN functie die zorgt dat de zin van de richting zo gekozen wordt dat de eerste niet-nul component van de vector positief is. Als de x- en y-component bijvoorbeeld beiden nul zijn, wordt gezorgd dat de z-component positief is.
 Dit is nodig omdat de vlakken langs een richting identiek zijn aan de vlakken langs zijn omgekeerde richting.
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_richtingen}{b, k}
+        \Function{bepaal\_richtingen}{b, $k$}
             \State $richtingen \gets \emptyset$
             \For{$i \in \{0,1,2,...,k-1\}$}
                     \State $\phi \gets $ \Call{uniform}{0, $2\pi$}
@@ -616,13 +616,13 @@ Dit is nodig omdat de vlakken langs een richting identiek zijn aan de vlakken la
 \end{dutchalgorithm}
 
 \paragraph{$\mathbf{\symBSParbitrary}$ boom}
-De $\symBSParbitrary$ boom kiest op elk niveau de normalen van k driehoeken als richtingen.
-Als er minder dan k driehoeken zijn, worden de normalen van alle driehoeken gebruikt.
+De $\symBSParbitrary$ boom kiest op elk niveau de normalen van $k$ driehoeken als richtingen.
+Als er minder dan $k$ driehoeken zijn, worden de normalen van alle driehoeken gebruikt.
 Algoritme \ref{alg:bsparbitrary-richtingen} toont de implementatie van de BEPAAL\_RICHTINGEN functie voor de $\symBSParbitrary$ boom.
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_richtingen}{b, k}
+        \Function{bepaal\_richtingen}{b, $k$}
             \State $richtingen \gets \emptyset$
             \While{$richtingen_{lengte} < $ \Call{min}{$k-1$,$b_n - 1$}}
                     \State $\vec{richting} \gets \vec{b_{primitieven}[\Call{random\_int}{0, b_n}]_{normaal}}$
@@ -637,14 +637,14 @@ Algoritme \ref{alg:bsparbitrary-richtingen} toont de implementatie van de BEPAAL
 \end{dutchalgorithm}
 
 \paragraph{$\mathbf{\symBSPcluster}$ boom}
-De $\symBSPcluster$ boom kiest op elk niveau k richtingen door de normalen te clusteren in k groepen via K-means clustering.
+De $\symBSPcluster$ boom kiest op elk niveau $k$ richtingen door de normalen te clusteren in $k$ groepen via K-means clustering.
 De centra van de clusters zijn de gebruikte richtingen.
 Algoritme \ref{alg:bspcluster-richtingen} toont de implementatie van de BEPAAL\_RICHTINGEN functie voor de $\symBSPcluster$ boom.
 Als er tijdens het bepalen van de clusters, een cluster leeg wordt, worden alle clusters opnieuw willekeurig gegenereerd.
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       
-        \Function{bepaal\_richtingen}{b, k}
+        \Function{bepaal\_richtingen}{b, $k$}
             \State $\forall i \in \{0,1,...,b_n-1\}: \vec{normalen[i]} \gets $\Call{update\_zin}{$\vec{b_{primitieven}[i]_{normaal}}$}
             \If{$b_n \leq k$}
                 \State \Return $normalen$
