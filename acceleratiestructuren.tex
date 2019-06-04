@@ -1,7 +1,7 @@
 \chapter{$\mathbf{\symBSP}$ bomen}
 \label{hoofdstuk:voorgaand-werk}
-Dit hoofdstuk start met een korte uitleg over het concept van $\symBSP$ bomen.
-Daarna wijdt dit hoofdstuk uit over de verschillende varianten van de $\symBSP$ boom: de $\symKd$ boom, $\symRBSP$ boom en de algemene $\symBSP$ boom van \authorIze{} \cite{ize} ($\symBSPize$).
+Dit hoofdstuk start met een uitleg over het concept van $\symBSP$ bomen.
+Daarna wijdt dit hoofdstuk uit over de verschillende varianten van de $\symBSP$ boom: de $\symKd$ boom, de $\symRBSP$ boom en de algemene $\symBSP$ boom van \authorIze{} \cite{ize} ($\symBSPize$).
 Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
 
 \section{Concept}
@@ -12,7 +12,7 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
     Het bepalen van de omhullende asgealigneerde balk is het eenvoudigste.
     Dit omhullend volume wordt dan in twee volumes (de kindvolumes) gesplitst volgens een vlak (het splitsingsvlak).
     De wortelknoop - die de hele scene voorstelt - krijgt dan twee kindknopen, één voor elk kindvolume.
-    Deze kindknopen bevatten alle driehoeken die (deels) in hun volume liggen. Figuur \ref{fig:traversal-bsp} toont een scene die opgesplitst is in twee kindknopen $k_1$ en $k_2$ door het oranje splitsingsvlak. Deze twee kindknopen zijn elk ook opgesplitst volgens een groen splitsingsvlak. 
+    Deze kindknopen bevatten alle driehoeken die (deels) in hun volume liggen. Deze kindknopen worden dan recursief opgesplitst op dezelfde manier. Figuur \ref{fig:traversal-bsp} toont een scene waarbij de wortelknoop opgesplitst is in twee kindknopen $k_1$ en $k_2$ door het oranje splitsingsvlak. Deze twee kindknopen zijn elk ook opgesplitst volgens een groen splitsingsvlak. 
 
     \paragraph{Het intersecteren van de boom}
     De eerste stap bij het bepalen van de intersectie tussen een straal en een boom, is het bepalen van de intersectie tussen de straal en het volume van de wortelknoop.
@@ -28,7 +28,7 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
         \centering
         \includegraphics[width=\linewidth]{img/volumeSplitTraversal}
         \caption[Intersecteren van een $\symBSP$ boom]%
-        {Intersecteren van een $\symBSP$ boom - \small Een 2D voorbeeld dat toont hoe de intersectie tussen een straal en een $\symBSP$ boom wordt bepaald. De straal bepaalt eerst de intersectie met het volume van de wortelknoop. Aangezien er een intersectie is, doorkruist de straal de wortelknoop door te intersecteren met het oranje splitsingsvlak. De $k_1$ knoop wordt doorkruist waardoor de intersectie met het linkse groene splitsingsvlak berekend wordt. Dan worden alle driehoeken in bladknoop $k_{1,2}$ getest op intersectie, gevolgd door alle driehoeken in bladknoop $k_1,1$. Omdat er nog geen intersectie gevonden is, wordt dan de $k_2$ knoop doorkruist waardoor intersectie met het rechtse groene splitsingsvlak berekend wordt. Bladknoop $k_{2,1}$ wordt dan doorkruist waardoor het intersectiepunt gevonden wordt.}
+        {Intersecteren van een $\symBSP$ boom - \small Een 2D voorbeeld dat toont hoe de intersectie tussen een straal en een $\symBSP$ boom wordt bepaald. De straal bepaalt eerst de intersectie met het volume van de wortelknoop. Aangezien er een intersectie is, doorkruist de straal de wortelknoop door te intersecteren met het oranje splitsingsvlak. De $k_1$ knoop wordt doorkruist waardoor de intersectie met het linkse groene splitsingsvlak berekend wordt. Dan worden alle driehoeken in bladknoop $k_{1,2}$ getest op intersectie, gevolgd door alle driehoeken in bladknoop $k_{1,1}$. Omdat er nog geen intersectie gevonden is, wordt dan de $k_2$ knoop doorkruist waardoor intersectie met het rechtse groene splitsingsvlak berekend wordt. Bladknoop $k_{2,1}$ wordt dan doorkruist waardoor het intersectiepunt gevonden wordt.}
         \label{fig:traversal-bsp}    
     \end{figure}
 
@@ -80,7 +80,7 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
     Voor een Kd-boom is de Surface Area Heuristiek ($\symSAH$) de beste gekende methode om bomen met minimale verwachtte kost te bouwen \cite{ize}.
     De $\symSAH$ is oorspronkelijk ontwikkeld door \authorGoldsmithSalmon{} \cite{goldsmith1987automatic} voor de $\symBVH$ en later aangepast door \authorMacDonaldBooth{} \cite{macdonald1990heuristics} voor de $\symKd$ boom. 
     De $\symSAH$ schat de kost van een splitsingsvlak door te veronderstellen dat beide kindknopen, bladknopen worden en dat de kost om een bladknoop te intersecteren afhankelijk is van het aantal driehoeken en de oppervlakte van het omhullend volume.
-    De verwachte kost $\symCost$ om een knoop $\symNodeExample$ te splitsen in kindknopen ${\symLeft}$ en ${\symRight}$ is dan gelijk aan formule \ref{eq:sah} met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
+    De verwachte kost $\symCost_\symNodeExample$ om een knoop $\symNodeExample$ te splitsen in kindknopen ${\symLeft}$ en ${\symRight}$ is dan gelijk aan formule \ref{eq:sah} met kost $\symCost$, oppervlakte $\symSA()$ en aantal driehoeken $\symNbPrimitives$.
     De subscripts ${\symIntersection}$ en ${\symTraversal}$ staan voor respectievelijk intersectie en doorkruising.
     \begin{equation}
         \label{eq:sah}
@@ -137,9 +137,9 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
     In tegenstelling tot de $\symKd$ en $\symRBSP$ boom kan $\symBSPize$ wel splitsingsvlakken kiezen afhankelijk van de geometrie.
     De $\symBSPize$ boom gebruikt de splitsingsvlakken van de $\symKd$ boom en elke driehoek in de knoop bepaalt nog vier extra splitsingsvlakken.
     Deze vier vlakken zijn: het vlak van de driehoek zelf (autopartitie) en de drie vlakken loodrecht op de driehoek door elk van de drie zijden.
-    Merk op dat deze laatste vier vlakken rekening houden met de geometrie en niet mogelijk zouden zijn bij een $\symRBSP$ boom.
+    Merk op dat deze laatste vier vlakken rekening houden met de geometrie en niet mogelijk zouden zijn bij een $\symRBSP$ boom \cite{ize}.
     Het omhullend volume van de knopen bij een $\symBSP$ boom is een convex veelvlak.
-    Voor de eenvoud wordt de omhullende balk gebruikt als omhullend volume voor de wortelknoop.
+    Voor de eenvoud wordt de asgealigneerde omhullende balk gebruikt als omhullend volume voor de wortelknoop.
     Dit heeft als extra voordeel dat er een zeer snelle test is voor stralen die niets raken. \\
 
     % sweeping Kd richtingen & bvh hulpstructuur
@@ -158,8 +158,8 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
     De boom die deze optimalisatie toepast, wordt aangeduid met $\symBSPizefastkd$.
     Het feit dat $\symKd$ knopen goedkoper zijn om te doorkruisen dan $\symBSP$ knopen, zorgt ervoor dat er voor deze twee soorten knopen een aparte doorkruiskost gebruikt moet worden in de $SAH$: $\symCostTraversalBSP$ en $\symCostTraversalKd$.
     Deze kosten rechtstreeks in de $SAH$ gebruiken, zorgt ervoor dat voornamelijk $\symBSP$ knopen gecreëerd worden.
-    De reden hiervoor is dat de intersectieterm van de $SAH$ lineair varieert in het aantal driehoeken en die intersectieterm domineert snel de constante doorkruisterm waardoor $\symBSP$ splitsingen, die de driehoeken beter splitsen, gekozen worden.
-    Deze lineaire afhankelijkheid is geen probleem als de $SAH$ enkel moet beslissen of een knoop gesplitst wordt of niet, maar wel als het moet bepalen of een knoop al dan niet gesplitst wordt en of dit best door een goedkoep $\symKd$ vlak of door een duur $\symBSP$ vlak gedaan wordt.\\
+    De reden hiervoor is dat de intersectieterm van de $SAH$ lineair varieert in het aantal driehoeken en die intersectieterm domineert snel de constante doorkruisterm waardoor $\symBSP$ splitsingen, die de driehoeken beter splitsen, gekozen worden \cite{ize}.
+    Deze lineaire afhankelijkheid is geen probleem als de $SAH$ enkel moet beslissen of een knoop gesplitst wordt of niet, maar wel als het moet bepalen of een knoop al dan niet gesplitst wordt en of dit best door een goedkoop $\symKd$ vlak of door een duur $\symBSP$ vlak gedaan wordt.\\
 
     \authorIze{} \cite{ize} lossen dit probleem op door ook $\symCostTraversalBSP$ lineair te laten variëren met het aantal driehoeken: $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$ waarbij $\alpha$ een instelbare parameter is.
     Als er na het testen van alle splitsingsvlakken geen splitsingsvlak gevonden is dat zorgt dat de kost om te splitsen lager is dan de kost om een bladknoop te creëren, worden alle $\symBSP$ vlakken opnieuw getest, maar deze keer met een constante $\symCostTraversalBSP$. Dit blijkt veel beter te werken dan een constante kost. Merk op dat deze optimalisatie gebruikt kan worden bij elke $\symBSP$ boom die de $\symKd$ richtingen bekijkt. Aangezien de $\symKd$ richtingen bij alle huidige $\symRBSP$ implementaties steeds in de verzameling splitsingsrichtingen zitten, kan de optimalisatie ook gebruikt worden om een $\symRBSPKd$ boom te bouwen.\\
@@ -173,7 +173,7 @@ Het hoofdstuk eindigt met een vergelijking van deze verschillende varianten.
 \paragraph{Bouwen en intersecteren} 
 Tabel \ref{tab:boom-vergelijking} vergelijkt de hierboven besproken $\symBSP$ bomen.
 Hoe algemener de $\symBSP$ boom, hoe complexer het omhullend volume en hoe nauwer de boom kan aansluiten aan de scene.
-Als voor elke driehoek in de knoop, dezelfde vlakken bekeken worden, kan sweeping toegepast worden om efficiënt de $SAH$ kosten te berekenen.
+Als voor meerdere driehoeken in de knoop, vlakken volgens dezelfde richting bekeken worden, kan sweeping toegepast worden om efficiënt de $SAH$ kosten te berekenen.
 Als sweeping niet kan, zoals bij de geometrie-afhankelijke vlakken van de $\symBSPize$ boom, is het berekenen van de $SAH$ kosten moeilijker en moet een hulpstructuur gebruikt worden.
 Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\symKd$ knoopdoorkruising gebruikt worden. Voor de $\symRBSP$ boom is dit nog nooit gedaan.
 
@@ -191,7 +191,6 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
     \caption[Vergelijking van de bestaande soorten $\symBSP$ bomen.]{Vergelijking van de bestaande soorten $\symBSP$ bomen - \small Deze tabel vat een aantal belangrijke eigenschappen van de bestaande soorten $\symBSP$ bomen samen. }
     \label{tab:boom-vergelijking}
   \end{table}
-  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
 
   \paragraph{Aantal verschillende splitsingsvlakken}
   Eén van de belangrijkste eigenschappen van een $\symBSP$ boom is zijn vermogen om zich aan te passen aan complexe geometrie.
@@ -204,9 +203,10 @@ Voor elk van deze soorten $\symBSP$ boom kan de optimalisatie met de snelle $\sy
   De $\symBSPize$ boom bekijkt op elk niveau ook exact dezelfde splitsingsvlakken en is dus niet zo algemeen als een $\symBSP$ boom kan zijn. 
   Figuur \ref{fig:splitsingsvlakken-bspize} toont dit visueel.
   De reden hiervoor is dat de gebruikte $\symBSP$ splitsingsvlakken enkel afhankelijk zijn van de driehoeken zelf en niet van welke driehoeken samen in een knoop zitten.\\
+  \footnotetext[1]{De $\symRBSPKd$ boom is nog nooit geïmplementeerd.}
 
   Geen van bovenstaande bomen gebruikt de volledige vrijheid van een $\symBSP$ boom om op elk niveau andere splitsingsvlakken te nemen en op die manier beperken ze hun vermogen om zich aan te passen aan complexe geometrie.
-  Driehoeken die in de wortelknoop door geen enkel vlak van elkaar kunnen worden gesplitst, kunnen nooit van elkaar gesplitst worden.
+  Driehoeken die in de wortelknoop door geen enkel vlak van elkaar kunnen worden gesplitst, kunnen op geen enkel niveau van elkaar gesplitst worden.
   Het volgende hoofdstuk introduceert nieuwe $\symBSP$ bomen die deze vrijheid wel benutten.
 
 

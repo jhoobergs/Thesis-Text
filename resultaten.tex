@@ -24,7 +24,7 @@ Hierdoor kan de kracht van de verschillende bomen objectief vergeleken worden.\\
 Figuur \ref{fig:results-scenes} toont de gebruikte testscenes en tabel \ref{tab:results-statistics-scenes} toont informatie over deze scenes.
 De Killeroo Been scene is een scene waarbij algemene $\symBSP$ bomen voordeel hebben ten opzichte van de $\symKd$ boom omwille van de complexe geometrie waarop is ingezoomd.
 De drie andere scenes zijn realistische indoor scenes.
-Alle scenes maken gebruik van de in pbrt ingebouwde Halton sampling met een specifiek aantal stralen per pixel (\textit{spp}).
+Alle scenes maken gebruik van de in pbrt ingebouwde Halton sampling \cite{pbrt} met een specifiek aantal stralen per pixel (\textit{spp}).
 De globale belichting wordt berekend via \textit{path tracing} waarbij steeds een maximale diepte van 5 gebruikt wordt, behalve bij de museum scene waar enkel directe belichting gebruikt wordt.\\
 
 \begin{figure}
@@ -52,7 +52,7 @@ De globale belichting wordt berekend via \textit{path tracing} waarbij steeds ee
     \caption{Museum scene}
     \label{fig:results-scene-museum}    
   \end{subfigure}
-  \caption[Testscenes]{Testscenes - \small De testscenes gebruikt om de nieuwe $\symBSP$ te testen}
+  \caption[Testscenes]{Testscenes - \small De testscenes gebruikt om de nieuwe $\symBSP$ bomen te testen}
   \label{fig:results-scenes}
 \end{figure}
 
@@ -970,7 +970,7 @@ head to column names}
     \plotAllFastKdVsAantal{data/vergelijken_blad_museum.csv}
     \skipCaptionA{1}{Museum}
   \end{subfigure}
-  \caption[Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte]{Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte - \small Elk van deze grafieken toont voor een bepaalde scene voor elke $\symBSP$ boom de cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties (met zicht- en schaduwstralen) in functie van de bladknoopgrootte. Voor een waarde van x op de x-as, wordt het procentueel aan straal-driehoekintersecties dat gebeurt in bladknopen met x of minder driehoeken, getoond.}
+  \caption[Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte]{Cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties in functie van de bladknoopgrootte - \small Elk van deze grafieken toont voor een bepaalde scene voor elke $\symBSP$ boom de cumulatieve procentuele bijdrage aan het totaal aantal straal-driehoekintersecties (met zicht- en schaduwstralen) in functie van de bladknoopgrootte. Voor een waarde van x op de x-as, wordt het procentueel aantal straal-driehoekintersecties dat gebeurt in bladknopen met x of minder driehoeken, getoond.}
   \label{fig:vergelijking-blad}
 \end{figure}
 

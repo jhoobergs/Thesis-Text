@@ -10,7 +10,7 @@ Het algemene idee van de $\symBSPsweep$ boom wordt dan besproken en daarna worde
     In de eerste subsectie wordt wiskundig aangetoond dat het (onder bepaalde aannames) altijd voordelig is om bladknopen met meer dan één driehoek op te splitsen in kleinere bladknopen.
     De tweede subsectie toont een voorbeeld waarbij de $\symKd$ en $\symBSPize$ boom vergeleken worden op basis van de grootte van de bladknopen.
 \subsection{Wiskundige basis}
-    De rendertijd $\symTime_{\symRender}$ bestaat uit twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
+    De rendertijd $\symTime_{\symRender}$ bevat twee grote factoren: de tijd gespendeerd aan het intersecteren met driehoeken (de intersectietijd) en de tijd gespendeerd aan het doorkruisen van de boom (de doorkruistijd).
     De totale intersectietijd $\symTime_{\symIntersection, \symTotal}$ is afhankelijk van het aantal driehoeken $\symNbPrimitives_\symLeaf$ in de geïntersecteerde bladknopen $\symLeaf$ en het aantal keer $\symTraversalL_\symLeaf$ dat elk van deze bladknopen doorkruist wordt.
     De totale doorkruistijd $\symTime_{\symTraversal, \symTotal}$ is afhankelijk van het aantal doorkruisingen $\symTraversalL_{\symInternal}$ van inwendige knopen.
     Formule \ref{eq:rendertijd} beschrijft dit wiskundig met $\symTime_{\symIntersection}$ de tijd nodig voor één straal-driehoekintersectie, $\symTime_{\symTraversal}$ de tijd nodig om één knoop te doorkruisen en $B$ het aantal geïntersecteerde bladknopen.
@@ -128,7 +128,7 @@ Hieruit kan worden afgeleid dat het altijd beter is om bladknopen met meer dan �
     \label{fig:voorbeeld-bladknopen}
     \caption[Invloed grootte bladknopen op het aantal straal-driehoekintersecties]{Invloed grootte bladknopen op het aantal straal-driehoekintersecties - \small (a) toont de Killeroo scene, (b) toont de scene waarbij ingezoomd is op de benen van de Killeroo, (c) toont het totaal aantal intersecties als een cumulatieve som over het aantal driehoeken in de bladknoop. Dit betekent dat de waarde bij x overeenkomt met de som van het aantal intersecties in bladknopen met x of minder driehoeken.}
 \end{figure}
-Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeld scene dient bij de pbrt \cite{pbrt} \textit{ray tracer}.
+Figuur \ref{fig:killeroo} toont de Killeroo scene die als voorbeeldscene dient bij de pbrt \cite{pbrt} \textit{ray tracer}.
 Voor deze scene zijn de $\symKd$ boom en de $\symBSPizefastkd$ boom aan elkaar gewaagd.
 De $\symBSPizefastkd$ boom neemt de bovenhand als er wordt ingezoomd op de benen (figuur \ref{fig:killeroo-been}) van de Killeroo, waar de $\symKd$ boom veel bladknopen met meerdere driehoeken bevat.
 Figuur \ref{fig:voorbeeld-cumul} toont het cumulatief aantal intersecties per groep van bladknopen met hetzelfde aantal driehoeken.

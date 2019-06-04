@@ -3,7 +3,7 @@
 
 \section{Fysisch gebaseerd renderen}
 \paragraph{Ray tracing}
-\textit{Ray tracing} \cite{appel1968some} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het genereert afbeeldingen (= renderen) door stralen te sturen door een scene \cite{Suffern:2007:RTG:1324795}. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt ervoor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
+\textit{Ray tracing} \cite{appel1968some} is een computergrafiek techniek voor fysisch gebaseerd renderen. Het genereert afbeeldingen (= renderen) door stralen te sturen door een scene \cite{Suffern:2007:RTG:1324795}. Een camera wordt op een bepaalde positie in de scene geplaatst en een afbeeldingsvlak, opgedeeld in pixels, wordt er voor geplaatst. Door elke pixel worden één (of meerdere stralen) gestuurd. Deze stralen worden zichtstralen genoemd en de kleur van hun dichtste intersectiepunt met de scene, bepaalt de kleur van de pixel. Figuur \ref{fig:raytracing} toont dit visueel.\\
 
 \begin{figure}
     \centering
@@ -68,7 +68,7 @@ Algemene $\symBSP$ bomen kunnen hiervoor theoretisch gezien een oplossing bieden
 Het ontwerpen van een algemene $\symBSP$ boom die efficiënter is dan de $\symKd$ boom bij het \textit{ray tracen}, is een uitdagend probleem.
 Eén van de moeilijkheden bij het bouwen van een algemene $\symBSP$ boom is het kiezen van goede splitsingsvlakken uit het grote aantal mogelijke splitsingsvlakken.
 In tegenstelling tot de $\symKd$ boom, waarbij enkel asgealigneerde vlakken mogelijk zijn, zijn alle vlakken mogelijk bij een algemene $\symBSP$ boom.
-In deze masterproef wordt onderzocht of het mogelijk is om goede splitsingvlakken te bepalen afhankelijk van de normalen van de driehoeken in de scene.\\
+In deze masterproef wordt onderzocht of het mogelijk is om goede splitsingsvlakken te bepalen afhankelijk van de normalen van de driehoeken in de scene.\\
 
 De oplossing die in deze tekst naar voren geschoven wordt, is een nieuw soort algemene $\symBSP$ boom: de $\symBSPsweep$ boom.
 De $\symBSPsweep$ boom laat toe om in elke knoop een aantal richtingen te bepalen afhankelijk van de driehoeken in die knoop.

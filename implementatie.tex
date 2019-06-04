@@ -82,7 +82,7 @@ In de volgende secties wordt bij elk type $\symBSP$ boom hun specifieke knooprep
 De exacte implementaties van de functies om deze representaties in te vullen, zijn triviaal en worden niet expliciet beschreven.\\
 
 
-Samengevat gaat Algoritme \ref{alg:bsp-bouw} voor elke knoop, die nog voldoende primitieven bevat en niet op de maximale diepte ligt, de beste splitsing bepalen en afhankelijk van de $\symSAH$ waarde bepalen of een splitsing moet gebeuren. 
+Samengevat gaat algoritme \ref{alg:bsp-bouw} voor elke knoop, die nog voldoende primitieven bevat en niet op de maximale diepte ligt, de beste splitsing bepalen en afhankelijk van de $\symSAH$ waarde bepalen of een splitsing moet gebeuren. 
 Aangezien een slechte splitsing op een bepaald niveau, kan leiden tot een nuttige splitsing op een lager niveau, wordt een knoop toch gesplitst als splitsen nadelig is volgens de $\symSAH$ heuristiek.
 Zulke \textit{slechte aanpassingen} worden niet gedaan als de kost van de beste splitsing vier keer hoger is dan de kost om niet te splitsen en als er bovendien minder dan 16 primitieven in de knoop zitten.
 Elk lusvrij pad van de wortelknoop naar elke andere knoop, mag maximaal twee zulke \textit{slechte aanpassingen} bevatten.
@@ -405,10 +405,10 @@ Tabel \ref{tab:voorstelling-bsp-knoop} toont de representatie van zowel inwendig
 De representatie van de $\symBSP$ knopen is identiek aan de representatie van de paper van \authorIze{} \cite{ize}.
 Net als bij de $\symKd$ en $\symRBSP$ knopen bevatten zowel inwendige $\symBSP$ knopen als blad $\symBSP$ knopen de \textit{flags} variabele.
 De \textit{flags} variabele wordt bij de $\symBSP$ boom enkel gebruikt om aan te geven of het een inwendige knoop (waarde 0) of een bladknoop (waarde 1) is.
-Om de oriëntatie van het splitsingsvlak voor te stellen, zijn drie vlottend komma getallen nodig.
+Om de oriëntatie van het splitsingsvlak voor te stellen, zijn drie vlottende komma getallen nodig.
 De \textit{splitsRichting} variabele bij inwendige $\symBSP$ knopen stelt de normaal van het splitsingsvlak voor.
 De nodige geheugenruimte voor de inwendige $\symBSP$ knopen en de blad $\symBSP$ knopen is verschillend, maar aangezien elke knoop - in de huidige implementatie - evenveel geheugen moet innemen, neemt elke knoop 160 bits geheugen in.
-Dit is 2.5 keer meer dan de $\symKd$ en $\symRBSP$ knopen en toont één van de nadelen van algemene $\symBSP$ bomen.\\
+Dit is 2.5 keer zoveel als de $\symKd$ en $\symRBSP$ knopen en toont één van de nadelen van algemene $\symBSP$ bomen.\\
 \begin{table}
         \centering
         \begin{tabular}{@{}|c|c|c|c|@{}} \toprule      
@@ -445,7 +445,7 @@ De $\symBSP$ vlakken worden per driehoek bekeken en maken gebruik van een $\symB
 Bij de $\symBSPize$ boom is het splitsen van de omhullende volumes en het berekenen van de oppervlaktes complexer omdat met algemene convexe veelvlakken gewerkt moet worden in plaats van met asgealigneerde balken.
 Elke van deze convexe veelvlakken kan beschouwd worden als een \symKDOP{} met andere richtingen en is ook op deze manier geïmplementeerd.
 Voor elke splitsingsrichting wordt gekeken of een voorouder van de huidige knoop al gesplitst is volgens een richting die binnen een hoek van $0.5^{\circ}$ ligt. 
-De gebruikte richtingen worden gecontroleerd in volgorde dat ze gebruikt zijn.
+De gebruikte richtingen worden gecontroleerd in de volgorde waarin ze gebruikt zijn.
 Als een vorige richting gevonden wordt, wordt er opnieuw gesplitst volgens deze vorige richting in plaats van de nieuwe richting.
 
 
@@ -500,7 +500,7 @@ Tabel \ref{tab:voorstelling-bspkd-knoop} toont de representatie van zowel inwend
 \end{table}   
 
 Het grootste verschil tussen $\symBSP$ knopen en $\symBSPKd$ knopen is dat de $\symBSPKd$ knopen gebruik maken van de snellere $\symKd$ doorkruistechniek voor inwendige $\symKd$ knopen.
-Algoritme \ref{alg:bspkd-inwendige-doorkruising} toont de aangepaste versie van het doorkruisalgoritme voor $\symBSPKd$ knopen.
+Algoritme \ref{alg:bspkd-inwendige-doorkruising} toont de aangepaste versie van het doorkruisalgoritme voor $\symBSPKd$ knopen.\\
 
 
 \begin{dutchalgorithm}
@@ -640,7 +640,7 @@ Algoritme \ref{alg:bsparbitrary-richtingen} toont de implementatie van de BEPAAL
 De $\symBSPcluster$ boom kiest op elk niveau $k$ richtingen door de normalen te clusteren in $k$ groepen via K-means clustering.
 De centra van de clusters zijn de gebruikte richtingen.
 Algoritme \ref{alg:bspcluster-richtingen} toont de implementatie van de BEPAAL\_RICHTINGEN functie voor de $\symBSPcluster$ boom.
-Als er tijdens het bepalen van de clusters, een cluster leeg wordt, worden alle clusters opnieuw willekeurig gegenereerd.
+Als er tijdens het bepalen van de clusters, een cluster leeg wordt, worden alle clusters opnieuw willekeurig gegenereerd.\\
 
 \begin{dutchalgorithm}
     \begin{algorithmic}       

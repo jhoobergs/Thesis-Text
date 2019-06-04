@@ -1,9 +1,10 @@
-\documentclass[master=cws,masteroption=mmc]{kulemt}
+\documentclass[master=cws,masteroption=mmc, bind=18mm]{kulemt}
+%\documentclass[master=cws,masteroption=mmc,oneside]{kulemt}
 \setup{title={Het gebruik van de normalen bij het bouwen van BSP acceleratiestructuren},
   author={Jesse Hoobergs},
   promotor={Prof.\,dr.\,ir.\ Ph. Dutré},
   assessor={Dr. B. Verreet\and Prof. dr. R. Vandebril},
-  assistant={Ir.\ M. Moulin\and Ir. P. Bartels}}
+  assistant={Ir. P. Bartels}}
 % De volgende \setup mag verwijderd worden als geen fiche gewenst is.
 \setup{filingcard,
   translatedtitle={Using the normals to build BSP acceleration structures.},
@@ -213,7 +214,6 @@ Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met me
     $\symTime_{\symIntersection}$ & De tijd nodig om te intersecteren met één primitief. \\
     $\symTime_{\symIntersection, \symTotal}$ & De totale tijd gespendeerd aan het intersecteren met primitieven. \\
     $\symTime_{\symRender}$ & De rendertijd\\
-    $\symRBSP$ & $\symBSP$ boom die in elke knoop dezelfde verzameling richtingen als splitsingsrichtingen gebruikt. \\
     $\symRBSPKd$ & $\symRBSP$ boom waarbij $\symKd$ knopen efficiënter doorkruist worden dan $\symBSP$ knopen. \\
   
   \end{tabularx}
