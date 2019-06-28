@@ -289,6 +289,7 @@ $\implies$ Acceleratiestructuren
 			\item Kunnen zich minder goed aanpassen aan scene
 		\end{itemize}
 	\end{itemize}
+	\pause
 	\vspace{5pt}
 	\hspace{5pt}
 	\includegraphics[height=0.5\paperheight]{../img/splitsing-Kd}
@@ -299,6 +300,7 @@ $\implies$ Acceleratiestructuren
 	\begin{itemize}
 	\item Bepaal kost na splitsen volgens vlak
 	\item Kies beste splitsingsvlak of splits niet
+	\pause
 	\item \textit{Surface Area} heuristiek
 		\begin{itemize}
 			\item Kans om kindknoop te doorkruisen is evenredig met oppervlakte
@@ -307,6 +309,7 @@ $\implies$ Acceleratiestructuren
 			\item $\symCost_\symNodeExample = \frac{\symSA(\symLeft)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symLeft*\symCost_\symIntersection + \frac{\symSA(\symRight)}{\symSA(\symNodeExample)}*\symNbPrimitives_\symRight*\symCost_\symIntersection + \symCost_\symTraversal$
 			\item Kost om niet te splitsen: $\symNbPrimitives_\symLeft*\symCost_\symIntersection$
 		\end{itemize}
+	\pause
 	\item Alle asgealigneerde vlakken testen is onhaalbaar
 		\begin{itemize}
 			\item Havran: slechts $2n$ mogelijke splitsingsvlakken per richting
@@ -323,6 +326,7 @@ $\implies$ Acceleratiestructuren
 				\item Aantal driehoeken in beide kindknopen nodig
 				\item Oppervlaktes beide kindknopen nodig
 			\end{itemize}
+		\pause
 		\item \textit{Sweeping}
 			\begin{itemize}
 				\item Sorteer driehoeken volgens eindknopen langs as
@@ -343,6 +347,7 @@ $\implies$ Acceleratiestructuren
 				\item Kunnen niet alle niet-intersecterende driehoeken scheiden
 			\end{itemize}
 	\end{itemize}
+	\pause
 	\vspace{5pt}
 	\hspace{5pt}
 	\includegraphics[height=0.5\paperheight]{../img/splitsing-RBSP}
@@ -358,7 +363,7 @@ $\implies$ Acceleratiestructuren
 	\item Oppervlakte $\symKDOP$ berekenen is duurder
 	\item Ten opzichte van $\symKd$ boom
 		\begin{itemize}
-			\item Minder straal-driehoekintersecties en doorkruisingen
+			\item Minder straal-driehoekintersecties
 			\item Tragere inwendige knoopdoorkruising
 			\item Tragere rendertijd
 		\end{itemize}
@@ -390,20 +395,24 @@ $\implies$ Acceleratiestructuren
 \begin{frame}{$\symBSPizefastkd$ boom}
 	\begin{itemize}
 	\item Optimalisatie
+	\pause
 	\item Inwendige $\symKd$ knopen bevoordelen
 		\begin{itemize}
 			\item Sneller te doorkruisen dan $\symBSP$ knopen
 			\item Lagere doorkruiskost in $\symSA$ kost dan inwendige $\symBSP$ knopen
 		\end{itemize}
+	\pause
 	\item Aanpassing $\symSA$ heuristiek
 		\begin{itemize}
 			\item Aparte $\symCostTraversalKd$ en $\symCostTraversalBSP$
+			\pause
 			\item Rechtstreeks gebruiken in $SA$ kost werkt niet
 			\begin{itemize}
 				\item $SA$ kost varieert lineair in aantal driehoeken
 				\item $\symBSP$ knopen splitsen beter
 				\item Bijna enkel $\symBSP$ knopen gebruikt
 			\end{itemize}
+			\pause
 			\item $\symCostTraversalBSP$ lineair afhankelijke van aantal driehoek
 			\begin{itemize}
 				\item $\symCostTraversalBSP = \alpha * \symCost_\symIntersection * (\symNbPrimitives - 1) + \symCostTraversalKd$
@@ -419,10 +428,11 @@ $\implies$ Acceleratiestructuren
 	\item Ten opzichte van $\symKd$ boom
 		\begin{itemize}
 			\item Geen volledige sweeping mogelijk
-			\item Minder straal-driehoekintersecties en doorkruisingen
+			\item Minder straal-driehoekintersecties
 			\item Gemiddeld lichtjes tragere inwendige knoopdoorkruising
 			\item Lichtjes snellere rendertijd
 		\end{itemize}
+	\pause
 	\item Ten opzichte van $\symRBSP$ boom
 		\begin{itemize}
 			\item Duurdere bouwtijd
@@ -612,7 +622,7 @@ $\implies$ Acceleratiestructuren
 			\begin{itemize}
 				\item $\symKd$
 				\item $\symRBSP$ en $\symRBSPKd$
-				\item $\symBSP$ en $\symBSPizefastkd$
+				\item $\symBSPize$ en $\symBSPizefastkd$
 				\item $\symBSPrandomany$, $\symBSParbitraryany$ en $\symBSPclusterany$				
 			\end{itemize}
 	\end{itemize}
@@ -658,10 +668,188 @@ $\implies$ Acceleratiestructuren
 	  \end{itemize}
 \end{frame}
 
-\begin{frame}{Acceleratiestructuren}
+\begin{frame}{Twee experimenten}
+	\begin{itemize}
+		\item Afhankelijkheid van het aantal richtingen $k$ bij $\symBSPsweep$
+		\begin{itemize}
+			\item Eerste drie scenes zeven keer gerenderd
+				\begin{itemize}
+					\item Voor elk $k$-waarde van 2 tem 10
+					\item Voor elk van de negen $\symBSPsweep$ bomen
+				\end{itemize}
+			\item Uitvoering met rendertijd = mediaan zeven rendertijden gebruikt als representatieve
+		\end{itemize}
+		\vspace{5pt}
+		\item Vergelijking met de andere $\symBSP$ bomen
+		\begin{itemize}
+			\item Alle vier scenes zeven keer gerenderd
+				\begin{itemize}
+					\item Voor elke besproken bestaande $\symBSP$ boom
+					\item Voor $\symBSPrandomfastkd$, $\symBSParbitraryfastkd$, $\symBSPclusterfastkd$ met optimale $k$-waarde
+				\end{itemize}
+			\item Uitvoering met rendertijd = mediaan zeven rendertijden gebruikt als representatieve
+		\end{itemize}
+	\end{itemize}
 \end{frame}
 
-\begin{frame}{Acceleratiestructuren}
+\begin{frame}{Afhankelijkheid van het aantal richtingen}
+	\begin{itemize}
+		\item Bouwtijd
+		\begin{itemize}
+			\item Twee ordegroottes groter dan bouwtijd $\symKd$ boom
+			\item Afhankelijkheid van $k$
+				\begin{itemize}
+					\item $\symBSPrandomany$ lineair
+					\item $\symBSParbitraryany$ en $\symBSPclusterany$: sublineair
+				\end{itemize}
+			\item Op zelfde wijze afhankelijk van aantal driehoeken als $\symKd$ boom
+			\item Gebruik convex veelvlak is ongeveer 25 keer trager dan asgealigneerde balk
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Afhankelijkheid van het aantal richtingen}
+	\begin{itemize}
+		\item Aantal knopen
+		\begin{itemize}
+			\item Stijgt met stijgende k, maar vlakt snel af
+			\item $\symBSPrandomany$: 1.8 - 2 keer zoveel knopen als $\symKd$ boom
+			\item $\symBSParbitraryany$ en $\symBSPclusterany$: 1.2 - 1.3 keer zoveel knopen als $\symKd$ boom
+		\end{itemize}
+		\vspace{10pt}
+		\item Procentueel aantal $\symKd$ knopen
+		\begin{itemize}
+			\item Daalt met stijgende k, maar vlakt snel af
+			\item $\symBSPrandomfastkd$: 20\% - 35 \%
+			\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$: 30\% - 45 \%
+			\item Afhankelijkheid van de diepte
+				\begin{itemize}
+					\item Bovenste niveaus: bijna enkel $\symKd$ knopen
+					\item Onderste niveaus: bijna enkel $\symBSP$ knopen
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Rendertijd}
+		\begin{itemize}
+			\item $\symBSPsweep$ boom zonder $\symKd$ richtingen
+			\begin{itemize}
+				\item Daalt sterk met stijgende k
+				\item Enkel sneller dan $\symKd$ boom bij Killeroo Been scene
+				\item Daalt tot ongeveer 1.8 keer ($\symBSPrandom$) en 1.3 keer ($\symBSParbitrary$ en $\symBSPcluster$) trager
+			\end{itemize}
+			\item $\symBSPsweep$ boom met $\symKd$ richtingen als $\symBSP$ richtingen
+			\begin{itemize}
+				\item Daalt lichtjes met stijgende k en stijgt dan voor grotere k-waarden
+				\item Bij minstens één k-waarde sneller dan $\symKd$ boom
+				\item $\symBSPrandomkd$ trager dan $\symBSParbitrarykd$ en $\symBSPclusterkd$
+			\end{itemize}
+			\item $\symBSPsweep$ boom met $\symKd$ richtingen apart behandeld
+			\begin{itemize}
+				\item Daalt met stijgende k
+				\item Bij elk k-waarde sneller dan $\symKd$ boom
+					\begin{itemize}
+						\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$: daalt al minstens 15\% voor k = 4
+					\end{itemize}
+				\item $\symBSPrandomfastkd$ trager dan $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$
+			\end{itemize}
+		\end{itemize}
+\end{frame}
+
+\begin{frame}{Afhankelijkheid van het aantal richtingen}
+	\begin{itemize}
+		\item Aantal intersecties
+		\begin{itemize}
+			\item Verloop in functie van k zoals rendertijd
+			\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$:
+				\begin{itemize}
+					\item daling tot 40\%
+					\item vlak vanaf een k-waarde van 5
+				\end{itemize}
+			\item $\symBSPrandomfastkd$:
+				\begin{itemize}
+					\item daling tot 40\%
+					\item daalt trager maar monotoon in functie van k
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Afhankelijkheid van het aantal richtingen}
+	\begin{itemize}
+		\item Aantal doorkruisingen
+		\begin{itemize}
+			\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$:
+				\begin{itemize}
+					\item evenveel als $\symKd$ boom
+					\item onafhankelijk van k
+				\end{itemize}
+			\item $\symBSPrandomfastkd$:
+				\begin{itemize}
+					\item stijgt tot 10\% meer dan $\symKd$ boom
+					\item stijgt traag en monotoon in functie van k
+				\end{itemize}
+		\end{itemize}
+		\item Procentueel aantal $\symKd$ doorkruisingen
+		\begin{itemize}
+			\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$:
+				\begin{itemize}
+					\item 85\% - 90\%
+					\item vlak vanaf k-waarde van 5
+				\end{itemize}
+			\item $\symBSPrandomfastkd$:
+				\begin{itemize}
+					\item 80\% - 90\%
+					\item daalt traag en monotoon in functie van k
+				\end{itemize}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Vergelijking bestaande bomen}
+	\begin{itemize}
+		\item Nieuwe bomen
+		\begin{itemize}
+			\item $\symBSPrandomfastkd$ met k = 10
+			\item $\symBSParbitraryfastkd$ met k = 6
+			\item $\symBSPclusterfastkd$ met k = 6
+			\item $\symRBSPKd$ met k = 13
+		\end{itemize}
+		\item Bestaande bomen
+		\begin{itemize}
+			\item $\symKd$
+			\item $\symRBSP$ met k = 13
+			\item $\symBSPize$
+			\item $\symBSPizefastkd$
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[c]{Rendertijd en Bouwtijd}
+	\includegraphics[width=.9\paperwidth]{graphics/rendertijd}
+\end{frame}
+
+\begin{frame}[c]{Straal-driehoekintersecties}
+	\includegraphics[width=.9\paperwidth]{graphics/intersecties}
+\end{frame}
+
+\begin{frame}[c]{\textit{False color} afbeeldingen intersecties}
+	\begin{itemize}
+		\item $\symBSParbitraryfastkd$ vs $\symKd$
+	\end{itemize}
+	\includegraphics[height=.35\paperheight]{../img/fc/conference/bsparbitraryfastkd}
+	\includegraphics[height=.35\paperheight]{../img/fc/conference/kdtree}
+	\includegraphics[height=.35\paperheight]{../img/fc/conference/own-bsparbitraryfastkd}
+	\includegraphics[height=.35\paperheight]{../img/fc/conference/own-kdtree}
+\end{frame}
+
+\begin{frame}[c]{Inwendige knoopdoorkruisingen}
+	\includegraphics[width=.9\paperwidth]{graphics/doorkruisingen}
+\end{frame}
+
+\begin{frame}[c]{$\symKd$ knoopdoorkruisingen}
+	\includegraphics[height=.75\paperheight]{graphics/kdknopen}
 \end{frame}
 
 %%
@@ -669,13 +857,48 @@ $\implies$ Acceleratiestructuren
 %%
 \section{Conclusie}
 
-\begin{frame}{Acceleratiestructuren}
+\begin{frame}{Conclusie}
+	\begin{itemize}
+		\item $\symBSPsweep$
+		\begin{itemize}
+			\item Nuttig en uitbreidbaar concept voor algemene $\symBSP$ bomen
+			\item Lokale geometerie makkelijk in rekening te brengen
+			\item Beperkte bouwtijd door \textit{sweeping}
+		\end{itemize}
+		\item Variant met snelle $\symKd$ richtingen is superieur
+		\item $\symBSPrandomfastkd$
+			\begin{itemize}
+				\item In elke knoop andere splitsingsvlakken kiezen maakt de boom beter
+			\end{itemize}
+		\item $\symBSParbitraryfastkd$ en $\symBSPclusterfastkd$
+			\begin{itemize}
+			\item Splitsingsvlakken afhankelijk van lokale geometrie (normalen) maken de boom nog beter
+			\item Vermindering rendertijd met meer dan 20\%
+			\item Vermindering straal-driehoekintersecties met meer dan 40\%
+			\item Clustering lijkt geen voordeel te bieden
+			\end{itemize}
+
+	\end{itemize}
 \end{frame}
 
-\begin{frame}{Acceleratiestructuren}
+\begin{frame}{Toekomstig onderzoek}
+	\begin{itemize}
+		\item Verbeteren bouwtijd
+		\item Bepalen beste aantal richtingen (per diepte)
+		\item Bepalen betere richtingen
+		\item Focus op splitsen in disjuncte delen ipv SA kost
+	\end{itemize}
 \end{frame}
 
-\begin{frame}{Acceleratiestructuren}
-\end{frame}
+
+\begin{frame}[c,plain,noframenumbering]
+	\begin{tikzpicture}[remember picture,overlay]
+	\fill[fill=kul-blue]
+		(current page.south east)  rectangle  ([shift={(0,-0.1\paperheight)}]current page.north west)   ;
+	\end{tikzpicture}
+	
+	\centering
+	\textcolor{white}{Bedankt voor jullie aandacht}
+	\end{frame}
 
 \end{document}
