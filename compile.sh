@@ -5,6 +5,8 @@ cp *.tex results
 cp *.bib results
 cp kulemt* results
 cp logokul* results
+cp -r img results/img
+cp -r data results/data
 cd results
 pdflatex masterproef
 bibtex masterproef

@@ -1,5 +1,6 @@
-\documentclass[master=cws,masteroption=mmc, bind=18mm]{kulemt}
+%\documentclass[master=cws,masteroption=mmc, bind=18mm]{kulemt}
 %\documentclass[master=cws,masteroption=mmc,oneside]{kulemt}
+\documentclass[master=cws,masteroption=mmc,oneside,english]{kulemt}
 \setup{title={Het gebruik van de normalen bij het bouwen van BSP acceleratiestructuren},
   author={Jesse Hoobergs},
   promotor={Prof.\,dr.\,ir.\ Ph. Dutré},
@@ -144,6 +145,7 @@
 
 \tableofcontents*
 
+\begin{comment}
 \begin{abstract}
 \textit{Ray tracing} is een computergrafiek techniek waarbij stralen door een virtuele 3D scene gestuurd worden om een realistische 2D afbeelding te genereren.
 Om het aantal straal-driehoekintersecties te verminderen, wordt gebruik gemaakt van acceleratiestructuren.
@@ -162,6 +164,27 @@ Er is ook een optimalisatie van de $\symBSPsweep$ boom uitgewerkt: de $\symBSPsw
 De drie $\symBSPsweepfastkd$ soorten zijn duidelijk beter dan de bestaande $\symBSP$ bomen. 
 Van de drie soorten $\symBSPsweepfastkd$ bomen zijn de twee soorten die gebruik maken van de normalen, beduidend beter dan de soort die random richtingen bepaalt.
 Ze verminderen bij alle testscenes het aantal straal-driehoekintersecties met meer dan 40\% en de rendertijd met meer dan 20\% ten opzichte van de $\symKd$ boom. De bouwtijd is twee ordegroottes groter dan die van de $\symKd$ boom, maar wel kleiner dan die van elke andere algemene $\symBSP$ boom.
+\end{abstract}
+\end{comment}
+
+\begin{abstract}
+\textit{Ray tracing} is a computer graphics technique where rays are sent through a virtual 3D scene to generate a realistic 2D image.
+To reduce the amount of ray-triangle intersections, acceleration structures are used.
+These acceleration structures ensure that rays are only intersected with triangles that could possibly intersect with the ray.
+One of the most often used acceleration structures are \textit{Binary Space Partitioning} ($\symBSP$) trees.
+The $\symBSP$ tree recursively splits the bounding volume of the scene in child volumes by using splitting planes.
+In practice, only $\symKd$ trees are used, these are a specific kind of $\symBSP$ trees which only split by using axis-aligned splitting planes.\\
+
+In this thesis, we introduce a new kind of general $\symBSP$ tree: the $\symBSPsweep$ tree.
+The $\symBSPsweep$ tree allows to determine a number of directions in each node depending on the triangles in that node.  
+The best plane of all planes whose normal is one of these directions, is used to split the node.
+Three types of $\symBSPsweep$ trees are designed: one that generates random directions in each nodes ($\symBSPrandom$) and two types that generate directions based on the normals of the triangles in the node ($\symBSParbitrary$ and $\symBSPcluster$).
+The $\symBSParbitrary$  tree chooses the normals of a few random triangles in the node and the $\symBSPcluster$  tree calculates a clustering of the normals of the triangles in the node and uses the cluster centra as directions.
+An optimised version of the $\symBSPsweep$ tree has also been worked out: the $\symBSPsweepfastkd$ tree which favors axis-aligned splits and makes use of their computational advantages.\\
+
+The three types of $\symBSPsweepfastkd$ trees are clearly better than the existing $\symBSP$ trees.
+The two types that make use of the local geometry (by using the normals) are significantly better than the type that uses the random directions.
+In all test scenes, they reduce the number of ray-triangle intersections by more than 40\% and the render time by more than 20\% with respect to the $\symKd$ tree. The build time is two orders of magnitude greater than that of the $\symKd$ tree, but smaller than that of any other general $\symBSP$ tree.
 \end{abstract}
 
 % Een lijst van figuren en tabellen is optioneel
