@@ -1,18 +1,19 @@
 \chapter{English Commentary}
 
-The first chapter gives a general overview of ray tracing and the idea of acceleration structures.
+The first chapter gives a general overview of ray tracing and the concept of acceleration structures.
 It also specifies the goal of the thesis: 'Creating a general $\symBSP$ tree that is superior to the $\symKd$ tree in terms of render time'.\\
 
 The second chapter gives an overview of the existing types of $\symBSP$ trees:
 \begin{itemize}
   \item The $\symKd$ tree is a $\symBSP$ tree which only uses axis-aligned splitting planes. Figure \ref{fig:splitsing-kd} shows its splitting power.
   \item The $\symRBSP$ tree is a $\symBSP$ tree that - like the $\symKd$ tree - has a fixed set of splitting axes, but this set contains more axes than just the x-, y- and z-axis. Figure \ref{fig:splitsing-rbsp} shows its splitting power.
-  \item The $\symBSPize$ tree is a general $\symBSP$ tree that uses that $\symKd$ splitting planes and four additional planes for each triangle: the plane of the triangle itself and the three planes that go through the sides of the triangle and are perpendicular to it.  
+  \item The $\symBSPize$ tree is a general $\symBSP$ tree that uses that $\symKd$ splitting planes and four additional planes for each triangle: the plane of the triangle itself and the three planes that go through the sides of the triangle and are perpendicular to it. 
+  It was the first and only - before the $\symBSPsweep$ tree - general $\symBSP$ tree that could compete with the $\symKd$ tree in terms of render time.
 \end{itemize}
 
 Table \ref{tab:boom-vergelijking} shows in its last two rows the amount of distinct splitting planes used in each level and the total amount of distinct splitting planes used for each of these types of $\symBSP$ trees when there are n triangles in the scene.
 In this thesis it is noticed that the same splitting planes are tested in all levels of the tree.
-This means that any two triangles that can't be separated from each other in the root node, can't be separated in the entire tree.
+This means that any two triangles that can't be separated from each other in the root node, can't be separated in the entire tree.\\
 
 The third chapter presents the new type of $\symBSP$ tree: the $\symBSPsweep$ tree.
 The chapter starts with a mathematical explanation as to why - under certain conditions - it is always advantageous to split a leaf node with more than one triangle into child nodes.
@@ -24,9 +25,14 @@ The $\symRBSP$ tree can now be seen as a $\symBSPsweep$ tree where the same $k$ 
 
 Three versions of the $\symBSPsweep$ tree are designed:
 \begin{itemize}
-  \item $\symBSPrandom$ % used to see if using more planes is useful ?
-  \item $\symBSParbitrary$ 
-  \item $\symBSPcluster$
+  \item $\symBSPrandom$ generates $k$ random directions in each node. This tree doesn't make use of the possibility to use the local geometry to determine the optimal split directions and is therefore used as a baseline for $\symBSPsweep$ performance.
+  \item $\symBSParbitrary$ choses the normals of $k$ arbitrary triangles in the node as split directions.
+  \item $\symBSPcluster$ calculates a K-means clustering of the normals in the node and uses the cluster centra as split directions.
 \end{itemize}
 
-% $O(n\log(n))$
+Table \ref{tab:boom-vergelijking-sweep} shows the same statistics as table \ref{tab:boom-vergelijking} but now for the three types of $\symBSPsweep$ trees. It shows that the $\symBSPsweep$ trees use a total of $O(n\log n)$ distinct split planes instead of $O(n)$ for the $\symKd$ tree. This follows from the fact that the $\symBSPsweep$ trees use different split planes in each level of the tree.\\
+
+The forth chapter explains the implementation details of all the $\symBSP$ trees used in the comparisons.
+It shows that the general outlines of the build and intersect algorithms for each of these trees are the same and that they only differ in the implementation of some helper methods.
+It also explains the data structure of the nodes for each type of $\symBSP$ tree and shows that the nodes of the general $\symBSP$ trees need 2.5 times a much memory. This is due to the fact that they need to store three floating point values to identify the split axis.
+
