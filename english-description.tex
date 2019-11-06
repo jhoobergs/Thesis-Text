@@ -1,0 +1,32 @@
+\chapter{English Commentary}
+
+The first chapter gives a general overview of ray tracing and the idea of acceleration structures.
+It also specifies the goal of the thesis: 'Creating a general $\symBSP$ tree that is superior to the $\symKd$ tree in terms of render time'.\\
+
+The second chapter gives an overview of the existing types of $\symBSP$ trees:
+\begin{itemize}
+  \item The $\symKd$ tree is a $\symBSP$ tree which only uses axis-aligned splitting planes. Figure \ref{fig:splitsing-kd} shows its splitting power.
+  \item The $\symRBSP$ tree is a $\symBSP$ tree that - like the $\symKd$ tree - has a fixed set of splitting axes, but this set contains more axes than just the x-, y- and z-axis. Figure \ref{fig:splitsing-rbsp} shows its splitting power.
+  \item The $\symBSPize$ tree is a general $\symBSP$ tree that uses that $\symKd$ splitting planes and four additional planes for each triangle: the plane of the triangle itself and the three planes that go through the sides of the triangle and are perpendicular to it.  
+\end{itemize}
+
+Table \ref{tab:boom-vergelijking} shows in its last two rows the amount of distinct splitting planes used in each level and the total amount of distinct splitting planes used for each of these types of $\symBSP$ trees when there are n triangles in the scene.
+In this thesis it is noticed that the same splitting planes are tested in all levels of the tree.
+This means that any two triangles that can't be separated from each other in the root node, can't be separated in the entire tree.
+
+The third chapter presents the new type of $\symBSP$ tree: the $\symBSPsweep$ tree.
+The chapter starts with a mathematical explanation as to why - under certain conditions - it is always advantageous to split a leaf node with more than one triangle into child nodes.
+This also implies that a tree that tries more distinct splitting planes - and thus has more splitting power - has the potential to be better.
+In section \ref{sct:concept} the idea of the $\symBSPsweep$ tree is explained.
+The $\symBSPsweep$ tree is a general $\symBSP$ tree in which $k$ directions are determined in each node and all $2n$ splitting planes along each of these directions are checked by sweeping. 
+These $k$ directions can be different for every node and can be chosen dependant on the local geometry.
+The $\symRBSP$ tree can now be seen as a $\symBSPsweep$ tree where the same $k$ directions are chosen in every node.\\
+
+Three versions of the $\symBSPsweep$ tree are designed:
+\begin{itemize}
+  \item $\symBSPrandom$ % used to see if using more planes is useful ?
+  \item $\symBSParbitrary$ 
+  \item $\symBSPcluster$
+\end{itemize}
+
+% $O(n\log(n))$
