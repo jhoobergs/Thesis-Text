@@ -30,9 +30,36 @@ Three versions of the $\symBSPsweep$ tree are designed:
   \item $\symBSPcluster$ calculates a K-means clustering of the normals in the node and uses the cluster centra as split directions.
 \end{itemize}
 
+Each of these versions has three variants:
+\begin{itemize}
+  \item $\symBSPsweep$: Calculates $k$ directions in each node,
+  \item $\symBSPsweepkd$: Calculates $k-3$ directions and uses the x-, y- and z-axis as other split axes
+  \item $\symBSPsweepfastkd$: Use the same split planes as $\symBSPsweepkd$ but optimises and favors the use of $\symKd$ planes 
+\end{itemize}
+
 Table \ref{tab:boom-vergelijking-sweep} shows the same statistics as table \ref{tab:boom-vergelijking} but now for the three types of $\symBSPsweep$ trees. It shows that the $\symBSPsweep$ trees use a total of $O(n\log n)$ distinct split planes instead of $O(n)$ for the $\symKd$ tree. This follows from the fact that the $\symBSPsweep$ trees use different split planes in each level of the tree.\\
 
 The forth chapter explains the implementation details of all the $\symBSP$ trees used in the comparisons.
 It shows that the general outlines of the build and intersect algorithms for each of these trees are the same and that they only differ in the implementation of some helper methods.
-It also explains the data structure of the nodes for each type of $\symBSP$ tree and shows that the nodes of the general $\symBSP$ trees need 2.5 times a much memory. This is due to the fact that they need to store three floating point values to identify the split axis.
+It also explains the data structure of the nodes for each type of $\symBSP$ tree and shows that the nodes of the general $\symBSP$ trees need 2.5 times as much memory. This is due to the fact that they need to store three floating point values to identify the split axis.\\
+
+The fifth chapter discusses the results gathered by rendering the four scenes in figure \ref{fig:results-scenes} with different configurations of the $\symBSPsweep$ trees.
+Section \ref{h5-richtingen} shows the results for the 9 $\symBSPsweep$ trees for increasing values of $k$.
+All plots are relative to the result of the $\symKd$ tree.
+There are a lot of conclusions to draw from the plots, but the most important one is that the versions without the $\symKd$ directions can't compete with the $\symKd$ tree, that the versions with the $\symKd$ directions have at least one $k$ value for which the render time is lower than that of the $\symKd$ tree and the versions with the optimisation for $\symKd$ directions clearly beat the $\symKd$ tree in terms of render time for all values of $k$.
+It can also be noted that the $\symBSPrandom$ trees improve with increasing $k$ and that the other two versions seem to converge to an optimal solution for $k$ equal to 6 or 7.\\
+
+Section \ref{h5-vergelijken} compares the $\symBSPsweep$ trees with existing $\symBSP$ trees.
+Table \ref{tab:bsp-vergelijken-renderbouwtijd} shows for every scene the render times (R) and the build times (B) relative to that of the $\symKd$ tree.
+The three $\symBSPsweep$ trees do always have a better render time than the $\symKd$ tree.
+It is also worth noting that the $\symRBSPKd$ tree - also a type op $\symBSPsweep$ tree - also outperforms the $\symKd$ tree.
+The build times of the $\symBSPsweep$ trees are also much better than the build times of the only other general $\symBSP$ tree, the $\symBSPize$ tree. The main reason for this is the reduction of ray-triangle intersections as shown by table \ref{tab:bsp-vergelijken-intersecties} where ZI represent the intersections with primary rays and SI the intersection with secundary rays.
+Tables \ref{tab:results-statistics-fc} and \ref{tab:results-statistics-fc-own} show false color images for the amount of ray-triangle intersections for each pixel. In the first table, all trees use the same color scale. In the second table, they all use different color scales. 
+The $\symBSPsweep$ trees are clearly much better at adapting to locale geometry and do therefore have less hotspot regions.\\
+
+Table \ref{tab:bsp-vergelijken-doorkruisingen} shows that the amount of node traversals does also decrease when using the $\symBSPsweep$ trees. ZD represent the traversals caused by primary rays and SD the traversals caused by secundary rays.
+It is important to note that the traversals through a general $\symBSP$ are computationally more expensive than the traversals through a $\symKd$ tree. This implies that the $\symBSPsweep$ trees might still spend more time traversing nodes than the $\symKd$ tree despite the decrease in node traversals.
+In the $\symBSPsweepfastkd$ optimised trees, this problem is reduced a lot by favoring $\symKd$ nodes and traversing them with a different traversing algorithm. Table \ref{tab:bsp-vergelijken-kdknopen} shows the proportion of nodes that are $\symKd$ node (the $\symKd$ column), the proportion of primary ray traversals (ZD $\symKd$) that use $\symKd$ nodes and the proportion of secundary ray traversals (SD $\symKd$) that use $\symKd$ nodes. The table shows that almost all traversals can use the fast $\symKd$ node traversal algorithm even though less than half of the nodes are $\symKd$ nodes. The reason for this is that $\symKd$ nodes are used mainly in the top levels while the $\symBSP$ nodes are mostly used in the lower levels of the tree. This can be seen in the heatmaps in figure \ref{fig:k-kd-knopen-diepte} which show the proportion of $\symKd$ nodes for each depth, for multiple values of $k$. 
+\\
+
 
