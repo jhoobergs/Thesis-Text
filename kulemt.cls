@@ -456,11 +456,18 @@
     \clearpage
   \fi}
 \makeoddhead{ruled}{}{}{%
-  \if@mainmatter \rightmark \else \scshape\leftmark \fi}
+  \if@mainmatter \rightmark \else \scshape\leftmark \fi
+}
+\makeevenfoot{ruled}{}{}{} %enabled means no page numbers
+\makeoddfoot{ruled}{}{}{} %enabled means no page numbers
 \pagestyle{ruled}
 \makepagestyle{nohead}
-\makeevenfoot{nohead}{\thepage}{}{}
-\makeoddfoot{nohead}{}{}{\thepage}
+\makeevenfoot{nohead}{
+  %\thepage %enabled means page numbers for chapter pages
+  }{}{}
+\makeoddfoot{nohead}{}{}{
+  %\thepage %enabled means page numbers for chapter pagess
+}
 \aliaspagestyle{chapter}{nohead}
 \maxsecnumdepth{subsection}
 \maxtocdepth{section}
