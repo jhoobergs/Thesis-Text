@@ -1,40 +1,62 @@
 \chapter{English Commentary}
 
+\section{Translation of abstract}
+\textit{Ray tracing} is a computer graphics technique where rays are sent through a virtual 3D scene to generate a realistic 2D image.
+To reduce the amount of ray-triangle intersections, acceleration structures are used.
+These acceleration structures ensure that rays are only intersected with triangles that could possibly intersect with the ray.
+One of the most often used acceleration structures are \textit{Binary Space Partitioning} ($\symBSP$) trees.
+The $\symBSP$ tree recursively splits the bounding volume of the scene in child volumes by using splitting planes.
+In practice, only $\symKd$ trees are used, these are a specific kind of $\symBSP$ trees which only split by using axis-aligned splitting planes.\\
+
+In this thesis, we introduce a new kind of general $\symBSP$ tree: the $\symBSPsweep$ tree.
+The $\symBSPsweep$ tree allows to determine a number of directions in each node depending on the triangles in that node.  
+The best plane of all planes whose normal is one of these directions, is used to split the node.
+Three types of $\symBSPsweep$ trees are designed: one that generates random directions in each nodes ($\symBSPrandom$) and two types that generate directions based on the normals of the triangles in the node ($\symBSParbitrary$ and $\symBSPcluster$).
+The $\symBSParbitrary$  tree chooses the normals of a few random triangles in the node and the $\symBSPcluster$  tree calculates a clustering of the normals of the triangles in the node and uses the cluster centra as directions.
+An optimised version of the $\symBSPsweep$ tree has also been worked out: the $\symBSPsweepfastkd$ tree which favors axis-aligned splits and makes use of their computational advantages.\\
+
+The three types of $\symBSPsweepfastkd$ trees are clearly better than the existing $\symBSP$ trees.
+The two types that make use of the local geometry (by using the normals) are significantly better than the type that uses the random directions.
+In all test scenes, they reduce the number of ray-triangle intersections by more than 40\% and the render time by more than 20\% with respect to the $\symKd$ tree. The build time is two orders of magnitude greater than that of the $\symKd$ tree, but smaller than that of any other general $\symBSP$ tree.
+
+\newpage
+
+\section{Commentary on chapters 1 to 5}
 The first chapter gives a general overview of ray tracing and the concept of acceleration structures.
 It also specifies the goal of the thesis: 'Creating a general $\symBSP$ tree that is superior to the $\symKd$ tree in terms of render time'.\\
 
 The second chapter gives an overview of the existing types of $\symBSP$ trees:
 \begin{itemize}
-  \item The $\symKd$ tree is a $\symBSP$ tree which only uses axis-aligned splitting planes. Figure \ref{fig:splitsing-kd} shows its splitting power.
-  \item The $\symRBSP$ tree is a $\symBSP$ tree that - like the $\symKd$ tree - has a fixed set of splitting axes, but this set contains more axes than just the x-, y- and z-axis. Figure \ref{fig:splitsing-rbsp} shows its splitting power.
-  \item The $\symBSPize$ tree is a general $\symBSP$ tree that uses that $\symKd$ splitting planes and four additional planes for each triangle: the plane of the triangle itself and the three planes that go through the sides of the triangle and are perpendicular to it. 
+  \item The $\symKd$ tree is a $\symBSP$ tree which only uses axis-aligned split planes. Figure \ref{fig:splitsing-kd} shows its splitting power.
+  \item The $\symRBSP$ tree is a $\symBSP$ tree that - like the $\symKd$ tree - has a fixed set of split axes, but this set contains more axes than just the x-, y- and z-axis. Figure \ref{fig:splitsing-rbsp} shows its splitting power.
+  \item The $\symBSPize$ tree is a general $\symBSP$ tree that uses that $\symKd$ split planes and four additional planes for each triangle: the plane of the triangle itself and the three planes that go through the sides of the triangle and are perpendicular to it. 
   It was the first and only - before the $\symBSPsweep$ tree - general $\symBSP$ tree that could compete with the $\symKd$ tree in terms of render time.
 \end{itemize}
 
-Table \ref{tab:boom-vergelijking} shows in its last two rows the amount of distinct splitting planes used in each level and the total amount of distinct splitting planes used for each of these types of $\symBSP$ trees when there are n triangles in the scene.
-In this thesis it is noticed that the same splitting planes are tested in all levels of the tree.
+Table \ref{tab:boom-vergelijking} shows in its last two rows the amount of distinct split planes used in each level and the total amount of distinct split planes used for each of these types of $\symBSP$ trees when there are n triangles in the scene.
+In this thesis it is noticed that the same split planes are tested in all levels of the tree.
 This means that any two triangles that can't be separated from each other in the root node, can't be separated in the entire tree.\\
 
 The third chapter presents the new type of $\symBSP$ tree: the $\symBSPsweep$ tree.
 The chapter starts with a mathematical explanation as to why - under certain conditions - it is always advantageous to split a leaf node with more than one triangle into child nodes.
-This also implies that a tree that tries more distinct splitting planes - and thus has more splitting power - has the potential to be better.
+This also implies that a tree that tries more distinct split planes - and thus has more splitting power - has the potential to be better.
 In section \ref{sct:concept} the idea of the $\symBSPsweep$ tree is explained.
-The $\symBSPsweep$ tree is a general $\symBSP$ tree in which $k$ directions are determined in each node and all $2n$ splitting planes along each of these directions are checked by sweeping. 
-These $k$ directions can be different for every node and can be chosen dependant on the local geometry.
+The $\symBSPsweep$ tree is a general $\symBSP$ tree in which $k$ directions are determined in each node and all $2n$ split planes along each of these directions are checked by sweeping. 
+These $k$ directions can be different for every node and can be chosen depending on the local geometry.
 The $\symRBSP$ tree can now be seen as a $\symBSPsweep$ tree where the same $k$ directions are chosen in every node.\\
 
-Three versions of the $\symBSPsweep$ tree are designed:
+Three types of $\symBSPsweep$ tree are designed:
 \begin{itemize}
   \item $\symBSPrandom$ generates $k$ random directions in each node. This tree doesn't make use of the possibility to use the local geometry to determine the optimal split directions and is therefore used as a baseline for $\symBSPsweep$ performance.
   \item $\symBSParbitrary$ choses the normals of $k$ arbitrary triangles in the node as split directions.
   \item $\symBSPcluster$ calculates a K-means clustering of the normals in the node and uses the cluster centra as split directions.
 \end{itemize}
 
-Each of these versions has three variants:
+Each of these types has three variants:
 \begin{itemize}
   \item $\symBSPsweep$: Calculates $k$ directions in each node,
   \item $\symBSPsweepkd$: Calculates $k-3$ directions and uses the x-, y- and z-axis as other split axes
-  \item $\symBSPsweepfastkd$: Use the same split planes as $\symBSPsweepkd$ but optimises and favors the use of $\symKd$ planes 
+  \item $\symBSPsweepfastkd$: Uses the same split planes as $\symBSPsweepkd$ but optimises and favors the use of $\symKd$ planes 
 \end{itemize}
 
 Table \ref{tab:boom-vergelijking-sweep} shows the same statistics as table \ref{tab:boom-vergelijking} but now for the three types of $\symBSPsweep$ trees. It shows that the $\symBSPsweep$ trees use a total of $O(n\log n)$ distinct split planes instead of $O(n)$ for the $\symKd$ tree. This follows from the fact that the $\symBSPsweep$ trees use different split planes in each level of the tree.\\
@@ -44,22 +66,61 @@ It shows that the general outlines of the build and intersect algorithms for eac
 It also explains the data structure of the nodes for each type of $\symBSP$ tree and shows that the nodes of the general $\symBSP$ trees need 2.5 times as much memory. This is due to the fact that they need to store three floating point values to identify the split axis.\\
 
 The fifth chapter discusses the results gathered by rendering the four scenes in figure \ref{fig:results-scenes} with different configurations of the $\symBSPsweep$ trees.
-Section \ref{h5-richtingen} shows the results for the 9 $\symBSPsweep$ trees for increasing values of $k$.
+Section \ref{h5-richtingen} shows the results for the 9 $\symBSPsweep$ trees - 3 types with 3 variants - for increasing values of $k$.
 All plots are relative to the result of the $\symKd$ tree.
-There are a lot of conclusions to draw from the plots, but the most important one is that the versions without the $\symKd$ directions can't compete with the $\symKd$ tree, that the versions with the $\symKd$ directions have at least one $k$ value for which the render time is lower than that of the $\symKd$ tree and the versions with the optimisation for $\symKd$ directions clearly beat the $\symKd$ tree in terms of render time for all values of $k$.
-It can also be noted that the $\symBSPrandom$ trees improve with increasing $k$ and that the other two versions seem to converge to an optimal solution for $k$ equal to 6 or 7.\\
+There are a lot of conclusions to draw from the plots, but the most important one is that the variants without the $\symKd$ directions can't compete with the $\symKd$ tree, that the variants with the $\symKd$ directions have at least one $k$ value for which the render time is lower than that of the $\symKd$ tree and the variants with the optimisation for $\symKd$ directions clearly beat the $\symKd$ tree in terms of render time for all values of $k$.
+It can also be noted that the $\symBSPrandom$ trees improve with increasing $k$ and that the other two types seem to converge to an optimal solution for $k$ equal to 6 or 7.\\
 
-Section \ref{h5-vergelijken} compares the $\symBSPsweep$ trees with existing $\symBSP$ trees.
+Section \ref{h5-vergelijken} compares the best $\symBSPsweepfastkd$ trees with existing $\symBSP$ trees.
 Table \ref{tab:bsp-vergelijken-renderbouwtijd} shows for every scene the render times (R) and the build times (B) relative to that of the $\symKd$ tree.
 The three $\symBSPsweep$ trees do always have a better render time than the $\symKd$ tree.
-It is also worth noting that the $\symRBSPKd$ tree - also a type op $\symBSPsweep$ tree - also outperforms the $\symKd$ tree.
-The build times of the $\symBSPsweep$ trees are also much better than the build times of the only other general $\symBSP$ tree, the $\symBSPize$ tree. The main reason for this is the reduction of ray-triangle intersections as shown by table \ref{tab:bsp-vergelijken-intersecties} where ZI represent the intersections with primary rays and SI the intersection with secundary rays.
+It is also worth noting that the $\symRBSPKd$ tree - also a type of $\symBSPsweep$ tree - also outperforms the $\symKd$ tree.
+ The main reason for this is the reduction of ray-triangle intersections as shown by table \ref{tab:bsp-vergelijken-intersecties} where ZI represent the intersections with primary rays and SI the intersection with secundary rays.
 Tables \ref{tab:results-statistics-fc} and \ref{tab:results-statistics-fc-own} show false color images for the amount of ray-triangle intersections for each pixel. In the first table, all trees use the same color scale. In the second table, they all use different color scales. 
-The $\symBSPsweep$ trees are clearly much better at adapting to locale geometry and do therefore have less hotspot regions.\\
+The $\symBSPsweep$ trees are clearly much better at adapting to locale geometry as can be seen by the reduction of hotspot regions.
+The build times of the $\symBSPsweep$ trees are also much better than the build times of the only other general $\symBSP$ tree, the $\symBSPize$ tree. 
+It is also worth noting that the ratio between the build time of the $\symBSPsweep$ tree and the build time of the $\symKd$ tree is independent of the number of triangles while this ratio increases for the $\symBSPize$ tree.
+\\
 
 Table \ref{tab:bsp-vergelijken-doorkruisingen} shows that the amount of node traversals does also decrease when using the $\symBSPsweep$ trees. ZD represent the traversals caused by primary rays and SD the traversals caused by secundary rays.
 It is important to note that the traversals through a general $\symBSP$ are computationally more expensive than the traversals through a $\symKd$ tree. This implies that the $\symBSPsweep$ trees might still spend more time traversing nodes than the $\symKd$ tree despite the decrease in node traversals.
-In the $\symBSPsweepfastkd$ optimised trees, this problem is reduced a lot by favoring $\symKd$ nodes and traversing them with a different traversing algorithm. Table \ref{tab:bsp-vergelijken-kdknopen} shows the proportion of nodes that are $\symKd$ node (the $\symKd$ column), the proportion of primary ray traversals (ZD $\symKd$) that use $\symKd$ nodes and the proportion of secundary ray traversals (SD $\symKd$) that use $\symKd$ nodes. The table shows that almost all traversals can use the fast $\symKd$ node traversal algorithm even though less than half of the nodes are $\symKd$ nodes. The reason for this is that $\symKd$ nodes are used mainly in the top levels while the $\symBSP$ nodes are mostly used in the lower levels of the tree. This can be seen in the heatmaps in figure \ref{fig:k-kd-knopen-diepte} which show the proportion of $\symKd$ nodes for each depth, for multiple values of $k$. 
+In the $\symBSPsweepfastkd$ optimised trees, this problem is reduced a lot by favoring $\symKd$ nodes and traversing them with a different traversing algorithm. Table \ref{tab:bsp-vergelijken-kdknopen} shows the proportion of nodes that are $\symKd$ nodes (the $\symKd$ column), the proportion of primary ray traversals (ZD $\symKd$) that use $\symKd$ nodes and the proportion of secundary ray traversals (SD $\symKd$) that use $\symKd$ nodes. The table shows that almost all traversals can use the fast $\symKd$ node traversal algorithm even though less than half of the nodes are $\symKd$ nodes. The reason for this is that $\symKd$ nodes are used mainly in the top levels while the $\symBSP$ nodes are mostly used in the lower levels of the tree. This can be seen in the heatmaps in figure \ref{fig:k-kd-knopen-diepte} which show the proportion of $\symKd$ nodes for each depth, for multiple values of $k$. 
 \\
 
+\newpage
+\section{Translation of chapter 6: Conclusion}
 
+\subsection{Conclusions $\symBSPsweep$}
+The designed $\symBSPsweep$ tree is a very useful and extensible concept for building general $\symBSP$ trees.
+The local geometry of the node can easily be taken into account to generate good split directions.
+Due to the sweeping, the build time remains relatively limited compared to the only other general $\symBSP$ tree: the $\symBSPize$ tree.
+The build time is two orders of magnitude greater than that of the $\symKd$ tree.
+For many applications, however, this is not a problem since the tree can be built in advance.\\
+
+The simple $\symBSPsweep$ trees that do not use the $\symKd$ directions are almost  always inferior to the $\symKd$ tree and $\symBSPize$ trees.
+In the special Killeroo Been scene, these trees do show their potential, since they work better than the $\symKd$ tree.
+The $\symBSPsweepkd$ trees, which always take the $\symKd$ directions as the first three directions, perform better than the $\symKd$ and $\symBSPize$ trees for certain values of $k$ (the number of directions).
+These trees will, however, never be used in practice because they serve as a stepping stone to the $\symBSPsweepfastkd$ trees, which always perform better than the existing $\symBSP$ trees. \\
+
+The $\symBSPrandomfastkd$ tree shows that choosing other split directions in each node makes the tree much better.
+Even without taking the local geometry into account, a tree ($\symBSPrandomfastkd$) can be built that is better than the $\symKd$ or well-thought out $\symBSPizefastkd$ tree.
+This is mainly due to the larger number of different split planes - $O(nlog (n))$ instead of $O (n)$ - that are checking during the build.
+The $\symBSParbitraryfastkd$ and $\symBSPclusterfastkd$ trees show that choosing split directions depending on local geometry can make this tree even better.
+They reduce the number of ray-triangle intersections by more than 40\% and the render time by more than 20\% compared to the $\symKd$ tree in all test scenes.
+These trees also show that adding just one direction on top of the $\symKd$ directions can already have a major effect on these values.
+The clustering does not seem to offer any advantage over choosing random normals.
+
+\newpage
+\subsection{Future research}
+Future research should focus on a number of issues: improving build time, determining the best number of directions and determining better directions.
+Improving the build time could be done by using the \authorBudge{} \cite{Budge} method to incrementally calculate the $\symSA$ of the split volumes instead of always starting from scratch.
+Certain parts of the build process can easily be parallelized.
+For example, it is possible to sweep over the different split directions in parallel.
+The number of directions that are generated could be depending on the depth.
+At higher levels we mainly want to use $\symKd$ nodes so it is possible to use only the $\symKd$ directions or the $\symKd$ directions plus a small number of $\symBSP$ directions. More $\symBSP$ directions would then be used at the lower levels. \\
+
+It is also a possibility to stop searching for the best split, when a split is found that divides the triangles into two disjunct parts.
+This allows using higher $k$ values, without getting an increase in construction time.
+In section \ref{h5-directions-quality} it was also noticeable that the number of ray-triangle intersections dropped sharply when only one direction determined by the normals was used, but that more directions based on the normals did not allow this number to decrease much more.
+At the $\symBSPrandomfastkd$ tree, the number of intersections continued to decrease with an increasing number of directions.
+We therefore think that it might be a good idea to make a hybrid solution that generates a small number of directions based on the normals and a larger number of random directions when a good split has not been found.
